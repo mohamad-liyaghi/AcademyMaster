@@ -2,3 +2,4 @@ venv/
 TODO.md
 .env
 __pycache__
+postgres-data
