@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
+
 THIRD_PARTY_URLS = [
     path('__debug__/', include('debug_toolbar.urls')),
     path('download/', SpectacularAPIView.as_view(), name='download-schema'),
@@ -16,3 +17,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     *THIRD_PARTY_URLS,
 ]
+
+handler404 = 'apps.core.views.handler_404'
+handler500 = 'apps.core.views.handler_500'

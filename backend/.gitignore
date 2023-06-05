@@ -3,3 +3,5 @@ TODO.md
 .env
 __pycache__
 postgres-data
+logs/critical.log
+!logs/.keep

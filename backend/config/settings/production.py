@@ -1,5 +1,6 @@
 from .core import *
-
+import logging.config
+from django.utils.log import DEFAULT_LOGGING
 
 DEBUG = False
 ALLOWED_HOSTS = list(config('ALLOWED_HOSTS'))
@@ -14,3 +15,38 @@ DATABASES = {
         'PORT': config('DATABASE_PORT')
     }
 }
+
+
+LOGGING_CONFIG = None
+
+
+logging.config.dictConfig({
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'default': {
+            'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+        },
+        'django.server': DEFAULT_LOGGING['formatters']['django.server'],
+    },
+    'handlers': {
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': 'logs/critical.log',
+            'formatter': 'default',
+        },
+        'django.server': DEFAULT_LOGGING['handlers']['django.server'],
+    },
+    'loggers': {
+        '': {
+            'level': 'WARNING',
+            'handlers': ['file'],
+        },
+        'app': {
+            'level': 'CRITICAL',
+            'handlers': ['file'],
+            'propagate': False,
+        },
+        'django.server': DEFAULT_LOGGING['loggers']['django.server'],
+    },
+})
