@@ -10,6 +10,12 @@ sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
 
 SECRET_KEY = config('SECRET_KEY')
 
+THIRD_PARTY_APPS = [
+    'rest_framework',
+    'drf_spectacular',
+    'drf_spectacular_sidecar',
+    'debug_toolbar',
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -18,6 +24,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    *THIRD_PARTY_APPS,
 ]
 
 MIDDLEWARE = [
@@ -79,3 +87,14 @@ STATIC_URL = 'static/'
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Academy Master Api',
+    'DESCRIPTION': 'Advance academy management system API',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
