@@ -98,8 +98,11 @@ SPECTACULAR_SETTINGS = {
     'SERVE_INCLUDE_SCHEMA': False,
 }
 
+# Celery configs
 CELERY_BROKER_URL = config("CELERY_BROKER_URL")
+CELERY_RESULT_BACKEND = config("CELERY_RESULT_BACKEND")
 
+# Cache configs
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
@@ -109,3 +112,12 @@ CACHES = {
         }
     }
 }
+
+
+# Email configs
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = config("EMAIL_HOST")
+EMAIL_HOST_USER = config("EMAIL_USER")
+EMAIL_HOST_PASSWORD = config("EMAIL_PASSWORD")
+EMAIL_PORT = config("EMAIL_PORT")
+DEFAULT_FROM_EMAIL = config("EMAIL_FROM")
