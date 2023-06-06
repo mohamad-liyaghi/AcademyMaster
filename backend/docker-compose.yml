@@ -1,25 +1,6 @@
 version: '3.9'
 
 services:
-  rabbitmq:
-      image: rabbitmq:3.10-management-alpine
-      hostname: rabbitmq
-      container_name: academy-master-rabbitmq
-      ports:
-        - "5672:5672"
-        - "15672:15672"
-      environment:
-        - RABBITMQ_DEFAULT_USER=rabbituser
-        - RABBITMQ_DEFAULT_PASS=1234EErr
-        - RABBITMQ_DEFAULT_VHOST=/
-      networks:
-        - main
-      healthcheck:
-        test: ["CMD", "rabbitmqctl", "status"]
-        interval: 3s
-        timeout: 3s
-        retries: 5
-
   backend:
     build:
       context: .
@@ -38,6 +19,7 @@ services:
     depends_on:
       - database
       - rabbitmq
+      - redis
 
   database:
     image: postgres:12
@@ -69,6 +51,34 @@ services:
       - .:/backend
     networks:
       - main    
+  rabbitmq:
+      image: rabbitmq:3.10-management-alpine
+      hostname: rabbitmq
+      container_name: academy-master-rabbitmq
+      ports:
+        - "5672:5672"
+        - "15672:15672"
+      environment:
+        - RABBITMQ_DEFAULT_USER=rabbituser
+        - RABBITMQ_DEFAULT_PASS=1234EErr
+        - RABBITMQ_DEFAULT_VHOST=/
+      networks:
+        - main
+      healthcheck:
+        test: ["CMD", "rabbitmqctl", "status"]
+        interval: 3s
+        timeout: 3s
+        retries: 5
+
+  redis:
+    image: redis:6.2-alpine
+    container_name: academy-master-redis
+    
+    ports:
+      - 6379:6379
+    networks:
+      - main
+    restart: always
 
 networks:
   main:

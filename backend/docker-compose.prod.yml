@@ -1,6 +1,56 @@
 version: '3.9'
 
 services:
+  backend:
+    build:
+      context: .
+      dockerfile: docker/production/Dockerfile
+    command: sh docker/production/commands/setup.sh
+    container_name: academy-master-backend
+    ports:
+      - 8000:8000
+    volumes:
+      - .:/backend
+    restart: on-failure
+    networks:
+      - main
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.production
+    depends_on:
+      - database
+      - rabbitmq
+      - redis
+
+  database:
+    image: postgres:12
+    container_name: academy-master-postgres
+    restart: on-failure
+    ports:
+      - 5432:5432
+    volumes:
+      - ./postgres-data:/var/lib/posgresql/data
+    networks:
+      - main
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1234EErr
+      - POSTGRES_DB=academy_master_production
+
+  celery:
+    build: 
+      context: .
+      dockerfile: docker/production/Dockerfile
+    container_name: academy-master-celery
+    command: sh docker/production/commands/celery.sh 
+    depends_on:
+      backend:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    volumes:
+      - .:/backend
+    networks:
+      - main    
   rabbitmq:
       image: rabbitmq:3.10-management-alpine
       hostname: rabbitmq
@@ -20,55 +70,15 @@ services:
         timeout: 3s
         retries: 5
 
-  backend:
-    build:
-      context: .
-      dockerfile: docker/production/Dockerfile
-    command: sh docker/production/commands/setup.sh
-    container_name: academy-master-backend
+  redis:
+    image: redis:6.2-alpine
+    container_name: academy-master-redis
+    
     ports:
-      - 8000:8000
-    volumes:
-      - .:/backend
-    restart: on-failure
+      - 6379:6379
     networks:
       - main
-    environment:
-      - DJANGO_SETTINGS_MODULE=config.settings.production
-    depends_on:
-      - database
-      - rabbitmq
-
-  database:
-    image: postgres:12
-    container_name: academy-master-postgres
-    restart: on-failure
-    ports:
-      - 5432:5432
-    volumes:
-      - ./postgres-data:/var/lib/posgresql/data
-    networks:
-      - main
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=1234EErr
-      - POSTGRES_DB=academy_master_production 
-
-  celery:
-    build: 
-      context: .
-      dockerfile: docker/production/Dockerfile
-    container_name: academy-master-celery
-    command: sh docker/production/commands/celery.sh 
-    depends_on:
-      backend:
-        condition: service_started
-      rabbitmq:
-        condition: service_healthy
-    volumes:
-      - .:/backend
-    networks:
-      - main    
+    restart: always
 
 networks:
   main:
