@@ -1,11 +1,30 @@
 version: '3.9'
 
 services:
+  rabbitmq:
+      image: rabbitmq:3.10-management-alpine
+      hostname: rabbitmq
+      container_name: academy-master-rabbitmq
+      ports:
+        - "5672:5672"
+        - "15672:15672"
+      environment:
+        - RABBITMQ_DEFAULT_USER=rabbituser
+        - RABBITMQ_DEFAULT_PASS=1234EErr
+        - RABBITMQ_DEFAULT_VHOST=/
+      networks:
+        - main
+      healthcheck:
+        test: ["CMD", "rabbitmqctl", "status"]
+        interval: 3s
+        timeout: 3s
+        retries: 5
+
   backend:
     build:
       context: .
       dockerfile: docker/production/Dockerfile
-    command: sh docker/production/setup.sh
+    command: sh docker/production/commands/setup.sh
     container_name: academy-master-backend
     ports:
       - 8000:8000
@@ -18,6 +37,7 @@ services:
       - DJANGO_SETTINGS_MODULE=config.settings.production
     depends_on:
       - database
+      - rabbitmq
 
   database:
     image: postgres:12
@@ -32,7 +52,23 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=1234EErr
-      - POSTGRES_DB=academy_master_production
+      - POSTGRES_DB=academy_master_production 
+
+  celery:
+    build: 
+      context: .
+      dockerfile: docker/production/Dockerfile
+    container_name: academy-master-celery
+    command: sh docker/production/commands/celery.sh 
+    depends_on:
+      backend:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    volumes:
+      - .:/backend
+    networks:
+      - main    
 
 networks:
   main:
