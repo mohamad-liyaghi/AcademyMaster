@@ -28,12 +28,12 @@ class TestAccountModel:
         assert self.user.token != self.superuser.token
 
     def test_user_is_admin(self):
-        assert self.superuser.is_admin == True
-        assert self.user.is_admin == False
+        assert self.superuser.is_admin() == True
+        assert self.user.is_admin() == False
 
     def test_user_is_student(self):
-        assert self.superuser.is_student == False
-        assert self.user.is_student == True
+        assert self.superuser.is_student() == False
+        assert self.user.is_student() == True
 
     def test_user_is_manager(self):
         manager = Account.objects.create_user(
@@ -42,9 +42,9 @@ class TestAccountModel:
         )
         manager.role = Account.Role.MANAGER
         manager.save()
-        assert self.superuser.is_manager == False
-        assert self.superuser.is_manager == False
-        assert manager.is_manager == True
+        assert self.superuser.is_manager() == False
+        assert self.superuser.is_manager() == False
+        assert manager.is_manager() == True
 
     def test_user_is_teacher(self):
         teacher = Account.objects.create_user(
@@ -53,6 +53,6 @@ class TestAccountModel:
         )
         teacher.role = Account.Role.TEACHER
         teacher.save()
-        assert self.superuser.is_teacher == False
-        assert self.superuser.is_teacher == False
-        assert teacher.is_teacher == True
+        assert self.superuser.is_teacher() == False
+        assert self.superuser.is_teacher() == False
+        assert teacher.is_teacher() == True

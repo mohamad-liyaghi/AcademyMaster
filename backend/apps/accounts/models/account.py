@@ -3,8 +3,8 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from accounts.managers import AccountManager
 from core.models import AbstractToken
 
-
 class Account(AbstractBaseUser, PermissionsMixin, AbstractToken):
+    # TODO: Role is temporarly, remove after implementing Managers/Teachers
     class Role(models.TextChoices):
         ADMIN = 'a', 'Admin'
         MANAGER = 'm', 'Manager'
@@ -39,24 +39,22 @@ class Account(AbstractBaseUser, PermissionsMixin, AbstractToken):
         return f'{self.first_name} {self.last_name}'
 
     @property
-    def is_admin(self) -> bool:
-        return bool(self.role == 'a' and self.is_superuser)
-
-    @property
-    def is_manager(self) -> bool:
-        return bool(self.role == 'm')
-
-    @property
-    def is_teacher(self) -> bool:
-        return bool(self.role == 't')
-
-    @property
-    def is_student(self) -> bool:
-        return bool(self.role == 's')
-
-    @property
     def is_staff(self) -> bool:
         return bool(self.is_superuser)
+
+    def is_admin(self) -> bool:
+        return bool(self.is_staff)
+
+    def is_manager(self) -> bool:
+        # TODO: Add manager model when implemented
+        return bool(self.role == 'm')
+
+    def is_teacher(self) -> bool:
+        # TODO Add teacher model when implemented
+        return bool(self.role == 't')
+
+    def is_student(self) -> bool:
+        return bool(self.role == 's')
 
     def __str__(self) -> str:
         self.email
