@@ -36,6 +36,19 @@ services:
       - POSTGRES_PASSWORD=1234EErr
       - POSTGRES_DB=academy_master_production
 
+  test_database:
+    image: postgres:12
+    container_name: academy-master-postgres-test
+    restart: on-failure
+    ports:
+      - 5431:5432
+    networks:
+      - main
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1234EErr
+      - POSTGRES_DB=academy_master_production_test
+
   celery:
     build: 
       context: .
