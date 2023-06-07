@@ -10,6 +10,6 @@ class AbstractToken(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.token:
-            self.token = generate_unique_token()
+            self.token = generate_unique_token(self.__class__)
 
         super().save(*args, **kwargs)

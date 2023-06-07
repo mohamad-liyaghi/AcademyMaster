@@ -2,7 +2,7 @@ import secrets
 import random
 
 
-def generate_unique_token(obj):
+def generate_unique_token(klass):
     # Generate a random token length between 4 and 32
     token_length = random.randint(4, 32)
 
@@ -10,9 +10,8 @@ def generate_unique_token(obj):
     token = secrets.token_hex(token_length)[:token_length]
 
     # Check if the generated token is unique
-    klass = obj.__class__
     if klass.objects.filter(token=token).exists():
-        generate_unique_token(obj=obj)
+        generate_unique_token(klass=klass)
 
     # Return the unique token
     return token
