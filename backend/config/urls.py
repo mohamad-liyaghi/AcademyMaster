@@ -2,6 +2,9 @@ from django.contrib import admin
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
+LOCAL_APP_URLS = [
+    path('accounts/', include('apps.accounts.urls'))
+]
 
 THIRD_PARTY_URLS = [
     path('__debug__/', include('debug_toolbar.urls')),

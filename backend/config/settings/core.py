@@ -4,11 +4,15 @@ import os
 import sys
 
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
 
 
 SECRET_KEY = config('SECRET_KEY')
+
+LOCAL_APPS = [
+    'apps.accounts.apps.AccountsConfig',
+]
 
 THIRD_PARTY_APPS = [
     'rest_framework',
@@ -24,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    *LOCAL_APPS,
     *THIRD_PARTY_APPS,
 ]
 
