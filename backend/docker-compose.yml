@@ -101,6 +101,8 @@ services:
     ports:
       - 5000:80
       - 25:25  
+    networks:
+      - main
     restart: always
 
 networks:

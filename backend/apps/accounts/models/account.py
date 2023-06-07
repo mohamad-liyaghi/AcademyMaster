@@ -57,4 +57,4 @@ class Account(AbstractBaseUser, PermissionsMixin, AbstractToken):
         return bool(self.role == 's')
 
     def __str__(self) -> str:
-        self.email
+        return str(self.email)

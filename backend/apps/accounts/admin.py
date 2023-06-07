@@ -9,4 +9,4 @@ class AccountAdmin(admin.ModelAdmin):
 
 @admin.register(VerificationCode)
 class VerificationCodeAdmin(admin.ModelAdmin):
-    list_display = ['account', 'code', 'created_at']
+    list_display = ['account', 'code', 'expire_at']

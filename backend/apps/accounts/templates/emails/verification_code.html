@@ -1,0 +1,21 @@
+{% block subject %}
+Verify Your Account On Academy Master
+{% endblock subject %}
+
+{% block html_body %}
+<p>Dear {{ first_name }},</p>
+
+<p>To verify your account, please enter this code within the next 5 minutes:</p>
+
+<h2>{{ verification_code }}</h2>
+
+<p>
+    This code will expire on
+    {{expire_at}}.  
+  </p>
+
+<p>If you did not request this verification, please ignore this email.</p>
+
+<p>Thanks,</p> 
+<p>The Academy Master Team</p>
+{% endblock html_body %}

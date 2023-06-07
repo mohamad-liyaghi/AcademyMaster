@@ -41,10 +41,11 @@ class AccountManager(BaseUserManager):
 
 class VerificationCodeManager(models.Manager):
 
-    def verify_verification_code(self, user, code):
+    def verify(self, user, code):
         verification_code = self.get_queryset().filter(account=user).first()
+        print(verification_code)
 
-        if code == verification_code.code and verification_code.retry_count < 5:
+        if code == verification_code.code and verification_code.is_valid():
             return True
 
         verification_code.retry_count += 1
