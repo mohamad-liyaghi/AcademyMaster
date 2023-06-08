@@ -11,7 +11,6 @@ def send_email(
     subject: str,
     context: dict
 ) -> None:
-    print("HI")
     '''Send email in the background using Celery'''
 
     # Do not send emails while testing
@@ -22,7 +21,7 @@ def send_email(
     email_message = BaseEmailMessage(
         subject=subject,
         template_name=template_path,
-        context=context,
+        context={**context},
     )
 
     # Send the email to the specified recipient

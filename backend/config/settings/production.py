@@ -1,6 +1,7 @@
 from .core import *
 import logging.config
 from django.utils.log import DEFAULT_LOGGING
+from datetime import timedelta
 
 DEBUG = False
 ALLOWED_HOSTS = list(config('ALLOWED_HOSTS'))
@@ -50,3 +51,7 @@ logging.config.dictConfig({
         'django.server': DEFAULT_LOGGING['loggers']['django.server'],
     },
 })
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+}
