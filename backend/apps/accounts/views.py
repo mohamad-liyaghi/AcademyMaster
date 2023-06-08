@@ -7,6 +7,9 @@ from accounts.serializers import (
     AccountVerifySerializer
 )
 from drf_spectacular.utils import extend_schema, extend_schema_view
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+)
 
 
 @extend_schema_view(
@@ -41,3 +44,13 @@ class UserVerifyView(APIView):
             return Response("Account verified", status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@extend_schema_view(
+    post=extend_schema(
+        description='''Return Access/Refresh Token''',
+        tags=['Authentication'],
+    ),
+)
+class TokenObtainView(TokenObtainPairView):
+    pass

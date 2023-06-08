@@ -114,3 +114,41 @@ class TestVerifyUserView:
             reverse('accounts:verify'), {}, format='json'
         )
         assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+@pytest.mark.django_db
+class TestObtainTokenView:
+    def setup(self):
+        password = '1234EErr'
+        self.user = Account.objects.create_superuser(
+            email='fake@fake.com', password=password
+        )
+        self.data = {
+            'email': self.user.email,
+            'password': password
+        }
+
+    def test_get_access_token(self, api_client):
+        response = api_client.post(
+            reverse('accounts:login'), self.data, format='json'
+        )
+        assert response.status_code == status.HTTP_200_OK
+
+    def test_get_access_token_non_existance_user(self, api_client):
+        response = api_client.post(
+            reverse('accounts:login'), 
+            {
+                'email': 'non@exist.com', 'password': '1234EErr'
+            }, format='json'
+        )
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        assert response.json() == {
+            "detail": "No active account found with the given credentials"
+        }
+
+    def test_get_access_token_invalid_data(self, api_client):
+        self.data['password'] = 'invalid_password'
+        response = api_client.post(
+            reverse('accounts:login'), self.data, format='json'
+        )
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED

@@ -1,5 +1,5 @@
 from .core import *
-
+from datetime import timedelta
 
 DEBUG = True
 ALLOWED_HOSTS = list(config('ALLOWED_HOSTS'))
@@ -21,4 +21,8 @@ DATABASES = {
         'HOST': config('DATABASE_HOST'),
         'PORT': config('DATABASE_PORT')
     }
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
 }
