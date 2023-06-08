@@ -73,3 +73,44 @@ class TestRegisterUserView:
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert verification.is_valid
         assert user.verification_codes.count() == 1
+
+
+@pytest.mark.django_db
+class TestVerifyUserView:
+
+    def setup(self):
+        self.user = Account.objects.create_user(
+            email='fake@fake.com', password='1234EErr'
+        )
+        verification_code = self.user.verification_codes.first().code
+        self.data = {
+            'email': self.user.email,
+            'code': verification_code,
+        }
+
+    def test_verify_user(self, api_client):
+        response = api_client.post(
+            reverse('accounts:verify'), self.data, format='json'
+        )
+        assert response.status_code == status.HTTP_200_OK
+
+    def test_verify_active_user(self, api_client):
+        self.user.is_active = True
+        self.user.save()
+        response = api_client.post(
+            reverse('accounts:verify'), self.data, format='json'
+        )
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_verify_invalid_user(self, api_client):
+        self.data['email'] = 'not@exist.com'
+        response = api_client.post(
+            reverse('accounts:verify'), self.data, format='json'
+        )
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_verify_invalid_data(self, api_client):
+        response = api_client.post(
+            reverse('accounts:verify'), {}, format='json'
+        )
+        assert response.status_code == status.HTTP_400_BAD_REQUEST

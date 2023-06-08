@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from accounts.models import VerificationCode, Account
+from django.shortcuts import get_object_or_404
+from accounts.models import Account, VerificationCode
 
 
 class AccountRegisterSerializer(serializers.ModelSerializer):
@@ -45,4 +46,31 @@ class AccountRegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = Account.objects.create_user(**validated_data)
+        return user
+
+
+class AccountVerifySerializer(serializers.ModelSerializer):
+    email = serializers.EmailField()
+
+    class Meta:
+        model = VerificationCode
+        fields = ['email', 'code']
+
+    def verify_code(self, email: str, code: int):
+        user = get_object_or_404(Account, email=email)
+
+        if user.is_active:
+            raise serializers.ValidationError(
+                    "User is already activated."
+                )
+
+        verify_code = VerificationCode.objects.verify(user=user, code=code)
+
+        if not verify_code:
+            raise serializers.ValidationError(
+                "Code is either invalid or expired."
+            )
+
+        user.is_active = True
+        user.save()
         return user

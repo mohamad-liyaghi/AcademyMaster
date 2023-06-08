@@ -103,8 +103,6 @@ class TestVerificationCodeModel:
 
     def test_verify_verification_code(self, user):
         verification_code = user.verification_codes.first()
-        print(verification_code)
-        print(verification_code.is_valid())
         verified_code = VerificationCode.objects.verify(
             user=user,
             code=verification_code.code

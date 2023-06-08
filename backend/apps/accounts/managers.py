@@ -42,8 +42,8 @@ class AccountManager(BaseUserManager):
 class VerificationCodeManager(models.Manager):
 
     def verify(self, user, code):
-        verification_code = self.get_queryset().filter(account=user).first()
-        print(verification_code)
+
+        verification_code = user.verification_codes.first()
 
         if code == verification_code.code and verification_code.is_valid():
             return True
