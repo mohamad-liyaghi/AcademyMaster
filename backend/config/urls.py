@@ -18,6 +18,7 @@ THIRD_PARTY_URLS = [
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    *LOCAL_APP_URLS,
     *THIRD_PARTY_URLS,
 ]
 
