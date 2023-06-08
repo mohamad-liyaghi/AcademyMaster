@@ -51,3 +51,13 @@ class VerificationCodeManager(models.Manager):
         verification_code.retry_count += 1
         verification_code.save()
         return False
+
+    def check_or_create(self, user):
+        '''Regenerate a token for a user if its token is expired'''
+        verification_code = user.verification_codes.first()
+
+        if verification_code and verification_code.is_valid():
+            return False
+
+        self.create(account=user)
+        return True

@@ -1,5 +1,9 @@
 from rest_framework import serializers
 from django.shortcuts import get_object_or_404
+from accounts.exceptions import (
+    DuplicateUserException,
+    PendingVerificationException
+)
 from accounts.models import Account, VerificationCode
 
 
@@ -24,23 +28,10 @@ class AccountRegisterSerializer(serializers.ModelSerializer):
 
         if account:
             if account.is_active:
-                raise serializers.ValidationError(
-                    f"An active account with email {email} already exists"
-                )
+                raise DuplicateUserException()
 
-            verification_code = account.verification_codes.first()
-
-            if verification_code and verification_code.is_valid():
-                raise serializers.ValidationError(
-                    "User already exists, Verify your email."
-                )
-
-            else:
-                # TODO: Add re-gen verification code
-                VerificationCode.objects.create(account=account)
-                raise serializers.ValidationError(
-                    f"A new verification code has been sent to {email}"
-                )
+            VerificationCode.objects.check_or_create(user=account)
+            raise PendingVerificationException()
 
         return value
 

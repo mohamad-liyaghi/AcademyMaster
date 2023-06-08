@@ -137,3 +137,17 @@ class TestVerificationCodeModel:
             code=verification_code.code
         )
         assert verified_code is False
+
+    def test_check_or_create(self, user):
+        verification_code = user.verification_codes.first()
+        verification_code.expire_at = verification_code.expire_at - timedelta(minutes=10)
+        verification_code.save()
+
+        check_verification = VerificationCode.objects.check_or_create(user=user)
+        assert check_verification is True
+        assert user.verification_codes.count() == 2
+
+    def test_check_or_create_valid_token(self, user):
+        check_verification = VerificationCode.objects.check_or_create(user=user)
+        assert check_verification is False
+        assert user.verification_codes.count() == 1

@@ -54,7 +54,7 @@ class TestRegisterUserView:
             reverse('accounts:register'), self.data, format='json'
         )
 
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.status_code == status.HTTP_202_ACCEPTED
         assert user.verification_codes.count() == 2
 
     def test_register_duplicated_valid_token(self, api_client):
@@ -70,8 +70,8 @@ class TestRegisterUserView:
             reverse('accounts:register'), self.data, format='json'
         )
 
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert verification.is_valid
+        assert response.status_code == status.HTTP_202_ACCEPTED
+        assert verification.is_valid == True
         assert user.verification_codes.count() == 1
 
 
