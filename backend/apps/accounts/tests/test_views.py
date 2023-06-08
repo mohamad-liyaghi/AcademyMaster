@@ -100,7 +100,7 @@ class TestVerifyUserView:
         response = api_client.post(
             reverse('accounts:verify'), self.data, format='json'
         )
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.status_code == status.HTTP_409_CONFLICT
 
     def test_verify_invalid_user(self, api_client):
         self.data['email'] = 'not@exist.com'

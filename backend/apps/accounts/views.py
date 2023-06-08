@@ -16,6 +16,11 @@ from rest_framework_simplejwt.views import (
     post=extend_schema(
         description='''Register a new user.''',
         request=AccountRegisterSerializer,
+        responses={
+            '200': 'User already exists and pending to verification',
+            '201': 'ok',
+            '400': 'An active user already exists',
+        },
         tags=['Authentication'],
     ),
 )
@@ -27,6 +32,11 @@ class UserRegisterView(CreateAPIView):
     post=extend_schema(
         description='''Verify an account.''',
         request=AccountVerifySerializer,
+        responses={
+            '200': 'User already exists and pending to verification',
+            '409': 'User is already verified',
+            '400': 'Invalid token',
+        },
         tags=['Authentication'],
     ),
 )
@@ -49,6 +59,10 @@ class UserVerifyView(APIView):
 @extend_schema_view(
     post=extend_schema(
         description='''Return Access/Refresh Token''',
+        responses={
+            '200': 'Success',
+            '400': 'Invalid data',
+        },
         tags=['Authentication'],
     ),
 )

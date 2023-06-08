@@ -13,3 +13,13 @@ class PendingVerificationException(APIException):
     detail = '''
         An unverified user exists with this email. Please verify your account.
         '''
+
+
+class AlreadyVerifiedException(APIException):
+    status_code = status.HTTP_409_CONFLICT
+    detail = 'User is already verified.'
+
+
+class InvalidVerificationCodeException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    detail = 'Code is either invalid or expired.'
