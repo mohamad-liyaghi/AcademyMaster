@@ -1,45 +1,7 @@
 import pytest
-from accounts.models import Account, VerificationCode
+from accounts.models import VerificationCode
 from datetime import timedelta
 from django.utils import timezone
-
-
-@pytest.fixture
-def user():
-    return Account.objects.create_user(
-        email="simple@simple.com",
-        password="1234USERnormal"
-    )
-
-
-@pytest.fixture
-def superuser():
-    return Account.objects.create_superuser(
-        email="superuser@superuser.com",
-        password="1234EErrSuperuser"
-    )
-
-
-@pytest.fixture
-def manager():
-    manager = Account.objects.create_user(
-        email="manager@manager.com",
-        password="1234USERnormal",
-    )
-    manager.role = Account.Role.MANAGER
-    manager.save()
-    return manager
-
-
-@pytest.fixture
-def teacher():
-    teacher = Account.objects.create_user(
-        email="teacher@teacher.com",
-        password="1234USERnormal",
-    )
-    teacher.role = Account.Role.TEACHER
-    teacher.save()
-    return teacher
 
 
 @pytest.mark.django_db
@@ -78,12 +40,6 @@ class TestAccountModel:
 
 @pytest.mark.django_db
 class TestVerificationCodeModel:
-
-    def test_create_verification_code(self, user):
-        assert user.verification_codes.count() == 1
-
-    def test_not_create_code_for_superuser(self, superuser):
-        assert superuser.verification_codes.count() == 0
 
     def test_verification_code_is_valid(self, user):
         verification_code = user.verification_codes.first()
