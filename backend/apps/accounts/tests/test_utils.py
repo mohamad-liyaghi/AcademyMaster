@@ -1,5 +1,6 @@
 import pytest
 from accounts.utils import generate_unique_verification_code
+from core.tests import user
 
 
 @pytest.mark.django_db

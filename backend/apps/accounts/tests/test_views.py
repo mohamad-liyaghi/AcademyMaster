@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 from accounts.models import Account
 import pytest
+from core.tests import user, superuser
 
 
 @pytest.fixture

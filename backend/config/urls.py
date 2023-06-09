@@ -3,7 +3,8 @@ from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 LOCAL_APP_URLS = [
-    path('accounts/', include('apps.accounts.urls'))
+    path('accounts/', include('apps.accounts.urls')),
+    path('profiles/', include('apps.profiles.urls')),
 ]
 
 THIRD_PARTY_URLS = [

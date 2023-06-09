@@ -1,4 +1,5 @@
 import pytest
+from core.tests import user, superuser
 
 
 @pytest.mark.django_db
