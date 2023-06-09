@@ -2,6 +2,7 @@ venv/
 TODO.md
 .env
 __pycache__
+celerybeat-schedule
 postgres-data
 logs/critical.log
 !logs/.keep

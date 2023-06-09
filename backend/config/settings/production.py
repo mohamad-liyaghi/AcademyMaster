@@ -1,7 +1,9 @@
 from .core import *
+from decouple import config
 import logging.config
 from django.utils.log import DEFAULT_LOGGING
 from datetime import timedelta
+from celery.schedules import crontab
 
 DEBUG = False
 ALLOWED_HOSTS = list(config('ALLOWED_HOSTS'))
@@ -57,4 +59,13 @@ SIMPLE_JWT = {
 }
 
 # Celery beat configs
-CELERY_BEAT_SCHEDULE = {}
+CELERY_BEAT_SCHEDULE = {
+    'auto_delete_expired_verification_codes': {
+        'task': 'apps.accounts.tasks.delete_expired_codes',
+        'schedule': crontab(hour=4, minute=0),
+    },
+    'auto_delete_deactivated_users': {
+        'task': 'apps.accounts.tasks.delete_deactivated_users',
+        'schedule': crontab(hour=5, minute=0),
+    }
+}

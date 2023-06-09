@@ -9,5 +9,8 @@ celery.config_from_object('django.conf:settings', namespace='CELERY')
 celery.config_defaults = {'broker_connection_retry_on_startup': True}
 
 celery.autodiscover_tasks(
-    ['apps.core.tasks']
+    [
+        'apps.core.tasks',
+        'apps.accounts.task'
+     ],
 )

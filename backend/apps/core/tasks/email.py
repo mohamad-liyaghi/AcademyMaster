@@ -1,10 +1,9 @@
 from celery import shared_task
 from templated_mail.mail import BaseEmailMessage
 from decouple import config
-from config.celery import celery
 
 
-@celery.task
+@shared_task
 def send_email(
     template_path: str,
     to_email: str,
