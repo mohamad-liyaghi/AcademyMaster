@@ -55,3 +55,6 @@ logging.config.dictConfig({
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
 }
+
+# Celery beat configs
+CELERY_BEAT_SCHEDULE = {}

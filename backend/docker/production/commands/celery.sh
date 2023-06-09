@@ -1,4 +1,4 @@
 #!/bin/sh
 
 echo "Running celery worker..."
-celery -A config worker --loglevel=info
+celery -A config worker --loglevel=CRITICAL

@@ -26,3 +26,6 @@ DATABASES = {
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
 }
+
+# Celery beat configs
+CELERY_BEAT_SCHEDULE = {}

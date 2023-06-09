@@ -64,6 +64,23 @@ services:
       - .:/backend
     networks:
       - main    
+    
+  celery-beat:
+    build: 
+      context: .
+      dockerfile: docker/production/Dockerfile
+    container_name: academy-master-celery-beat
+    command: sh docker/production/commands/celery-beat.sh 
+    depends_on:
+      backend:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    volumes:
+      - .:/backend
+    networks:
+      - main    
+
   rabbitmq:
       image: rabbitmq:3.10-management-alpine
       hostname: rabbitmq
