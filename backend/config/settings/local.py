@@ -40,3 +40,7 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': timedelta(minutes=5),
     }
 }
+
+
+MEDIA_ROOT = 'media/'
+MEDIA_URL = '/media/'

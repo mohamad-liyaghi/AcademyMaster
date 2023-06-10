@@ -6,3 +6,4 @@ celerybeat-schedule
 postgres-data
 logs/critical.log
 !logs/.keep
+media/
