@@ -1,15 +1,9 @@
 from datetime import timedelta
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APIClient
 from accounts.models import Account
 import pytest
-from core.tests import user, superuser
-
-
-@pytest.fixture
-def api_client():
-    return APIClient()
+from core.tests import user, superuser, api_client
 
 
 @pytest.mark.django_db

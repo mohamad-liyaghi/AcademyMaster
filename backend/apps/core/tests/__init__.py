@@ -2,12 +2,14 @@ from .fixtures import (
     user,
     superuser,
     manager,
-    teacher
+    teacher, 
+    api_client
 )
 
 __all__ = [
     'user',
     'superuser',
     'manager',
-    'teacher'
+    'teacher',
+    'api_client'
 ]
