@@ -51,3 +51,44 @@ class TestUpdateProfileView:
         )
         response = api_client.put(url, {}, format='json')
         assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
+@pytest.mark.django_db
+class TestRetrieveProfileView:
+
+    def test_retrieve_profile_unauthorized(self, superuser, api_client):
+        url = reverse(
+            'profiles:retrieve_profile',
+            kwargs={'profile_token': superuser.profile.token}
+        )
+        response = api_client.get(url)
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_retrieve_profile(self, superuser, api_client):
+        api_client.force_authenticate(user=superuser)
+        url = reverse(
+            'profiles:retrieve_profile',
+            kwargs={'profile_token': superuser.profile.token}
+        )
+        response = api_client.get(url)
+        assert response.status_code == status.HTTP_200_OK
+
+    def test_student_retrieve_others_profile(self, superuser, user, api_client):
+        '''Students cannot get others profile'''
+        api_client.force_authenticate(user=user)
+        url = reverse(
+            'profiles:retrieve_profile',
+            kwargs={'profile_token': superuser.profile.token}
+        )
+        response = api_client.get(url)
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    def test_student_get_own_profile(self, user, api_client):
+        api_client.force_authenticate(user=user)
+        profile = Profile.objects.create(user=user)
+        url = reverse(
+            'profiles:retrieve_profile',
+            kwargs={'profile_token': profile.token}
+        )
+        response = api_client.get(url)
+        assert response.status_code == status.HTTP_200_OK
