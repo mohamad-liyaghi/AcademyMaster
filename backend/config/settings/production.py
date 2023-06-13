@@ -69,3 +69,6 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': crontab(hour=5, minute=0),
     }
 }
+
+MEDIA_ROOT = 'media/'
+MEDIA_URL = '/media/'

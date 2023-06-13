@@ -1,9 +1,12 @@
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 LOCAL_APP_URLS = [
-    path('accounts/', include('apps.accounts.urls'))
+    path('accounts/', include('apps.accounts.urls')),
+    path('profiles/', include('apps.profiles.urls')),
 ]
 
 THIRD_PARTY_URLS = [
@@ -21,6 +24,12 @@ urlpatterns = [
     *LOCAL_APP_URLS,
     *THIRD_PARTY_URLS,
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(
+        settings.MEDIA_URL,
+        document_root=settings.MEDIA_ROOT
+        )
 
 handler404 = 'apps.core.views.handler_404'
 handler500 = 'apps.core.views.handler_500'

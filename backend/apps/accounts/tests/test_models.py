@@ -2,7 +2,7 @@ import pytest
 from accounts.models import VerificationCode
 from datetime import timedelta
 from django.utils import timezone
-
+from core.tests import user, superuser, manager, teacher
 
 @pytest.mark.django_db
 class TestAccountModel:

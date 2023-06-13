@@ -1,4 +1,5 @@
 import pytest
+from rest_framework.test import APIClient
 from accounts.models import Account
 
 
@@ -38,3 +39,8 @@ def teacher():
     teacher.role = Account.Role.TEACHER
     teacher.save()
     return teacher
+
+
+@pytest.fixture
+def api_client():
+    return APIClient()
