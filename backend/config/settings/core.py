@@ -13,6 +13,7 @@ SECRET_KEY = config('SECRET_KEY')
 LOCAL_APPS = [
     'apps.accounts.apps.AccountsConfig',
     'apps.profiles.apps.ProfilesConfig',
+    'apps.managers.apps.ManagersConfig',
 ]
 
 THIRD_PARTY_APPS = [

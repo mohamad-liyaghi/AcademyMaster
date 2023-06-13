@@ -7,6 +7,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 LOCAL_APP_URLS = [
     path('accounts/', include('apps.accounts.urls')),
     path('profiles/', include('apps.profiles.urls')),
+    path('managers/', include('apps.managers.urls')),
 ]
 
 THIRD_PARTY_URLS = [
