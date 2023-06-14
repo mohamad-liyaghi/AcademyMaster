@@ -5,13 +5,10 @@ from rest_framework.exceptions import ValidationError
 
 
 class ManagerCreateSerializer(serializers.ModelSerializer):
-
     permissions = serializers.SlugRelatedField(
         many=True,
         slug_field='codename',
-        queryset=Permission.objects.filter(
-            codename__in=ManagerPermission
-        ),
+        queryset=Permission.objects.filter(codename__in=ManagerPermission),
         write_only=True
     )
 
@@ -33,13 +30,51 @@ class ManagerCreateSerializer(serializers.ModelSerializer):
             promoted_by=self.context['request'].user
         )
 
-        if validated_data['permissions']:
-            codenames = [permission.codename for permission
-                         in validated_data['permissions']]
-            Manager.objects.add_permissions(
-                user=manager.user,
-                codenames=[*codenames]
-            )
+        self._add_permissions(manager, validated_data['permissions'])
 
         manager.save()
         return manager
+
+    def _add_permissions(self, manager, permissions):
+        if permissions:
+            codenames = [permission.codename for permission in permissions]
+            Manager.objects.add_permissions(
+                user=manager.user,
+                codenames=codenames
+            )
+
+
+class ManagerUpdateSerializer(serializers.ModelSerializer):
+    permissions = serializers.SlugRelatedField(
+        many=True,
+        slug_field='codename',
+        queryset=Permission.objects.filter(codename__in=ManagerPermission),
+        write_only=True
+    )
+
+    class Meta:
+        model = Manager
+        fields = ['permissions']
+
+    def update(self, instance, validated_data):
+        permissions = validated_data['permissions']
+        self._update_permissions(instance, permissions)
+
+        return super().update(instance, validated_data)
+
+    def _update_permissions(self, instance, permissions):
+        all_codenames = [permission.value for permission in ManagerPermission]
+        # Remove all permissions first
+        Manager.objects.remove_permissions(
+            user=instance.user,
+            codenames=all_codenames
+        )
+
+        if permissions:
+            requested_codenames = [
+                permission.codename for permission in permissions
+            ]
+            Manager.objects.add_permissions(
+                user=instance.user,
+                codenames=requested_codenames
+            )

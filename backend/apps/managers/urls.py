@@ -1,12 +1,18 @@
 from django.urls import path, include
 from managers.views import (
     ManagerCreateView,
+    ManagerUpdateView,
 )
 
 app_name = 'managers'
 
 v1_urlpatterns = [
     path('create/', ManagerCreateView.as_view(), name='create_manager'),
+    path(
+        '<str:manager_token>/update/',
+        ManagerUpdateView.as_view(),
+        name='update_manager'
+    )
 ]
 
 urlpatterns = [

@@ -10,7 +10,6 @@ class ManagerManager(models.Manager):
         permissions = Permission.objects.filter(
             codename__in=codenames
         ).select_related("content_type")
-        print(permissions)
 
         if permissions:
             user.user_permissions.add(*permissions)

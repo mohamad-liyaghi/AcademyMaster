@@ -2,11 +2,12 @@ from django.urls import reverse
 from rest_framework import status
 import pytest
 from core.tests import user, superuser, api_client, manager
-from managers.models import ManagerPermission
+from managers.models import ManagerPermission, Manager
 from accounts.models import Account
 
+
 @pytest.mark.django_db    
-class TestManagerCreateAPI:
+class TestManagerCreateView:
 
     def setup(self):
         self.create_url = reverse('managers:create_manager')
@@ -57,3 +58,76 @@ class TestManagerCreateAPI:
         api_client.force_authenticate(manager)
         resp = api_client.post(self.create_url, self.data)
         assert resp.status_code == status.HTTP_403_FORBIDDEN
+
+
+@pytest.mark.django_db    
+class TestManagerUpdateView:
+    def setup(self):
+        self.data = {
+            "permissions": []
+        }
+
+    def test_update_manager_unauthorized(self, api_client, manager):
+        resp = api_client.put(
+            reverse(
+                'managers:update_manager',
+                kwargs={'manager_token': manager.manager.token}
+            )
+        )
+        assert resp.status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_update_manager(self, api_client, manager, superuser):
+        api_client.force_authenticate(superuser)
+        self.data['permissions'] = [ManagerPermission.PROMOTE]
+        assert not manager.manager.can_promote()
+        resp = api_client.put(
+            reverse(
+                'managers:update_manager',
+                kwargs={'manager_token': manager.manager.token},
+            ),
+            self.data
+        )
+        assert manager.manager.can_promote()
+        assert resp.status_code == status.HTTP_200_OK
+
+    def test_update_manager_remove_permissions(self, api_client, manager, superuser):
+        api_client.force_authenticate(superuser)
+        resp = api_client.put(
+            reverse(
+                'managers:update_manager',
+                kwargs={'manager_token': manager.manager.token},
+            ),
+            self.data
+        )
+        assert resp.status_code == status.HTTP_200_OK
+        assert not manager.user_permissions.all()
+
+    def test_update_user_no_permission(self, api_client, manager, superuser):
+        '''Only admins and promoter can update a manager'''
+        api_client.force_authenticate(manager)
+        resp = api_client.put(
+            reverse(
+                'managers:update_manager',
+                kwargs={'manager_token': manager.manager.token},
+            ),
+            self.data
+        )
+        assert resp.status_code == status.HTTP_403_FORBIDDEN
+
+    def test_update_user_remove_and_add(self, api_client, manager, superuser):
+        api_client.force_authenticate(superuser)
+        Manager.objects.add_permissions(manager, [ManagerPermission.DEMOTE])
+        assert manager.manager.can_demote()
+        assert not manager.manager.can_promote()
+
+        self.data['permissions'] = [ManagerPermission.PROMOTE]
+        resp = api_client.put(
+            reverse(
+                'managers:update_manager',
+                kwargs={'manager_token': manager.manager.token},
+            ),
+            self.data
+        )
+        assert resp.status_code == status.HTTP_200_OK
+        assert not manager.manager.can_demote()
+        assert manager.manager.can_promote()

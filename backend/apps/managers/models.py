@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from core.models import AbstractToken
 from django.core.exceptions import ValidationError
 from managers.managers import ManagerManager
 
@@ -9,7 +10,7 @@ class ManagerPermission(models.TextChoices):
     DEMOTE = ('demote_manager', 'Can demote a manager to user')
 
 
-class Manager(models.Model):
+class Manager(AbstractToken):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
