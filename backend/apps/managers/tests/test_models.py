@@ -35,6 +35,11 @@ class TestManagerModel:
         Manager.objects.create(user=user, promoted_by=manager)
         assert user.manager.promoted_by == manager
 
+    def test_promote_manager_by_admin(self, superuser, user):
+
+        Manager.objects.create(user=user, promoted_by=superuser)
+        assert user.manager.promoted_by == superuser
+
     def test_remove_permission(self, manager):
         Manager.objects.add_permissions(
             user=manager,

@@ -10,8 +10,10 @@ class ManagerManager(models.Manager):
         permissions = Permission.objects.filter(
             codename__in=codenames
         ).select_related("content_type")
+        print(permissions)
 
-        user.user_permissions.add(*permissions)
+        if permissions:
+            user.user_permissions.add(*permissions)
 
     def remove_permissions(self, user: settings.AUTH_USER_MODEL, codenames: list):
         """Remove the specified permissions from the user."""
@@ -19,4 +21,5 @@ class ManagerManager(models.Manager):
             codename__in=codenames
         ).select_related("content_type")
 
-        user.user_permissions.remove(*permissions)
+        if permissions:
+            user.user_permissions.remove(*permissions)

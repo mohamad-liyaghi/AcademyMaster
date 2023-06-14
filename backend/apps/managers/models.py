@@ -52,6 +52,11 @@ class Manager(models.Model):
 
     def validate_promoter(self) -> None:
         """Check if the promoted user has the required permissions."""
+
+        # admins can promote managers
+        if self.promoted_by.is_admin():
+            return
+
         if not self.promoted_by.is_manager():
             raise ValidationError("Promoter must be a manager.")
 
