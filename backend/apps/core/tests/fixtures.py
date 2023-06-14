@@ -1,6 +1,7 @@
 import pytest
 from rest_framework.test import APIClient
 from accounts.models import Account
+from managers.models import Manager
 
 
 @pytest.fixture
@@ -25,8 +26,7 @@ def manager():
         email="manager@manager.com",
         password="1234USERnormal",
     )
-    manager.role = Account.Role.MANAGER
-    manager.save()
+    Manager.objects.create(user=manager)
     return manager
 
 
