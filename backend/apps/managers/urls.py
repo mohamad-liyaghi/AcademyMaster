@@ -2,6 +2,7 @@ from django.urls import path, include
 from managers.views import (
     ManagerCreateView,
     ManagerUpdateView,
+    ManagerDeleteView,
 )
 
 app_name = 'managers'
@@ -12,6 +13,11 @@ v1_urlpatterns = [
         '<str:manager_token>/update/',
         ManagerUpdateView.as_view(),
         name='update_manager'
+    ),
+    path(
+        '<str:manager_token>/delete/',
+        ManagerDeleteView.as_view(),
+        name='delete_manager'
     )
 ]
 

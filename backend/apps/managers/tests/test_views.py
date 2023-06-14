@@ -34,7 +34,7 @@ class TestManagerCreateView:
         self.data['user'] = superuser.id
         resp = api_client.post(self.create_url, self.data)
         assert resp.status_code == status.HTTP_400_BAD_REQUEST
-    
+
     def test_promote_manager_twice(self, api_client, superuser, manager):
         api_client.force_authenticate(superuser)
         self.data['user'] = manager.id
@@ -131,3 +131,61 @@ class TestManagerUpdateView:
         assert resp.status_code == status.HTTP_200_OK
         assert not manager.manager.can_demote()
         assert manager.manager.can_promote()
+
+
+@pytest.mark.django_db    
+class TestManagerDeleteView:
+    def test_delete_unauthorized(self, api_client, manager):
+        resp = api_client.delete(
+            reverse(
+                'managers:delete_manager',
+                kwargs={'manager_token': manager.manager.token}
+            )
+        )
+        assert resp.status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_delete_by_admin(self, api_client, manager, superuser):
+        api_client.force_authenticate(superuser)
+        resp = api_client.delete(
+            reverse(
+                'managers:delete_manager',
+                kwargs={'manager_token': manager.manager.token}
+            )
+        )
+        assert resp.status_code == status.HTTP_204_NO_CONTENT
+
+    def test_delete_by_manager(self, api_client, manager, user):
+        user.is_active = True
+        user.save()
+        Manager.objects.create(user=user)
+        assert user.is_manager()
+
+        api_client.force_authenticate(manager)
+        Manager.objects.add_permissions(
+            manager,
+            [ManagerPermission.DEMOTE]
+        )
+        assert manager.manager.can_demote()
+        resp = api_client.delete(
+            reverse(
+                'managers:delete_manager',
+                kwargs={'manager_token': user.manager.token}
+            )
+        )
+        assert resp.status_code == status.HTTP_204_NO_CONTENT
+
+    def test_delete_by_manager_without_permission(self, api_client, manager, user):
+        user.is_active = True
+        user.save()
+        Manager.objects.create(user=user)
+        assert user.is_manager()
+
+        api_client.force_authenticate(manager)
+        assert not manager.manager.can_demote()
+        resp = api_client.delete(
+            reverse(
+                'managers:delete_manager',
+                kwargs={'manager_token': user.manager.token}
+            )
+        )
+        assert resp.status_code == status.HTTP_403_FORBIDDEN

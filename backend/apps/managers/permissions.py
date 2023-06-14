@@ -3,13 +3,24 @@ from rest_framework import permissions
 
 class CanPromotePermission(permissions.BasePermission):
     """
-    Allow admins and managers who can promote admins
+    Only admins and managers with can_promote permission can access the page
     """
 
     def has_permission(self, request, view):
         user = request.user
         return (user.is_admin())\
             or (user.is_manager() and user.manager.can_promote())
+
+
+class CanDemotePermission(permissions.BasePermission):
+    """
+    Only admins and managers with can_demote perm can access the page
+    """
+
+    def has_permission(self, request, view):
+        user = request.user
+        return (user.is_admin())\
+            or (user.is_manager() and user.manager.can_demote())
 
 
 class IsManagerPromoter(permissions.BasePermission):
