@@ -111,3 +111,14 @@ class ManagerRetrieveSerializer(serializers.ModelSerializer):
 
         serializer = ManagerPermissionSerializer(perms, many=True)
         return serializer.data
+
+
+class ManagerListSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField()
+
+    class Meta:
+        model = Manager
+        fields = [
+            'user',
+            'token'
+        ]

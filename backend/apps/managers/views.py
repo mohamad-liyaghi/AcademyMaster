@@ -3,7 +3,8 @@ from rest_framework.generics import (
     CreateAPIView,
     UpdateAPIView,
     DestroyAPIView,
-    RetrieveAPIView
+    RetrieveAPIView,
+    ListAPIView
 )
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema, extend_schema_view
@@ -17,7 +18,8 @@ from managers.permissions import (
 from managers.serializers import (
     ManagerCreateSerializer,
     ManagerUpdateSerializer,
-    ManagerRetrieveSerializer
+    ManagerRetrieveSerializer,
+    ManagerListSerializer
 )
 
 
@@ -123,3 +125,21 @@ class ManagerRetrieveView(RetrieveAPIView):
             token=self.kwargs['manager_token']
         )
         return manager
+
+
+@extend_schema_view(
+    get=extend_schema(
+        description='''List of managers.''',
+        responses={
+            '200': 'ok',
+            '403': 'Permission denied',
+        },
+        tags=['Managers'],
+    ),
+)
+class ManagerListView(ListAPIView):
+    permission_classes = [IsAuthenticated, IsManager]
+    serializer_class = ManagerListSerializer
+
+    def get_queryset(self):
+        return Manager.objects.all().order_by('-promotion_date')

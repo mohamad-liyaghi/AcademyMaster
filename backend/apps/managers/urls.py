@@ -4,12 +4,14 @@ from managers.views import (
     ManagerUpdateView,
     ManagerDeleteView,
     ManagerRetrieveView,
+    ManagerListView,
 )
 
 app_name = 'managers'
 
 v1_urlpatterns = [
     path('create/', ManagerCreateView.as_view(), name='create_manager'),
+    path('', ManagerListView.as_view(), name='manager_list'),
     path(
         '<str:manager_token>/',
         ManagerRetrieveView.as_view(),
