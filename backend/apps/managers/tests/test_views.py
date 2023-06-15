@@ -6,7 +6,7 @@ from managers.models import ManagerPermission, Manager
 from accounts.models import Account
 
 
-@pytest.mark.django_db    
+@pytest.mark.django_db
 class TestManagerCreateView:
 
     def setup(self):
@@ -60,7 +60,7 @@ class TestManagerCreateView:
         assert resp.status_code == status.HTTP_403_FORBIDDEN
 
 
-@pytest.mark.django_db    
+@pytest.mark.django_db
 class TestManagerUpdateView:
     def setup(self):
         self.data = {
@@ -133,7 +133,7 @@ class TestManagerUpdateView:
         assert manager.manager.can_promote()
 
 
-@pytest.mark.django_db    
+@pytest.mark.django_db
 class TestManagerDeleteView:
     def test_delete_unauthorized(self, api_client, manager):
         resp = api_client.delete(
@@ -186,6 +186,38 @@ class TestManagerDeleteView:
             reverse(
                 'managers:delete_manager',
                 kwargs={'manager_token': user.manager.token}
+            )
+        )
+        assert resp.status_code == status.HTTP_403_FORBIDDEN
+
+
+@pytest.mark.django_db
+class TestManagerRetrieveView:
+    def test_retrieve_unauthorized(self, api_client, manager):
+        resp = api_client.get(
+            reverse(
+                'managers:retrieve_manager',
+                kwargs={'manager_token': manager.manager.token}
+            )
+        )
+        assert resp.status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_retrieve(self, api_client, manager, superuser):
+        api_client.force_authenticate(superuser)
+        resp = api_client.get(
+            reverse(
+                'managers:retrieve_manager',
+                kwargs={'manager_token': manager.manager.token}
+            )
+        )
+        assert resp.status_code == status.HTTP_200_OK
+
+    def test_retrieve_access_denied(self, api_client, manager, user):
+        api_client.force_authenticate(user)
+        resp = api_client.get(
+            reverse(
+                'managers:retrieve_manager',
+                kwargs={'manager_token': manager.manager.token}
             )
         )
         assert resp.status_code == status.HTTP_403_FORBIDDEN

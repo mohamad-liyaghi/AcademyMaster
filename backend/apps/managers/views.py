@@ -2,19 +2,22 @@ from django.shortcuts import get_object_or_404
 from rest_framework.generics import (
     CreateAPIView,
     UpdateAPIView,
-    DestroyAPIView
+    DestroyAPIView,
+    RetrieveAPIView
 )
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from managers.models import Manager
 from managers.permissions import (
+    IsManager,
     CanPromotePermission,
     IsManagerPromoter,
     CanDemotePermission
 )
 from managers.serializers import (
     ManagerCreateSerializer,
-    ManagerUpdateSerializer
+    ManagerUpdateSerializer,
+    ManagerRetrieveSerializer
 )
 
 
@@ -90,6 +93,29 @@ class ManagerUpdateView(UpdateAPIView):
 )
 class ManagerDeleteView(DestroyAPIView):
     permission_classes = [IsAuthenticated, CanDemotePermission]
+
+    def get_object(self):
+        manager = get_object_or_404(
+            Manager,
+            token=self.kwargs['manager_token']
+        )
+        return manager
+
+
+@extend_schema_view(
+    get=extend_schema(
+        description='''Detail page of an admin.''',
+        responses={
+            '200': 'ok',
+            '403': 'Permission denied',
+            '404': 'Not found',
+        },
+        tags=['Managers'],
+    ),
+)
+class ManagerRetrieveView(RetrieveAPIView):
+    permission_classes = [IsAuthenticated, IsManager]
+    serializer_class = ManagerRetrieveSerializer
 
     def get_object(self):
         manager = get_object_or_404(

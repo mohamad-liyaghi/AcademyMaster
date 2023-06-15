@@ -8,13 +8,16 @@ class ManagerCreateSerializer(serializers.ModelSerializer):
     permissions = serializers.SlugRelatedField(
         many=True,
         slug_field='codename',
-        queryset=Permission.objects.filter(codename__in=ManagerPermission),
+        queryset=Permission.objects.filter(
+            codename__in=ManagerPermission
+        ).select_related("content_type"),
         write_only=True
     )
+    token = serializers.CharField(read_only=True)
 
     class Meta:
         model = Manager
-        fields = ['user', 'permissions']
+        fields = ['user', 'permissions', 'token']
 
     def create(self, validated_data):
         user = validated_data['user']
@@ -48,7 +51,9 @@ class ManagerUpdateSerializer(serializers.ModelSerializer):
     permissions = serializers.SlugRelatedField(
         many=True,
         slug_field='codename',
-        queryset=Permission.objects.filter(codename__in=ManagerPermission),
+        queryset=Permission.objects.filter(
+            codename__in=ManagerPermission
+        ).select_related("content_type"),
         write_only=True
     )
 
@@ -78,3 +83,31 @@ class ManagerUpdateSerializer(serializers.ModelSerializer):
                 user=instance.user,
                 codenames=requested_codenames
             )
+
+
+class ManagerPermissionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Permission
+        fields = ['name']
+
+
+class ManagerRetrieveSerializer(serializers.ModelSerializer):
+    permissions = serializers.SerializerMethodField(
+        method_name='get_permissions'
+    )
+
+    class Meta:
+        model = Manager
+        fields = [
+            'user',
+            'promoted_by',
+            'promotion_date',
+            'permissions'
+        ]
+
+    def get_permissions(self, value):
+        all_codenames = [permission.value for permission in ManagerPermission]
+        perms = value.user.user_permissions.filter(codename__in=all_codenames)
+
+        serializer = ManagerPermissionSerializer(perms, many=True)
+        return serializer.data
