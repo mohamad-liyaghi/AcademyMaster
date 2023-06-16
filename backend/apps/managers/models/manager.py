@@ -3,11 +3,7 @@ from django.conf import settings
 from core.models import AbstractToken
 from django.core.exceptions import ValidationError
 from managers.managers import ManagerManager
-
-
-class ManagerPermission(models.TextChoices):
-    PROMOTE = ('promote_manager', 'Can promote a user to manager')
-    DEMOTE = ('demote_manager', 'Can demote a manager to user')
+from .permission import ManagerPermission
 
 
 class Manager(AbstractToken):
@@ -39,19 +35,7 @@ class Manager(AbstractToken):
     def __str__(self) -> str:
         return f'{self.user} (Manager)'
 
-    def can_promote(self) -> bool:
-        """Check if the user has permission to promote a manager."""
-        return self.user.user_permissions.filter(
-            codename=ManagerPermission.PROMOTE.value
-        ).exists()
-
-    def can_demote(self) -> bool:
-        """Check if the user has permission to demote a manager."""
-        return self.user.user_permissions.filter(
-            codename=ManagerPermission.DEMOTE.value
-        ).exists()
-
-    def validate_promoter(self) -> None:
+    def _validate_promoter(self) -> None:
         """Check if the promoted user has the required permissions."""
 
         # admins can promote managers
@@ -61,20 +45,20 @@ class Manager(AbstractToken):
         if not self.promoted_by.is_manager():
             raise ValidationError("Promoter must be a manager.")
 
-        if not self.promoted_by.manager.can_promote():
+        if not self.__class__.objects.has_permission(
+            user=self.promoted_by,
+            permission=ManagerPermission.PROMOTE.value
+        ):
             raise ValidationError("Permission denied.")
 
     def save(self, *args, **kwargs):
         if not self.pk:
             if self.promoted_by:
-                self.validate_promoter()
+                self._validate_promoter()
 
         return super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
         # Remove all manager permissions of a user while deleting
-        self.__class__.objects.remove_permissions(
-            user=self.user,
-            codenames=[*ManagerPermission]
-        )
+        self.__class__.objects.remove_all_permissions(user=self.user)
         return super().delete(*args, **kwargs)

@@ -1,4 +1,5 @@
 from rest_framework import permissions
+from managers.models import Manager, ManagerPermission
 
 
 class BaseIsAdminOrManager(permissions.BasePermission):
@@ -19,7 +20,11 @@ class CanPromotePermission(BaseIsAdminOrManager):
     def has_permission(self, request, view):
         user = request.user
         return self.is_admin_or_manager(user) and (
-            user.is_admin() or user.manager.can_promote()
+            user.is_admin() or
+            Manager.objects.has_permission(
+                user=user,
+                permission=ManagerPermission.PROMOTE.value
+            )
         )
 
 
@@ -31,7 +36,11 @@ class CanDemotePermission(BaseIsAdminOrManager):
     def has_permission(self, request, view):
         user = request.user
         return self.is_admin_or_manager(user) and (
-            user.is_admin() or user.manager.can_demote()
+            user.is_admin() or
+            Manager.objects.has_permission(
+                user=user,
+                permission=ManagerPermission.DEMOTE.value
+            )
         )
 
 

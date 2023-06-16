@@ -26,7 +26,7 @@ def manager():
         email="manager@manager.com",
         password="1234USERnormal",
     )
-    Manager.objects.create(user=manager)
+    Manager.objects.create_with_permissions(user=manager, permissions=[])
     return manager
 
 

@@ -17,21 +17,30 @@ class TestManagerModel:
             Manager.objects.create(user=manager)
 
     def test_promote_manager_no_permission(self, manager, user):
-        assert not manager.manager.can_promote()
+        assert not Manager.objects.has_permission(
+            user=manager,
+            permission=ManagerPermission.PROMOTE.value
+        )
         with pytest.raises(ValidationError):
             Manager.objects.create(user=manager, promoted_by=user)
 
     def test_promote_manager_with_permission(self, manager, user):
-        assert not manager.manager.can_promote()
+        assert not Manager.objects.has_permission(
+            user=manager,
+            permission=ManagerPermission.PROMOTE.value
+        )
 
         # Give related permissions to the user
         Manager.objects.add_permissions(
             user=manager,
-            codenames=[
-                ManagerPermission.PROMOTE.value,
+            permissions=[
+                ManagerPermission.PROMOTE,
             ]
         )
-        assert manager.manager.can_promote()
+        assert Manager.objects.has_permission(
+            user=manager,
+            permission=ManagerPermission.PROMOTE.value
+        )
         Manager.objects.create(user=user, promoted_by=manager)
         assert user.manager.promoted_by == manager
 
@@ -42,32 +51,55 @@ class TestManagerModel:
 
     def test_remove_permission(self, manager):
         Manager.objects.add_permissions(
+            permissions=[
+                ManagerPermission.PROMOTE,
+            ],
             user=manager,
-            codenames=[
-                ManagerPermission.PROMOTE.value,
-            ]
         )
-        assert manager.manager.can_promote()
+        assert Manager.objects.has_permission(
+            user=manager,
+            permission=ManagerPermission.PROMOTE.value
+        )
 
         Manager.objects.remove_permissions(
             user=manager,
-            codenames=[
-                ManagerPermission.PROMOTE.value,
+            permissions=[
+                ManagerPermission.PROMOTE,
             ]
         )
-        assert not manager.manager.can_promote()
+        assert not Manager.objects.has_permission(
+            user=manager,
+            permission=ManagerPermission.PROMOTE.value
+        )
 
     def test_remove_permission_after_deletion(self, manager):
         Manager.objects.add_permissions(
             user=manager,
-            codenames=[
-                ManagerPermission.PROMOTE.value,
+            permissions=[
+                ManagerPermission.PROMOTE,
             ]
         )
-        assert manager.manager.can_promote()
+        assert Manager.objects.has_permission(
+            user=manager,
+            permission=ManagerPermission.PROMOTE.value
+        )
 
         Manager.objects.get(user=manager).delete()
 
         assert not manager.user_permissions.filter(
             codename=ManagerPermission.PROMOTE.value
         ).exists()
+
+    def test_create_manager_with_permission(self, user):
+        user.is_active = True
+        user.save()
+        manager = Manager.objects.create_with_permissions(
+            user=user,
+            permissions=[
+                ManagerPermission.PROMOTE
+            ]
+        )
+        assert Manager.objects.has_permission(
+            user=user,
+            permission=ManagerPermission.PROMOTE.value
+        )
