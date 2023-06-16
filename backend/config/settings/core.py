@@ -13,6 +13,7 @@ SECRET_KEY = config('SECRET_KEY')
 LOCAL_APPS = [
     'apps.accounts.apps.AccountsConfig',
     'apps.profiles.apps.ProfilesConfig',
+    'apps.managers.apps.ManagersConfig',
 ]
 
 THIRD_PARTY_APPS = [
@@ -99,7 +100,10 @@ REST_FRAMEWORK = {
 
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 5
 }
 
 SPECTACULAR_SETTINGS = {

@@ -46,8 +46,10 @@ class Account(AbstractBaseUser, PermissionsMixin, AbstractToken):
         return bool(self.is_staff)
 
     def is_manager(self) -> bool:
-        # TODO: Add manager model when implemented
-        return bool(self.role == 'm')
+        try:
+            return bool(self.manager)
+        except:
+            return False
 
     def is_teacher(self) -> bool:
         # TODO Add teacher model when implemented

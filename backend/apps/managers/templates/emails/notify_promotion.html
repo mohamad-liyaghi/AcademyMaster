@@ -1,0 +1,14 @@
+{% block subject %}
+You've been promoted to Manager!
+{% endblock subject %}
+
+{% block html_body %}
+<p>Dear {{ first_name }},</p>
+
+<p>Congratulations! You have been promoted to the position of Manager.</p>
+
+<a href='{% url 'managers:retrieve_manager' manager_token %}'>See your permissions.</a>
+
+<p>The Academy Master Team</p>
+
+{% endblock html_body %}

@@ -5,13 +5,18 @@ DEBUG = True
 ALLOWED_HOSTS = list(config('ALLOWED_HOSTS'))
 
 
-THIRD_PARTY_APPS += [
+INSTALLED_APPS += [
     'debug_toolbar',
 ]
 
 
 MIDDLEWARE += {
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+}
+
+INTERNAL_IPS = ["*"]
+DEBUG_TOOLBAR_CONFIG = {
+    'SHOW_TOOLBAR_CALLBACK': lambda _request: DEBUG
 }
 
 DATABASES = {
