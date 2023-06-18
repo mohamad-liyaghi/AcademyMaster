@@ -3,10 +3,10 @@ from django.conf import settings
 from core.models import AbstractToken
 from django.core.exceptions import ValidationError
 from managers.managers import ManagerManager
-from .permission import ManagerPermission
+from core.models import AbstractPermission
 
 
-class Manager(AbstractToken):
+class Manager(AbstractToken, AbstractPermission):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -24,10 +24,6 @@ class Manager(AbstractToken):
     objects = ManagerManager()
 
     class Meta:
-        permissions = [
-            (permission.value, permission.label)
-            for permission in ManagerPermission
-        ]
         db_table = 'managers'
         verbose_name = 'Manager'
         verbose_name_plural = 'Managers'
@@ -45,9 +41,8 @@ class Manager(AbstractToken):
         if not self.promoted_by.is_manager():
             raise ValidationError("Promoter must be a manager.")
 
-        if not self.__class__.objects.has_permission(
-            user=self.promoted_by,
-            permission=ManagerPermission.PROMOTE.value
+        if not self.promoted_by.has_perm(
+            self.__class__.get_permission('add')
         ):
             raise ValidationError("Permission denied.")
 
@@ -60,5 +55,5 @@ class Manager(AbstractToken):
 
     def delete(self, *args, **kwargs):
         # Remove all manager permissions of a user while deleting
-        self.__class__.objects.remove_all_permissions(user=self.user)
+        self.user.user_permissions.clear()
         return super().delete(*args, **kwargs)

@@ -1,12 +1,12 @@
 from rest_framework import serializers
-from managers.models import Manager, ManagerPermission
 from django.contrib.auth.models import Permission
 from rest_framework.exceptions import ValidationError
+from managers.models import Manager
 
 
 class ManagerCreateSerializer(serializers.ModelSerializer):
     permissions = serializers.MultipleChoiceField(
-        choices=ManagerPermission.choices,
+        choices=Permission.objects.all(),
         write_only=True
     )
 
@@ -36,7 +36,7 @@ class ManagerCreateSerializer(serializers.ModelSerializer):
 
 class ManagerUpdateSerializer(serializers.ModelSerializer):
     permissions = serializers.MultipleChoiceField(
-        choices=ManagerPermission.choices,
+        choices=Permission.objects.all(),
         write_only=True
     )
 
@@ -45,6 +45,7 @@ class ManagerUpdateSerializer(serializers.ModelSerializer):
         fields = ['permissions']
 
     def update(self, instance, validated_data):
+
         Manager.objects.update_permission(
                 user=instance.user,
                 permissions=validated_data['permissions']
@@ -75,9 +76,8 @@ class ManagerRetrieveSerializer(serializers.ModelSerializer):
         ]
 
     def get_permissions(self, value):
-        permissions = Manager.objects.get_permission_list(
+        permissions = Permission.objects.filter(
             user=value.user,
-            permission_class=ManagerPermission
         )
 
         serializer = ManagerPermissionListSerializer(permissions, many=True)

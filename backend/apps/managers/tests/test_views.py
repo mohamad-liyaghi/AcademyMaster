@@ -2,7 +2,7 @@ from django.urls import reverse
 from rest_framework import status
 import pytest
 from core.tests import user, superuser, api_client, manager
-from managers.models import ManagerPermission, Manager
+from managers.models import Manager
 from accounts.models import Account
 
 
@@ -45,20 +45,16 @@ class TestManagerCreateView:
         api_client.force_authenticate(superuser)
         resp = api_client.post(self.create_url, self.data)
         assert resp.status_code == status.HTTP_201_CREATED
-        assert not Manager.objects.has_permission(
-            user=self.user,
-            permission=ManagerPermission.PROMOTE.value
-        )
+        assert not self.user.has_perm(Manager.get_permission('add'))
 
     def test_promotion_with_permission(self, api_client, superuser):
         api_client.force_authenticate(superuser)
-        self.data['permissions'] = [*ManagerPermission]
+        self.data['permissions'] = [Manager.get_permission('add')]
         resp = api_client.post(self.create_url, self.data)
         assert resp.status_code == status.HTTP_201_CREATED
-        assert Manager.objects.has_permission(
-            user=self.user,
-            permission=ManagerPermission.PROMOTE.value
-        )
+        assert self.user.user_permissions.filter(
+            codename=Manager.get_permission('add').codename
+        ).exists()
 
     def test_insufficient_permission(self, api_client, manager):
         api_client.force_authenticate(manager)
@@ -84,11 +80,12 @@ class TestManagerUpdateView:
 
     def test_update_manager(self, api_client, manager, superuser):
         api_client.force_authenticate(superuser)
-        self.data['permissions'] = [ManagerPermission.PROMOTE]
-        assert not Manager.objects.has_permission(
-            user=manager,
-            permission=ManagerPermission.PROMOTE.value
-        )
+        self.data['permissions'] = [
+            Manager.get_permission('add')
+        ]
+        assert not manager.user_permissions.filter(
+            codename=Manager.get_permission('add').codename
+        ).exists()
         resp = api_client.put(
             reverse(
                 'managers:update_manager',
@@ -96,10 +93,9 @@ class TestManagerUpdateView:
             ),
             self.data
         )
-        assert Manager.objects.has_permission(
-            user=manager,
-            permission=ManagerPermission.PROMOTE.value
-        )
+        assert manager.user_permissions.filter(
+            codename=Manager.get_permission('add').codename
+        ).exists()
         assert resp.status_code == status.HTTP_200_OK
 
     def test_update_manager_remove_permissions(self, api_client, manager, superuser):
@@ -131,19 +127,17 @@ class TestManagerUpdateView:
         user.save()
         api_client.force_authenticate(superuser)
         Manager.objects.create_with_permissions(
-            permissions=[ManagerPermission.DEMOTE],
+            permissions=[Manager.get_permission('delete')],
             user=user
         )
-        assert Manager.objects.has_permission(
-                user=user,
-                permission=ManagerPermission.DEMOTE.value
-            )
-        assert not Manager.objects.has_permission(
-            user=user,
-            permission=ManagerPermission.PROMOTE.value
+        assert user.has_perm(
+            Manager.get_permission('delete', return_str=True)
+        )
+        assert not user.has_perm(
+            Manager.get_permission('add', return_str=True)
         )
 
-        self.data['permissions'] = [ManagerPermission.PROMOTE]
+        self.data['permissions'] = [Manager.get_permission('add')]
         resp = api_client.put(
             reverse(
                 'managers:update_manager',
@@ -152,14 +146,12 @@ class TestManagerUpdateView:
             self.data
         )
         assert resp.status_code == status.HTTP_200_OK
-        assert not Manager.objects.has_permission(
-                user=user,
-                permission=ManagerPermission.DEMOTE.value
-            )
-        assert Manager.objects.has_permission(
-            user=user,
-            permission=ManagerPermission.PROMOTE.value
-        )
+        assert not user.user_permissions.filter(
+            codename=Manager.get_permission('delete').codename
+        ).exists()
+        assert user.user_permissions.filter(
+            codename=Manager.get_permission('add').codename
+        ).exists()
 
 
 @pytest.mark.django_db
@@ -186,29 +178,32 @@ class TestManagerDeleteView:
     def test_delete_by_manager(self, api_client, manager, user):
         user.is_active = True
         user.save()
+        DELETE_PERMISSION = Manager.get_permission('delete')
         Manager.objects.create_with_permissions(
             user=user,
-            permissions=[]
+            permissions=[
+                DELETE_PERMISSION,
+            ]
         )
-
-        Manager.objects.add_permissions(
-            user=manager,
-            permissions=[ManagerPermission.DEMOTE.value],
-        )
-
         assert user.is_manager()
-        assert Manager.objects.has_permission(
-                user=manager,
-                permission=ManagerPermission.DEMOTE.value
-            )
-        api_client.force_authenticate(manager)
+        assert user.has_perm(
+            Manager.get_permission('delete', return_str=True)
+        )
+
+        # Add delete permission for user
+        manager.user_permissions.add(
+            DELETE_PERMISSION
+        )
+
+        api_client.force_authenticate(user)
 
         resp = api_client.delete(
             reverse(
                 'managers:delete_manager',
-                kwargs={'manager_token': user.manager.token}
+                kwargs={'manager_token': manager.manager.token}
             )
         )
+
         assert resp.status_code == status.HTTP_204_NO_CONTENT
 
     def test_delete_by_manager_without_permission(self, api_client, manager, user):
@@ -218,10 +213,7 @@ class TestManagerDeleteView:
         assert user.is_manager()
 
         api_client.force_authenticate(manager)
-        assert not Manager.objects.has_permission(
-                user=manager,
-                permission=ManagerPermission.DEMOTE.value
-            )
+        assert not manager.has_perm(Manager.get_permission('delete'))
         resp = api_client.delete(
             reverse(
                 'managers:delete_manager',

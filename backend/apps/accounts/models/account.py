@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from accounts.managers import AccountManager
 from core.models import AbstractToken
 
+
 class Account(AbstractBaseUser, PermissionsMixin, AbstractToken):
     # TODO: Role is temporarly, remove after implementing Managers/Teachers
     class Role(models.TextChoices):
@@ -48,7 +49,7 @@ class Account(AbstractBaseUser, PermissionsMixin, AbstractToken):
     def is_manager(self) -> bool:
         try:
             return bool(self.manager)
-        except:
+        except Exception:
             return False
 
     def is_teacher(self) -> bool:
