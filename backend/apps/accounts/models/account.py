@@ -5,12 +5,6 @@ from core.models import AbstractToken
 
 
 class Account(AbstractBaseUser, PermissionsMixin, AbstractToken):
-    # TODO: Role is temporarly, remove after implementing Managers/Teachers
-    class Role(models.TextChoices):
-        ADMIN = 'a', 'Admin'
-        MANAGER = 'm', 'Manager'
-        TEACHER = 't', 'Teacher'
-        STUDENT = 's', 'Student'
 
     username = None
     email = models.EmailField(unique=True, max_length=255)
@@ -20,12 +14,6 @@ class Account(AbstractBaseUser, PermissionsMixin, AbstractToken):
 
     is_active = models.BooleanField(default=False)
     date_joined = models.DateTimeField(auto_now_add=True)
-
-    role = models.CharField(
-        max_length=2,
-        choices=Role.choices,
-        default=Role.STUDENT
-    )
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name']
@@ -47,19 +35,26 @@ class Account(AbstractBaseUser, PermissionsMixin, AbstractToken):
         return bool(self.is_staff)
 
     def is_manager(self) -> bool:
+        '''Return True if user is Admin or Manager'''
         try:
-            return bool(self.manager)
+            return self.is_admin() or bool(self.manager)
         except Exception:
             return False
 
     def is_teacher(self) -> bool:
+        '''Return True if user is Teacher or Manager'''
         try:
-            return bool(self.teacher)
+            return self.is_admin() or bool(self.teacher)
         except Exception:
             return False
 
     def is_student(self) -> bool:
-        return bool(self.role == 's')
+        '''Return True if user is not Admin / Manager or Teacher'''
+        return not (
+            self.is_admin() and
+            self.is_manager() and
+            self.is_teacher()
+        )
 
     def __str__(self) -> str:
         return str(self.email)

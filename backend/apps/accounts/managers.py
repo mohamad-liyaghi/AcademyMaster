@@ -12,7 +12,6 @@ class AccountManager(BaseUserManager):
         user = self.model(
             email=email,
             is_active=is_active,
-            role="s",
             **kwargs
         )
 
@@ -28,7 +27,6 @@ class AccountManager(BaseUserManager):
             email=email,
             is_active=True,
             is_superuser=True,
-            role="a",
             **kwargs
         )
 
