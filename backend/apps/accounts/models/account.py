@@ -50,10 +50,10 @@ class Account(AbstractBaseUser, PermissionsMixin, AbstractToken):
 
     def is_student(self) -> bool:
         '''Return True if user is not Admin / Manager or Teacher'''
-        return not (
-            self.is_admin() and
-            self.is_manager() and
-            self.is_teacher()
+        return (
+            not self.is_admin() and
+            not self.is_manager() and
+            not self.is_teacher()
         )
 
     def __str__(self) -> str:
