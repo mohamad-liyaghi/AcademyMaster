@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-from teachers.models import Teacher
 from django.contrib.auth import get_user_model
+from teachers.models import Teacher
+from profiles.models import Profile
 
 
 class TeacherCreateSerializer(serializers.ModelSerializer):
@@ -33,3 +34,42 @@ class TeacherCreateSerializer(serializers.ModelSerializer):
         )
 
         return teacher
+
+
+class TeacherProfileSerializer(serializers.ModelSerializer):
+    '''The profile of the user'''
+    full_name = serializers.SerializerMethodField(method_name='get_full_name')
+
+    class Meta:
+        model = Profile
+        fields = [
+            'full_name',
+            'avatar',
+            'token'
+        ]
+
+    def get_full_name(self, value):
+        return value.user.full_name
+
+
+class TeacherRetrieveSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField(method_name='get_teacher_profile')
+
+    class Meta:
+        model = Teacher
+        fields = [
+            'user',
+            'promoted_by',
+            'description',
+            'promotion_date',
+            'contact_links',
+        ]
+
+    def get_teacher_profile(self, teacher):
+        try:
+            profile = teacher.user.profile
+            serializer = TeacherProfileSerializer(profile)
+            return serializer.data
+
+        except Exception:
+            return None

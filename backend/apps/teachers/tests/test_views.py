@@ -2,7 +2,6 @@ from django.urls import reverse
 from rest_framework import status
 import pytest
 from core.tests import user, teacher, superuser, api_client, manager
-from django.contrib.auth import get_user_model
 from teachers.models import Teacher
 from accounts.models import Account
 
@@ -52,3 +51,36 @@ class TestTeacherCreateView:
         api_client.force_authenticate(superuser)
         resp = api_client.post(self.create_url, self.data)
         assert resp.status_code == status.HTTP_400_BAD_REQUEST
+
+
+@pytest.mark.django_db
+class TestTeacherRetrieveView:
+
+    def test_retrieve_unauthorized(self, api_client, teacher):
+        resp = api_client.get(
+                reverse(
+                    'teachers:retrieve_teacher', 
+                    kwargs={'teacher_token': teacher.teacher.token}
+                )
+            )
+        assert resp.status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_retrieve_teacher(self, api_client, teacher, user):
+        api_client.force_authenticate(user)
+        resp = api_client.get(
+                reverse(
+                    'teachers:retrieve_teacher', 
+                    kwargs={'teacher_token': teacher.teacher.token}
+                )
+            )
+        assert resp.status_code == status.HTTP_200_OK
+
+    def test_retrieve_not_found(self, api_client, teacher, user):
+            api_client.force_authenticate(user)
+            resp = api_client.get(
+                reverse(
+                    'teachers:retrieve_teacher',
+                    kwargs={'teacher_token': 'Invalid'}
+                )
+            )
+            assert resp.status_code == status.HTTP_404_NOT_FOUND
