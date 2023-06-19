@@ -2,6 +2,7 @@ import pytest
 from rest_framework.test import APIClient
 from accounts.models import Account
 from managers.models import Manager
+from teachers.models import Teacher
 
 
 @pytest.fixture
@@ -36,8 +37,9 @@ def teacher():
         email="teacher@teacher.com",
         password="1234USERnormal",
     )
-    teacher.role = Account.Role.TEACHER
-    teacher.save()
+    Teacher.objects.create(
+        user=teacher
+    )
     return teacher
 
 

@@ -53,8 +53,10 @@ class Account(AbstractBaseUser, PermissionsMixin, AbstractToken):
             return False
 
     def is_teacher(self) -> bool:
-        # TODO Add teacher model when implemented
-        return bool(self.role == 't')
+        try:
+            return bool(self.teacher)
+        except Exception:
+            return False
 
     def is_student(self) -> bool:
         return bool(self.role == 's')
