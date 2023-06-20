@@ -83,3 +83,53 @@ class TestTeacherRetrieveView:
                 )
             )
             assert resp.status_code == status.HTTP_404_NOT_FOUND
+
+
+@pytest.mark.django_db
+class TestTeacherUpdateView:
+    def test_unauthorized(self, api_client, teacher):
+        resp = api_client.put(
+                reverse(
+                    'teachers:update_teacher', 
+                    kwargs={'teacher_token': teacher.teacher.token}
+                ),
+                {}
+            )
+        assert resp.status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_update(self, api_client, teacher):
+        api_client.force_authenticate(teacher)
+        resp = api_client.put(
+                reverse(
+                    'teachers:update_teacher', 
+                    kwargs={'teacher_token': teacher.teacher.token}
+                ),
+                {
+                    'description': 'Updated description'
+                }
+            )
+        assert resp.status_code == status.HTTP_200_OK
+
+    def test_update_others(self, api_client, teacher, superuser):
+        api_client.force_authenticate(superuser)
+        resp = api_client.put(
+                reverse(
+                    'teachers:update_teacher', 
+                    kwargs={'teacher_token': teacher.teacher.token}
+                ),
+                {
+                    'description': 'Updated description'
+                }
+            )
+        assert resp.status_code == status.HTTP_403_FORBIDDEN
+
+
+    def test_update_no_found(self, api_client, superuser):
+        api_client.force_authenticate(superuser)
+        resp = api_client.put(
+                reverse(
+                    'teachers:update_teacher', 
+                    kwargs={'teacher_token': 'fake_token'}
+                ),
+            )
+        assert resp.status_code == status.HTTP_404_NOT_FOUND

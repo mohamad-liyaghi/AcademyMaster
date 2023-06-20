@@ -73,3 +73,13 @@ class TeacherRetrieveSerializer(serializers.ModelSerializer):
 
         except Exception:
             return None
+
+
+class TeacherUpdateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Teacher
+        fields = [
+            'promotion_date',
+            'contact_links',
+        ]

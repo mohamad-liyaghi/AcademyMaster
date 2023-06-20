@@ -14,3 +14,11 @@ class CanAddTeacher(BasePermission):
                 Teacher.get_permission('add', return_str=True)
             )
         )
+
+
+class IsObjectOwner(BasePermission):
+    '''
+    Only teacher object owner can update the object
+    '''
+    def has_object_permission(self, request, view, obj):
+        return request.user == obj.user
