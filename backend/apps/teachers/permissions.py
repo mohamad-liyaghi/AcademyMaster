@@ -16,6 +16,20 @@ class CanAddTeacher(BasePermission):
         )
 
 
+class CanDeleteTeacher(BasePermission):
+    '''
+    Only admins and managers with teachers.delete_teacher,
+    perm can delete teachers
+    '''
+    def has_permission(self, request, view):
+        user = request.user
+        return (
+            user.is_manager() and user.has_perm(
+                Teacher.get_permission('delete', return_str=True)
+            )
+        )
+
+
 class IsObjectOwner(BasePermission):
     '''
     Only teacher object owner can update the object

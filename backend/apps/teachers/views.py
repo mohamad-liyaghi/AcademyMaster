@@ -3,11 +3,13 @@ from rest_framework.generics import (
     CreateAPIView,
     RetrieveAPIView,
     UpdateAPIView,
+    DestroyAPIView
 )
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from teachers.permissions import (
     CanAddTeacher,
+    CanDeleteTeacher,
     IsObjectOwner,
 )
 from teachers.serializers import (
@@ -93,4 +95,15 @@ class TeacherUpdateView(UpdateAPIView):
             token=self.kwargs['teacher_token']
         )
         self.check_object_permissions(self.request, teacher)
+        return teacher
+
+
+class TeacherDeleteView(DestroyAPIView):
+    permission_classes = [IsAuthenticated, CanDeleteTeacher]
+
+    def get_object(self):
+        teacher = get_object_or_404(
+            Teacher.objects.select_related('user'),
+            token=self.kwargs['teacher_token']
+        )
         return teacher

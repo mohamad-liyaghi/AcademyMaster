@@ -3,6 +3,7 @@ from teachers.views import (
     TeacherCreateView,
     TeacherRetrieveView,
     TeacherUpdateView,
+    TeacherDeleteView
 )
 
 app_name = 'teachers'
@@ -18,6 +19,11 @@ v1_urlpatterns = [
         '<str:teacher_token>/update/',
         TeacherUpdateView.as_view(),
         name='update_teacher'
+    ),
+    path(
+        '<str:teacher_token>/delete/',
+        TeacherDeleteView.as_view(),
+        name='delete_teacher'
     ),
 ]
 
