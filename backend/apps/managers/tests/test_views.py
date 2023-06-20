@@ -49,7 +49,7 @@ class TestManagerCreateView:
 
     def test_promotion_with_permission(self, api_client, superuser):
         api_client.force_authenticate(superuser)
-        self.data['permissions'] = [Manager.get_permission('add')]
+        self.data['permissions'] = [Manager.get_permission('add').codename]
         resp = api_client.post(self.create_url, self.data)
         assert resp.status_code == status.HTTP_201_CREATED
         assert self.user.user_permissions.filter(
@@ -81,7 +81,7 @@ class TestManagerUpdateView:
     def test_update_manager(self, api_client, manager, superuser):
         api_client.force_authenticate(superuser)
         self.data['permissions'] = [
-            Manager.get_permission('add')
+            Manager.get_permission('add').codename
         ]
         assert not manager.user_permissions.filter(
             codename=Manager.get_permission('add').codename
@@ -137,7 +137,7 @@ class TestManagerUpdateView:
             Manager.get_permission('add', return_str=True)
         )
 
-        self.data['permissions'] = [Manager.get_permission('add')]
+        self.data['permissions'] = [Manager.get_permission('add').codename]
         resp = api_client.put(
             reverse(
                 'managers:update_manager',

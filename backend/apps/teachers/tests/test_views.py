@@ -25,7 +25,6 @@ class TestTeacherCreateView:
     def test_create_teacher(self, api_client, superuser):
         api_client.force_authenticate(superuser)
         resp = api_client.post(self.create_url, self.data)
-        print(resp)
         assert resp.status_code == status.HTTP_201_CREATED
         assert self.user.teacher.promoted_by == superuser
 

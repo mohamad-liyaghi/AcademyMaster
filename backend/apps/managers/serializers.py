@@ -4,10 +4,17 @@ from rest_framework.exceptions import ValidationError
 from managers.models import Manager
 
 
+class PermissionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Permission
+        fields = ['codename']
+
+
 class ManagerCreateSerializer(serializers.ModelSerializer):
-    permissions = serializers.MultipleChoiceField(
-        choices=Permission.objects.all(),
-        write_only=True
+    permissions = serializers.ListField(
+        child=serializers.CharField(),
+        write_only=True,
+        required=False
     )
 
     token = serializers.CharField(read_only=True)
@@ -28,16 +35,17 @@ class ManagerCreateSerializer(serializers.ModelSerializer):
         manager = Manager.objects.create_with_permissions(
             user=user,
             promoted_by=self.context['request'].user,
-            permissions=validated_data['permissions'],
+            codenames=validated_data.get('permissions', None),
         )
 
         return manager
 
 
 class ManagerUpdateSerializer(serializers.ModelSerializer):
-    permissions = serializers.MultipleChoiceField(
-        choices=Permission.objects.all(),
-        write_only=True
+    permissions = serializers.ListField(
+        child=serializers.CharField(),
+        write_only=True,
+        required=False
     )
 
     class Meta:
@@ -45,19 +53,12 @@ class ManagerUpdateSerializer(serializers.ModelSerializer):
         fields = ['permissions']
 
     def update(self, instance, validated_data):
-
         Manager.objects.update_permission(
                 user=instance.user,
-                permissions=validated_data['permissions']
+                permissions=[],
+                codenames=validated_data.get('permissions', None)
         )
         return super().update(instance, validated_data)
-
-
-class ManagerPermissionListSerializer(serializers.ModelSerializer):
-    '''List of a managers permissions'''
-    class Meta:
-        model = Permission
-        fields = ['name']
 
 
 class ManagerRetrieveSerializer(serializers.ModelSerializer):
@@ -80,7 +81,7 @@ class ManagerRetrieveSerializer(serializers.ModelSerializer):
             user=value.user,
         )
 
-        serializer = ManagerPermissionListSerializer(permissions, many=True)
+        serializer = PermissionSerializer(permissions, many=True)
         return serializer.data
 
 
