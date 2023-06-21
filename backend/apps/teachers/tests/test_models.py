@@ -19,16 +19,12 @@ class TestTeacherModel:
             Teacher.objects.create(user=teacher)
 
     def test_promote_by_manager(self, user, manager):
-        assert not manager.has_perm(
-             Teacher.get_permission('add', return_str=True)
-        )
+        assert not manager.has_perm(perm_object=Teacher.get_permission('add'))
 
         manager.user_permissions.add(
              Teacher.get_permission('add')
         )
-        assert manager.user_permissions.filter(
-            codename=Teacher.get_permission('add').codename
-        ).exists()
+        assert manager.has_perm(perm_object=Teacher.get_permission('add'))
         Teacher.objects.create(user=user, promoted_by=manager)
 
     def test_promote_by_superuser(self, user, superuser):
@@ -36,9 +32,7 @@ class TestTeacherModel:
         assert teacher.promoted_by == superuser
 
     def test_promote_by_manager_no_permission(self, manager, user):
-        assert not manager.has_perm(
-             Teacher.get_permission('add', return_str=True)
-        )
+        assert not manager.has_perm(perm_object=Teacher.get_permission('add'))
 
         with pytest.raises(ValidationError):
             Teacher.objects.create(user=user, promoted_by=manager)

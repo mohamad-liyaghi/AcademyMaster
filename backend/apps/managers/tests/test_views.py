@@ -45,16 +45,14 @@ class TestManagerCreateView:
         api_client.force_authenticate(superuser)
         resp = api_client.post(self.create_url, self.data)
         assert resp.status_code == status.HTTP_201_CREATED
-        assert not self.user.has_perm(Manager.get_permission('add'))
+        assert not self.user.has_perm(perm_object=Manager.get_permission('add'))
 
     def test_promotion_with_permission(self, api_client, superuser):
         api_client.force_authenticate(superuser)
         self.data['permissions'] = [Manager.get_permission('add').codename]
         resp = api_client.post(self.create_url, self.data)
         assert resp.status_code == status.HTTP_201_CREATED
-        assert self.user.user_permissions.filter(
-            codename=Manager.get_permission('add').codename
-        ).exists()
+        assert self.user.has_perm(perm_object=Manager.get_permission('add'))
 
     def test_insufficient_permission(self, api_client, manager):
         api_client.force_authenticate(manager)
@@ -83,9 +81,7 @@ class TestManagerUpdateView:
         self.data['permissions'] = [
             Manager.get_permission('add').codename
         ]
-        assert not manager.user_permissions.filter(
-            codename=Manager.get_permission('add').codename
-        ).exists()
+        assert not manager.has_perm(perm_object=Manager.get_permission('add'))
         resp = api_client.put(
             reverse(
                 'managers:update_manager',
@@ -93,9 +89,7 @@ class TestManagerUpdateView:
             ),
             self.data
         )
-        assert manager.user_permissions.filter(
-            codename=Manager.get_permission('add').codename
-        ).exists()
+        assert manager.has_perm(perm_object=Manager.get_permission('add'))
         assert resp.status_code == status.HTTP_200_OK
 
     def test_update_manager_remove_permissions(self, api_client, manager, superuser):
@@ -130,12 +124,8 @@ class TestManagerUpdateView:
             permissions=[Manager.get_permission('delete')],
             user=user
         )
-        assert user.has_perm(
-            Manager.get_permission('delete', return_str=True)
-        )
-        assert not user.has_perm(
-            Manager.get_permission('add', return_str=True)
-        )
+        assert user.has_perm(perm_object=Manager.get_permission('delete'))
+        assert not user.has_perm(perm_object=Manager.get_permission('add'))
 
         self.data['permissions'] = [Manager.get_permission('add').codename]
         resp = api_client.put(
@@ -146,12 +136,8 @@ class TestManagerUpdateView:
             self.data
         )
         assert resp.status_code == status.HTTP_200_OK
-        assert not user.user_permissions.filter(
-            codename=Manager.get_permission('delete').codename
-        ).exists()
-        assert user.user_permissions.filter(
-            codename=Manager.get_permission('add').codename
-        ).exists()
+        assert not user.has_perm(perm_object=Manager.get_permission('delete'))
+        assert user.has_perm(perm_object=Manager.get_permission('add'))
 
 
 @pytest.mark.django_db
@@ -186,9 +172,7 @@ class TestManagerDeleteView:
             ]
         )
         assert user.is_manager()
-        assert user.has_perm(
-            Manager.get_permission('delete', return_str=True)
-        )
+        assert user.has_perm(perm_object=Manager.get_permission('delete'))
 
         # Add delete permission for user
         manager.user_permissions.add(
@@ -213,7 +197,7 @@ class TestManagerDeleteView:
         assert user.is_manager()
 
         api_client.force_authenticate(manager)
-        assert not manager.has_perm(Manager.get_permission('delete'))
+        assert not manager.has_perm(perm_object=Manager.get_permission('delete'))
         resp = api_client.delete(
             reverse(
                 'managers:delete_manager',

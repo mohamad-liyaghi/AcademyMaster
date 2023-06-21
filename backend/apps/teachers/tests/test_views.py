@@ -30,9 +30,7 @@ class TestTeacherCreateView:
         assert self.user.teacher.promoted_by == superuser
 
     def test_create_teacher_by_manager_permission_denied(self, api_client, manager):
-        assert not manager.has_perm(
-            Teacher.get_permission('add', return_str=True)
-        )
+        assert not manager.has_perm(perm_object=Teacher.get_permission('add'))
         api_client.force_authenticate(manager)
         resp = api_client.post(self.create_url, self.data)
         assert resp.status_code == status.HTTP_403_FORBIDDEN
@@ -160,7 +158,7 @@ class TestTeacherDeleteView:
     def test_delete_no_permission(self, api_client, teacher, manager):
         api_client.force_authenticate(manager)
         assert not manager.has_perm(
-            Manager.get_permission('delete', return_str=True)
+            perm_object=Manager.get_permission('delete')
         )
         resp = api_client.delete(
                 reverse(

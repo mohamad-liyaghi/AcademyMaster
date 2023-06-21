@@ -10,9 +10,8 @@ class CanAddTeacher(BasePermission):
     def has_permission(self, request, view):
         user = request.user
         return (
-            user.is_manager() and user.has_perm(
-                Teacher.get_permission('add', return_str=True)
-            )
+            user.is_manager() and
+            user.has_perm(perm_object=Teacher.get_permission('add'))
         )
 
 
@@ -24,9 +23,8 @@ class CanDeleteTeacher(BasePermission):
     def has_permission(self, request, view):
         user = request.user
         return (
-            user.is_manager() and user.has_perm(
-                Teacher.get_permission('delete', return_str=True)
-            )
+            user.is_manager() and
+            user.has_perm(perm_object=Teacher.get_permission('delete'))
         )
 
 

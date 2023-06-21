@@ -20,7 +20,7 @@ class TestManagerModel:
             Manager.objects.create(user=manager)
 
     def test_promote_manager_no_permission(self, manager, user):
-        assert not manager.has_perm(Manager.get_permission('add'))
+        assert not manager.has_perm(perm_object=Manager.get_permission('add'))
         with pytest.raises(ValidationError):
             Manager.objects.create(user=manager, promoted_by=user)
 
@@ -37,9 +37,7 @@ class TestManagerModel:
             ]
         )
 
-        assert manager_user.has_perm(
-            Manager.get_permission('add', return_str=True)
-        )
+        assert manager_user.has_perm(perm_object=Manager.get_permission('add'))
 
         Manager.objects.create(user=user, promoted_by=manager_user)
         assert user.manager.promoted_by == manager_user
@@ -51,27 +49,23 @@ class TestManagerModel:
 
     def test_remove_permission(self, manager):
         manager.user_permissions.add(Manager.get_permission('add'))
-        assert manager.user_permissions.filter(
-            codename=Manager.get_permission('add').codename
-        ).exists()
+        assert manager.has_perm(perm_object=Manager.get_permission('add'))
 
         manager.user_permissions.remove(
             Manager.get_permission('add')
         )
-        assert not manager.has_perm(Manager.get_permission('add'))
+        assert not manager.has_perm(perm_object=Manager.get_permission('add'))
 
     def test_remove_permission_after_deletion(self, manager):
         manager.user_permissions.add(
             Manager.get_permission('add')
         )
         manager = get_object_or_404(get_user_model(), id=manager.id)
-        assert manager.user_permissions.filter(
-            codename=Manager.get_permission('add').codename
-        ).exists()
+        assert manager.has_perm(perm_object=Manager.get_permission('add'))
 
         Manager.objects.get(user=manager).delete()
 
-        assert not manager.has_perm(Manager.get_permission('add', return_str=True))
+        assert not manager.has_perm(perm_object=Manager.get_permission('add'))
 
     def test_create_manager_with_permission(self, user):
         user.is_active = True
@@ -83,7 +77,7 @@ class TestManagerModel:
                 Manager.get_permission('add')
             ]
         )
-        assert user.has_perm('managers.add_manager')
+        assert user.has_perm(perm_object=Manager.get_permission('add'))
         user_id = user.id
         user = get_object_or_404(get_user_model(), id=user_id)
-        assert user.has_perm(Manager.get_permission('add', return_str=True))
+        assert user.has_perm(perm_object=Manager.get_permission('add'))

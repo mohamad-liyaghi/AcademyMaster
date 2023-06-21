@@ -15,7 +15,8 @@ class CanPromotePermission(BasePermission):
     def has_permission(self, request, view):
         user = request.user
         return (
-            user.is_manager() and user.has_perm(Manager.get_permission('add'))
+            user.is_manager() and
+            user.has_perm(perm_object=Manager.get_permission('add'))
         )
 
 
@@ -28,9 +29,8 @@ class CanDemotePermission(BasePermission):
         user = request.user
 
         return (
-            user.is_manager() and user.has_perm(
-                Manager.get_permission('delete', return_str=True)
-            )
+            user.is_manager() and
+            user.has_perm(perm_object=Manager.get_permission('delete'))
         )
 
 

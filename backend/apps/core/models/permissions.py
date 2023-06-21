@@ -9,19 +9,14 @@ class AbstractPermission(models.Model):
         abstract = True
 
     @classmethod
-    def get_permission(cls, action, return_str=False):
+    def get_permission(cls, action):
         '''
         Return a permission related to a class
-        :return_str: return the codename or the object
         '''
         codename = f'{action}_{cls.__name__.lower()}'
 
         try:
-            permission = Permission.objects.get(codename=codename)
-            if return_str:
-                return f'{cls._meta.app_label}.{codename}'
-
-            return permission
+            return Permission.objects.get(codename=codename)
 
         except Http404:
             raise ValueError("Permission not fount")
@@ -39,7 +34,7 @@ class AbstractPermission(models.Model):
         if not self.promoted_by.is_manager():
             raise ValidationError("Promoter must be a manager.")
 
-        if not self.promoted_by.user_permissions.filter(
-            codename=self.__class__.get_permission('add').codename
+        if not self.promoted_by.has_perm(
+            perm_object=self.__class__.get_permission('add')
         ):
             raise ValidationError("Permission denied for promoting.")
