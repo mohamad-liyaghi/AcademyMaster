@@ -3,7 +3,8 @@ from rest_framework.generics import (
     CreateAPIView,
     RetrieveAPIView,
     UpdateAPIView,
-    DestroyAPIView
+    DestroyAPIView,
+    ListAPIView
 )
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema, extend_schema_view
@@ -15,7 +16,8 @@ from teachers.permissions import (
 from teachers.serializers import (
     TeacherCreateSerializer,
     TeacherRetrieveSerializer,
-    TeacherUpdateSerializer
+    TeacherUpdateSerializer,
+    TeacherListSerializer
 )
 from teachers.models import Teacher
 
@@ -98,6 +100,18 @@ class TeacherUpdateView(UpdateAPIView):
         return teacher
 
 
+@extend_schema_view(
+    delete=extend_schema(
+        description='''Delete a teacher only by manager/admins.''',
+        request=TeacherRetrieveSerializer,
+        responses={
+            '201': 'ok',
+            '403': 'Permission denied',
+            '404': 'Not found',
+        },
+        tags=['Teachers'],
+    ),
+)
 class TeacherDeleteView(DestroyAPIView):
     permission_classes = [IsAuthenticated, CanDeleteTeacher]
 
@@ -107,3 +121,11 @@ class TeacherDeleteView(DestroyAPIView):
             token=self.kwargs['teacher_token']
         )
         return teacher
+
+
+class TeacherListView(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = TeacherListSerializer
+
+    def get_queryset(self):
+        return Teacher.objects.all().order_by('-promotion_date')

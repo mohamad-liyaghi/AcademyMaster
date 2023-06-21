@@ -83,3 +83,15 @@ class TeacherUpdateSerializer(serializers.ModelSerializer):
             'promotion_date',
             'contact_links',
         ]
+
+
+class TeacherListSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField()
+
+    class Meta:
+        model = Teacher
+        fields = [
+            'user',
+            'description',
+            'token',
+        ]

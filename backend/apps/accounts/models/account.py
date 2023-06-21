@@ -57,4 +57,4 @@ class Account(AbstractBaseUser, PermissionsMixin, AbstractToken):
         )
 
     def __str__(self) -> str:
-        return str(self.email)
+        return str(self.full_name)

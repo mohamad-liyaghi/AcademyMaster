@@ -7,3 +7,4 @@ postgres-data
 logs/critical.log
 !logs/.keep
 media/
+.idea/

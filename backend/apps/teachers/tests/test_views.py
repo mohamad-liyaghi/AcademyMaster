@@ -179,3 +179,34 @@ class TestTeacherDeleteView:
                 ),
             )
         assert resp.status_code == status.HTTP_404_NOT_FOUND
+
+
+@pytest.mark.django_db
+class TestTeacherListView:
+    def test_unauthorized(self, api_client, teacher):
+        resp = api_client.get(
+                reverse(
+                    'teachers:teacher_list',
+                ),
+            )
+        assert resp.status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_get_list(self, api_client, user):
+        api_client.force_authenticate(user)
+        resp = api_client.get(
+                reverse(
+                    'teachers:teacher_list',
+                ),
+            )
+        assert resp.status_code == status.HTTP_200_OK
+        assert resp.json()['count'] == 0
+
+    def test_get_list_with_teahcer(self, api_client, user, teacher):
+        api_client.force_authenticate(user)
+        resp = api_client.get(
+                reverse(
+                    'teachers:teacher_list',
+                ),
+            )
+        assert resp.status_code == status.HTTP_200_OK
+        assert resp.json()['count'] == 1
