@@ -1,13 +1,20 @@
 from rest_framework import serializers
-from managers.models import Manager, ManagerPermission
 from django.contrib.auth.models import Permission
 from rest_framework.exceptions import ValidationError
+from managers.models import Manager
+
+
+class PermissionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Permission
+        fields = ['codename']
 
 
 class ManagerCreateSerializer(serializers.ModelSerializer):
-    permissions = serializers.MultipleChoiceField(
-        choices=ManagerPermission.choices,
-        write_only=True
+    permissions = serializers.ListField(
+        child=serializers.CharField(),
+        write_only=True,
+        required=False
     )
 
     token = serializers.CharField(read_only=True)
@@ -28,16 +35,17 @@ class ManagerCreateSerializer(serializers.ModelSerializer):
         manager = Manager.objects.create_with_permissions(
             user=user,
             promoted_by=self.context['request'].user,
-            permissions=validated_data['permissions'],
+            codenames=validated_data.get('permissions', None),
         )
 
         return manager
 
 
 class ManagerUpdateSerializer(serializers.ModelSerializer):
-    permissions = serializers.MultipleChoiceField(
-        choices=ManagerPermission.choices,
-        write_only=True
+    permissions = serializers.ListField(
+        child=serializers.CharField(),
+        write_only=True,
+        required=False
     )
 
     class Meta:
@@ -47,16 +55,10 @@ class ManagerUpdateSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         Manager.objects.update_permission(
                 user=instance.user,
-                permissions=validated_data['permissions']
+                permissions=[],
+                codenames=validated_data.get('permissions', None)
         )
         return super().update(instance, validated_data)
-
-
-class ManagerPermissionListSerializer(serializers.ModelSerializer):
-    '''List of a managers permissions'''
-    class Meta:
-        model = Permission
-        fields = ['name']
 
 
 class ManagerRetrieveSerializer(serializers.ModelSerializer):
@@ -75,12 +77,11 @@ class ManagerRetrieveSerializer(serializers.ModelSerializer):
         ]
 
     def get_permissions(self, value):
-        permissions = Manager.objects.get_permission_list(
+        permissions = Permission.objects.filter(
             user=value.user,
-            permission_class=ManagerPermission
         )
 
-        serializer = ManagerPermissionListSerializer(permissions, many=True)
+        serializer = PermissionSerializer(permissions, many=True)
         return serializer.data
 
 

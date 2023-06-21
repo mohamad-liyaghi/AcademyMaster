@@ -1,56 +1,47 @@
-from rest_framework import permissions
-from managers.models import Manager, ManagerPermission
+from rest_framework.permissions import BasePermission
+from managers.models import Manager
 
 
-class BaseIsAdminOrManager(permissions.BasePermission):
-    def is_admin_or_manager(self, user):
-        return user.is_admin() or user.is_manager()
-
-
-class IsManager(BaseIsAdminOrManager):
+class IsManager(BasePermission):
     def has_permission(self, request, view):
-        return self.is_admin_or_manager(request.user)
+        return request.user.is_manager()
 
 
-class CanPromotePermission(BaseIsAdminOrManager):
+class CanPromotePermission(BasePermission):
     """
     Only admins and managers with can_promote permission can access the page
     """
 
     def has_permission(self, request, view):
         user = request.user
-        return self.is_admin_or_manager(user) and (
-            user.is_admin() or
-            Manager.objects.has_permission(
-                user=user,
-                permission=ManagerPermission.PROMOTE.value
-            )
+        return (
+            user.is_manager() and user.has_perm(Manager.get_permission('add'))
         )
 
 
-class CanDemotePermission(BaseIsAdminOrManager):
+class CanDemotePermission(BasePermission):
     """
     Only admins and managers with can_demote perm can access the page
     """
 
     def has_permission(self, request, view):
         user = request.user
-        return self.is_admin_or_manager(user) and (
-            user.is_admin() or
-            Manager.objects.has_permission(
-                user=user,
-                permission=ManagerPermission.DEMOTE.value
+
+        return (
+            user.is_manager() and user.has_perm(
+                Manager.get_permission('delete', return_str=True)
             )
         )
 
 
-class IsManagerPromoter(BaseIsAdminOrManager):
+class IsManagerPromoter(BasePermission):
     """
     Only Promoter and admins can update managers permissions
     """
 
     def has_object_permission(self, request, view, obj):
         user = request.user
-        return self.is_admin_or_manager(user) and (
-            user.is_admin() or obj.promoted_by == user
+        return (
+            user.is_admin() or
+            user.is_manager() and obj.promoted_by == user
         )

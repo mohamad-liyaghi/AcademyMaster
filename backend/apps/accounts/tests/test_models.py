@@ -4,6 +4,7 @@ from datetime import timedelta
 from django.utils import timezone
 from core.tests import user, superuser, manager, teacher
 
+
 @pytest.mark.django_db
 class TestAccountModel:
 
@@ -28,13 +29,13 @@ class TestAccountModel:
         assert user.is_student() is True
 
     def test_user_is_manager(self, user, superuser, manager):
-        assert superuser.is_manager() is False
         assert user.is_manager() is False
+        assert superuser.is_manager() is True
         assert manager.is_manager() is True
 
     def test_user_is_teacher(self, user, superuser, teacher):
-        assert superuser.is_teacher() is False
         assert user.is_teacher() is False
+        assert superuser.is_teacher() is True
         assert teacher.is_teacher() is True
 
 

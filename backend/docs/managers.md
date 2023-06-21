@@ -6,7 +6,6 @@ The Managers application is responsible for managing managers and thier permissi
 
 1. [Models](#models)
     - [Manager](#manager)
-    - [ManagerPermissions](#managerpermissions)
 2. [Custom Managers](#custom-managers)
     - [ManagerManager](#managermanager)
 3. [Signals](#signals)
@@ -34,18 +33,12 @@ The `Manager` model represents a manager within the Academy Master project. It c
 - `promoted_by`: A foreign key relationship to the `Account` model of the user who promoted the manager.
 - `promotion_date`: A datetime field representing the date the manager was promoted.
 
-### ManagerPermissions
-
-The `ManagerPermissions` is a ChoiceField representing the available permissions for managers. It contains the following choices:
-
-- `PROMOTE`: ('promote_manager', 'Can promote a user to manager')
-- `DEMOTE`: ('demote_manager', 'Can demote a manager to user')
 
 ## Custom Managers
 
 ### ManagerManager
 
-A custom manager for `ManagerPermission` that inherits from `BasePermissionManager`.
+A custom manager for for adding/updating permissions .
 
 ## Signals
 

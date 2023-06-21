@@ -63,7 +63,7 @@ class Profile(AbstractToken):
     def save(self, *args, **kwargs) -> None:
         '''
             Ensure that required fields are not None.
-            When an object is created by signal, 
+            When an object is created by signal,
             some fields are None.
             User must update them and cannot insert None.
         '''
@@ -71,7 +71,7 @@ class Profile(AbstractToken):
         if self.pk:
             # Get null fields
             null_fields = [
-                field.name for field in self._meta.fields \
+                field.name for field in self._meta.fields
                 if getattr(self, field.name) is None
             ]
 

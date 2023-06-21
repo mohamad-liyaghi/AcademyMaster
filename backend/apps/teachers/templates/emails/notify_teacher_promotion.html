@@ -1,0 +1,22 @@
+{% block subject %} 
+You've been promoted to Teacher!
+{% endblock subject %}
+
+{% block html_body %}
+<p>Dear {{ first_name }},</p>
+
+<p>Congratulations! You have been promoted to Teacher by `{{ promoter }}` on `{{ promotion_date }}`.</p>
+
+<p>As a Teacher, you will have more privileges than other users, some of your privileges:</p>
+<ul>
+   <li>Create courses and lessons</li>  
+   <li>Manage students enrolled in your courses</li>    
+   <li>Review and grade student assignments</li>
+</ul>
+
+{% comment %}# TODO add link for detail pag{% endcomment %}
+
+<p>Regards,<br>
+The Academy Master Team 
+</p>
+{% endblock html_body %}

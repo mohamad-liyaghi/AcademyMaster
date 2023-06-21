@@ -14,6 +14,7 @@ LOCAL_APPS = [
     'apps.accounts.apps.AccountsConfig',
     'apps.profiles.apps.ProfilesConfig',
     'apps.managers.apps.ManagersConfig',
+    'apps.teachers.apps.TeachersConfig',
 ]
 
 THIRD_PARTY_APPS = [

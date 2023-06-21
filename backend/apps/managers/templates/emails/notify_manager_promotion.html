@@ -5,7 +5,7 @@ You've been promoted to Manager!
 {% block html_body %}
 <p>Dear {{ first_name }},</p>
 
-<p>Congratulations! You have been promoted to the position of Manager.</p>
+<p>Congratulations! You have been promoted to the position of Manager by `{{ promoter }}` on `{{ promotion_date }}`.</p>
 
 <a href='{% url 'managers:retrieve_manager' manager_token %}'>See your permissions.</a>
 
