@@ -4,6 +4,7 @@ from accounts.models import Account
 from managers.models import Manager
 from teachers.models import Teacher
 
+# TODO remove all this fixtures
 
 @pytest.fixture
 def user():

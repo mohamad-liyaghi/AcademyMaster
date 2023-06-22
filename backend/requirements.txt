@@ -26,6 +26,7 @@ djangorestframework==3.14.0
 djangorestframework-simplejwt==5.2.2
 drf-spectacular==0.26.2
 drf-spectacular-sidecar==2023.6.1
+Faker==18.11.1
 gunicorn==20.1.0
 h11==0.14.0
 idna==3.4
@@ -41,8 +42,10 @@ Pillow==9.5.0
 pluggy==1.0.0
 prompt-toolkit==3.0.38
 psycopg2-binary==2.9.6
+pyaes==1.6.1
 PyJWT==2.7.0
 pyrsistent==0.19.3
+PySocks==1.7.1
 pytest==7.3.1
 pytest-django==4.5.2
 pytest-env==0.8.1
