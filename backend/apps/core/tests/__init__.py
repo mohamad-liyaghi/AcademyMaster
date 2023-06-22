@@ -1,4 +1,4 @@
-from .fixtures import (
+from .temp_fixtures import (
     user,
     superuser,
     manager,

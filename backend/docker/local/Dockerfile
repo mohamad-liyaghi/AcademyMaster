@@ -21,8 +21,5 @@ RUN pip install -r requirements.txt
 # Copy the rest of the application code to the working directory
 COPY . .
 
-# Rename .env.local.sample to .env to ensure the server can read the configuration
-RUN mv .env.local.sample .env
-
 # Expose port 8000 to the outside world
 EXPOSE 8000

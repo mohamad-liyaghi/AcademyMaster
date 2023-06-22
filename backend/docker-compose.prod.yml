@@ -11,6 +11,7 @@ services:
       - 8000:8000
     volumes:
       - .:/backend
+      - .env.prod.sample:/backend/.env
     restart: on-failure
     networks:
       - main
@@ -32,9 +33,9 @@ services:
     networks:
       - main
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=1234EErr
-      - POSTGRES_DB=academy_master_production
+      - POSTGRES_DB=$DATABASE_NAME
+      - POSTGRES_USER=$DATABASE_USER
+      - POSTGRES_PASSWORD=$DATABASE_PASSWORD
 
   test_database:
     image: postgres:12
@@ -45,9 +46,9 @@ services:
     networks:
       - main
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=1234EErr
-      - POSTGRES_DB=academy_master_production_test
+      - POSTGRES_DB=$TEST_DATABASE_NAME
+      - POSTGRES_USER=$TEST_DATABASE_USER
+      - POSTGRES_PASSWORD=$TEST_DATABASE_PASSWORD
 
   celery:
     build: 
