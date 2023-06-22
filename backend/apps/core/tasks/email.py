@@ -16,6 +16,9 @@ def send_email(
     if config('TESTING', default=False, cast=bool):
         return
 
+    # The defult domain for sending links in html message
+    context.update({'default_domain': config('DEFAULT_DOMAIN')})
+
     # Create an email message using the provided template and context
     email_message = BaseEmailMessage(
         subject=subject,

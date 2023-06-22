@@ -14,7 +14,10 @@ You've been promoted to Teacher!
    <li>Review and grade student assignments</li>
 </ul>
 
-{% comment %}# TODO add link for detail pag{% endcomment %}
+
+<a href='http://{{ default_domain }}{% url "teachers:retrieve_teacher" teacher_token %}'>
+   Detail page.
+</a>
 
 <p>Regards,<br>
 The Academy Master Team 
