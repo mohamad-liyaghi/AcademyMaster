@@ -1,8 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
-from datetime import timedelta, datetime
-import pytz
+from datetime import timedelta
 from accounts.utils import generate_unique_verification_code
 from accounts.managers import VerificationCodeManager
 
@@ -25,7 +24,7 @@ class VerificationCode(models.Model):
 
     def is_expired(self):
         '''Check if the code is expired'''
-        return not self.expire_at >= datetime.now(pytz.timezone('Asia/Tehran'))
+        return not self.expire_at >= timezone.now()
 
     def save(self, *args, **kwargs):
         if not self.pk:
