@@ -20,6 +20,6 @@ class AlreadyVerifiedException(APIException):
     detail = 'User is already verified.'
 
 
-class InvalidVerificationCodeException(APIException):
-    status_code = status.HTTP_400_BAD_REQUEST
-    detail = 'Code is either invalid or expired.'
+class DuplicationVerificationCodeException(APIException):
+    status_code = status.HTTP_409_CONFLICT
+    detail = 'An active verification code for given account already exists.'

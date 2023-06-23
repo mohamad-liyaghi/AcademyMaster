@@ -3,9 +3,10 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.auth.models import Permission
 from accounts.managers import AccountManager
 from core.models import AbstractToken
+from .role import AccountRole
 
 
-class Account(AbstractBaseUser, PermissionsMixin, AbstractToken):
+class Account(AbstractBaseUser, PermissionsMixin, AbstractToken, AccountRole):
 
     username = None
     email = models.EmailField(unique=True, max_length=255)
@@ -50,31 +51,6 @@ class Account(AbstractBaseUser, PermissionsMixin, AbstractToken):
     @property
     def is_staff(self) -> bool:
         return bool(self.is_superuser)
-
-    def is_admin(self) -> bool:
-        return bool(self.is_staff)
-
-    def is_manager(self) -> bool:
-        '''Return True if user is Admin or Manager'''
-        try:
-            return self.is_admin() or bool(self.manager)
-        except Exception:
-            return False
-
-    def is_teacher(self) -> bool:
-        '''Return True if user is Teacher or Manager'''
-        try:
-            return self.is_admin() or bool(self.teacher)
-        except Exception:
-            return False
-
-    def is_student(self) -> bool:
-        '''Return True if user is not Admin / Manager or Teacher'''
-        return (
-            not self.is_admin() and
-            not self.is_manager() and
-            not self.is_teacher()
-        )
 
     def __str__(self) -> str:
         return str(self.full_name)

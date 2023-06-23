@@ -1,10 +1,12 @@
 import pytest
 from django.contrib.auth.models import Permission
 from managers.models import Manager
+from core.tests.utils import create_account
 
 
 @pytest.fixture
-def manager_account(active_account):
+def manager_account():
+    active_account = create_account(is_active=True)
     Manager.objects.create_with_permissions(
         user=active_account,
         permissions=[]
@@ -13,7 +15,8 @@ def manager_account(active_account):
 
 
 @pytest.fixture
-def accessed_manager_account(active_account):
+def accessed_manager_account():
+    active_account = create_account(is_active=True)
     Manager.objects.create_with_permissions(
         user=active_account,
         permissions=[
