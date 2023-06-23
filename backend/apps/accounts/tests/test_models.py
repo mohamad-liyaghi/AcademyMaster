@@ -44,19 +44,19 @@ class TestVerificationCodeModel:
 
     def test_verification_code_is_valid(self, user):
         verification_code = user.verification_codes.first()
-        assert verification_code.is_valid() is True
+        assert verification_code.is_expired() is False
 
     def test_expired_verification_code(self, user):
         verification_code = user.verification_codes.first()
         verification_code.expire_at = timezone.now() - timedelta(minutes=7)
         verification_code.save()
-        assert verification_code.is_valid() is False
+        assert verification_code.is_expired()
 
     def test_expired_verification_code_by_retry(self, user):
         verification_code = user.verification_codes.first()
         verification_code.retry_count = 5
         verification_code.save()
-        assert verification_code.is_valid() is False
+        assert verification_code.is_expired() is False
 
     def test_verify_verification_code(self, user):
         verification_code = user.verification_codes.first()
@@ -64,7 +64,7 @@ class TestVerificationCodeModel:
             user=user,
             code=verification_code.code
         )
-        assert verified_code is True, "Verification code should be valid"
+        assert verified_code[0] is True
 
     def test_invalid_verify_verification_code(self, user):
         verification_code = user.verification_codes.first()
@@ -73,17 +73,18 @@ class TestVerificationCodeModel:
             user=user,
             code=fake_code
         )
-        assert verified_code is False, "Verification code should not be valid"
+        assert verified_code[0] is False, "Verification code should not be valid"
 
     def test_verify_expired_verification_code(self, user):
         verification_code = user.verification_codes.first()
         verification_code.expire_at = verification_code.expire_at - timedelta(minutes=10)
         verification_code.save()
+        assert verification_code.is_expired()
         verified_code = VerificationCode.objects.verify(
             user=user,
             code=verification_code.code
         )
-        assert verified_code is False
+        assert verified_code[0] is False
 
     def test_verify_verification_code_retry_limit(self, user):
         verification_code = user.verification_codes.first()
@@ -93,18 +94,4 @@ class TestVerificationCodeModel:
             user=user,
             code=verification_code.code
         )
-        assert verified_code is False
-
-    def test_check_or_create(self, user):
-        verification_code = user.verification_codes.first()
-        verification_code.expire_at = verification_code.expire_at - timedelta(minutes=10)
-        verification_code.save()
-
-        check_verification = VerificationCode.objects.check_or_create(user=user)
-        assert check_verification is True
-        assert user.verification_codes.count() == 2
-
-    def test_check_or_create_valid_token(self, user):
-        check_verification = VerificationCode.objects.check_or_create(user=user)
-        assert check_verification is False
-        assert user.verification_codes.count() == 1
+        assert verified_code[0] is False

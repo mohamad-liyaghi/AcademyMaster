@@ -32,19 +32,6 @@ class TestRegisterUserView:
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
-    def test_register_duplicated_expired_token(self, api_client, user):
-        verification = user.verification_codes.first()
-        verification.expire_at -= timedelta(days=2)
-        verification.save()
-
-        self.data['email'] = user.email
-        response = api_client.post(
-            reverse('accounts:register'), self.data, format='json'
-        )
-
-        assert response.status_code == status.HTTP_202_ACCEPTED
-        assert user.verification_codes.count() == 2
-
     def test_register_duplicated_valid_token(self, api_client, user):
         verification = user.verification_codes.first()
         verification.is_valid = True
@@ -99,6 +86,53 @@ class TestVerifyUserView:
             reverse('accounts:verify'), {}, format='json'
         )
         assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+@pytest.mark.django_db
+class TestCodeResendView:
+
+    def test_resend_verification_code(self, user, api_client):
+        verification = user.verification_codes.first()
+        verification.expire_at -= timedelta(days=2)
+        verification.save()
+        assert verification.is_expired()
+
+        response = api_client.post(
+            reverse('accounts:resend_code'),
+            {'user': user.token}, format='json'
+        )
+        assert response.status_code == status.HTTP_201_CREATED
+        assert user.verification_codes.count() == 2
+
+    def test_resend_valid_code(self, user, api_client):
+        verification = user.verification_codes.first()
+        assert not verification.is_expired()
+
+        response = api_client.post(
+            reverse('accounts:resend_code'),
+            {'user': user.token}, format='json'
+        )
+        assert response.status_code == status.HTTP_409_CONFLICT
+        assert user.verification_codes.count() == 1
+
+    def test_resend_for_active_user(self, user, api_client):
+        user.is_active = True
+        user.save()
+        assert user.is_active
+
+        response = api_client.post(
+            reverse('accounts:resend_code'),
+            {'user': user.token}, format='json'
+        )
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_resend_invalid_data(self, user, api_client):
+        verification = user.verification_codes.first()
+        assert not verification.is_expired()
+
+        response = api_client.post(reverse('accounts:resend_code'))
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
 
 
 @pytest.mark.django_db

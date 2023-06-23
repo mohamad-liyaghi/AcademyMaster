@@ -4,7 +4,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from accounts.serializers import (
     AccountRegisterSerializer,
-    AccountVerifySerializer
+    AccountVerifySerializer,
+    ResendCodeSerializer
 )
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework_simplejwt.views import (
@@ -54,6 +55,32 @@ class UserVerifyView(APIView):
             return Response("Account verified", status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@extend_schema_view(
+    post=extend_schema(
+        description='''Resend Verification Code.''',
+        request=AccountVerifySerializer,
+        responses={
+            '201': 'New Verification Code generated',
+            '200': 'An active code already exists.',
+            '400': 'Invalid Data',
+        },
+        tags=['Authentication'],
+    ),
+)
+class ResendCodeView(APIView):
+    '''Resend a new verification code for the user'''
+    serializer_class = ResendCodeSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.resend_code(user=serializer.validated_data['user'])
+        return Response(
+            'A new code generated and sent to user',
+            status=status.HTTP_201_CREATED
+        )
 
 
 @extend_schema_view(

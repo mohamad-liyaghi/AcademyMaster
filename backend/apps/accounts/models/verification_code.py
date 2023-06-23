@@ -5,7 +5,6 @@ from datetime import timedelta, datetime
 import pytz
 from accounts.utils import generate_unique_verification_code
 from accounts.managers import VerificationCodeManager
-tehran_tz = pytz.timezone('Asia/Tehran')
 
 
 class VerificationCode(models.Model):
@@ -24,11 +23,9 @@ class VerificationCode(models.Model):
         db_table = 'verification_codes'
         ordering = ["expire_at"]
 
-    def is_valid(self):
-        if self.retry_count >= 5:
-            return False
-
-        return self.expire_at >= datetime.now(tehran_tz)
+    def is_expired(self):
+        '''Check if the code is expired'''
+        return not self.expire_at >= datetime.now(pytz.timezone('Asia/Tehran'))
 
     def save(self, *args, **kwargs):
         if not self.pk:
