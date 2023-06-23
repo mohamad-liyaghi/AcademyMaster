@@ -1,10 +1,12 @@
 import pytest
 from teachers.models import Teacher
+from core.tests.utils import create_account
 
 
 @pytest.fixture
-def teacher_account(active_account):
+def teacher_account():
+    user = create_account(is_active=True)
     Teacher.objects.create(
-        user=active_account
+        user=user
     )
-    return active_account
+    return user

@@ -1,27 +1,19 @@
 import pytest
 from faker import Faker
 from accounts.models import Account
+from core.tests.utils import create_account
 
 faker = Faker()
 
 
 @pytest.fixture
 def deactive_account():
-    return Account.objects.create_user(
-        email=faker.email(),
-        password=faker.password()
-    )
+    return create_account()
 
 
 @pytest.fixture
 def active_account():
-    account = Account.objects.create_user(
-        email=faker.email(),
-        password=faker.password()
-    )
-    account.is_active = True
-    account.save()
-    return account
+    return create_account(is_active=True)
 
 
 @pytest.fixture

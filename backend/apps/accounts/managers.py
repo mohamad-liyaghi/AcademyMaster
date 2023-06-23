@@ -4,11 +4,12 @@ from django.db import models
 
 class AccountManager(BaseUserManager):
 
-    def create_user(self, email: str, password: str, **kwargs):
+    def create_user(
+            self, email: str, password: str, is_active=False, **kwargs
+    ):
 
         email = self.normalize_email(email)
 
-        is_active = False
         user = self.model(
             email=email,
             is_active=is_active,
