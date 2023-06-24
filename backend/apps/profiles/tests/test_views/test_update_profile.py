@@ -33,6 +33,29 @@ class TestUpdateProfileView:
         response = api_client.put(url, self.data, format='json')
         assert response.status_code == status.HTTP_200_OK
 
+    def test_update_profile_with_account(self, superuser, api_client):
+        '''Update user first/last name alongside profile data'''
+        updated_first_name = 'Updated First Name'
+        updated_last_name = 'Updated Last Name'
+
+        api_client.force_authenticate(user=superuser)
+        self.data['first_name'] = updated_first_name
+        self.data['last_name'] = updated_last_name
+
+        url = reverse(
+            self.url_path,
+            kwargs={'profile_token': superuser.profile.token}
+        )
+        response = api_client.put(url, self.data, format='json')
+        superuser.refresh_from_db()
+        assert response.status_code == status.HTTP_200_OK
+
+        assert response.json()['first_name'] == updated_first_name
+        assert response.json()['last_name'] == updated_last_name
+
+        assert superuser.first_name == updated_first_name
+        assert superuser.last_name == updated_last_name
+
     def test_update_profile_invalid_data(self, superuser, api_client):
         api_client.force_authenticate(user=superuser)
         url = reverse(
