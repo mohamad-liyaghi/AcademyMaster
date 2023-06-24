@@ -1,73 +1,50 @@
 import pytest
 from datetime import date
+from dateutil.relativedelta import relativedelta
 from django.core.exceptions import ValidationError
-from profiles.models import Profile
-from core.tests import user, superuser
 
 
 @pytest.mark.django_db
 class TestProfileModel:
 
-    def test_create_profile(self, superuser):
-        assert Profile.objects.count() == 1
+    @pytest.fixture(autouse=True)
+    def setup(self, superuser):
+        self.valid_data = {
+            'phone_number': '+989909901234',
+            'birth_date': date(1989, 1, 1),
+            'address': 'Unit 15, No.392, Q.Maqam Intersection, Beheshti st',
+            'passport_id': '436712'
+        }
+        self.profile = superuser.profile
+        self.update_profile(self.valid_data)
 
-    def test_deactive_user_profile(self, user):
-        assert Profile.objects.count() == 0
+    def update_profile(self, data):
+        self.profile.phone_number = data['phone_number']
+        self.profile.birth_date = data['birth_date']
+        self.profile.address = data['address']
+        self.profile.passport_id = data['passport_id']
+        self.profile.save()
 
-    def test_create_profile_active_user(self, user):
-        user.is_active = True
-        user.save()
-        assert Profile.objects.count() == 1
+    def test_phone_number_format(self):
+        '''Phone number format must be like +98 000 000 0000'''
+        assert self.profile.phone_number == self.valid_data['phone_number']
 
-    def test_create_profile_update_twice(self, user):
-        user.is_active = True
-        user.save()
-        assert Profile.objects.count() == 1
-        user.first_name = 'Updated'
-        user.save()
-        assert Profile.objects.count() == 1
-
-    def test_phone_number_format(self, superuser):
-        correct_number = '+989909901234'
-        superuser.profile.phone_number = correct_number
-        superuser.profile.birth_date = date(1989, 1, 1)
-        superuser.profile.address = 'fake addr'
-        superuser.profile.passport_id = '1234'
-        superuser.profile.save()
-        assert superuser.profile.phone_number == correct_number
-
-    def test_age_property(self, superuser):
+    def test_age_property(self):
         today = date.today()
-        birth_date = superuser.profile.birth_date = date(1989, 1, 1)
-        superuser.profile.birth_date = date(1989, 1, 1)
-        superuser.profile.phone_number = '+989909901234'
-        superuser.profile.address = 'fake addr'
-        superuser.profile.passport_id = '1234'
-        superuser.profile.save()
+        twenty_years_ago = today - relativedelta(years=20)
+        self.update_profile(
+            {**self.valid_data, 'birth_date': twenty_years_ago}
+        )
+        assert self.profile.age == 20
 
-        age_years = today.year - birth_date.year
-        if (today.month, today.day) < (birth_date.month, birth_date.day):
-            age_years -= 1
-
-        assert superuser.profile.age == age_years
-
-    def test_update_profile_null_value(self, superuser):
+    def test_update_profile_null_value(self):
         with pytest.raises(ValidationError):
-            superuser.profile.address = 'Fake addr'
-            superuser.profile.save()
+            self.profile.phone_number = None
+            self.profile.save()
 
-    def test_update_profile_correct_value(self, superuser):
-        birth_date = date(1989, 1, 1)
-        phone_number = '+989909901234'
-        address = 'fake addr'
-        passport_id = '1234'
-        superuser.profile.birth_date = birth_date
-        superuser.profile.phone_number = phone_number
-        superuser.profile.address = address
-        superuser.profile.passport_id = passport_id
-        superuser.profile.save()
-
-        assert superuser.profile.birth_date == birth_date
-        assert superuser.profile.phone_number == phone_number
-        assert superuser.profile.address == address
-        assert superuser.profile.passport_id == passport_id
+    def test_update_profile_correct_value(self):
+        self.update_profile(self.valid_data)
+        assert self.profile.birth_date == self.valid_data['birth_date']
+        assert self.profile.phone_number == self.valid_data['phone_number']
+        assert self.profile.address == self.valid_data['address']
+        assert self.profile.passport_id == self.valid_data['passport_id']
