@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from core.models import AbstractToken
 from django.conf import settings
 from datetime import date
+from dateutil.relativedelta import relativedelta
 
 
 class Profile(AbstractToken):
@@ -48,19 +49,20 @@ class Profile(AbstractToken):
 
     @property
     def age(self):
-        birth_date = self.birth_date
-        if not birth_date:
+        if not self.birth_date:
             return None
 
-        today = date.today()
-        age_years = today.year - birth_date.year
+        age = relativedelta(date.today(), self.birth_date).years
+        return age
 
-        if (today.month, today.day) < (birth_date.month, birth_date.day):
-            age_years -= 1
+    REQUIRED_FIELDS = [
+        'birth_date',
+        'address',
+        'passport_id',
+        'phone_number'
+    ]
 
-        return age_years
-
-    def save(self, *args, **kwargs) -> None:
+    def __check_required_fields(self) -> None:
         '''
             Ensure that required fields are not None.
             When an object is created by signal,
@@ -68,16 +70,18 @@ class Profile(AbstractToken):
             User must update them and cannot insert None.
         '''
 
-        if self.pk:
-            # Get null fields
-            null_fields = [
-                field.name for field in self._meta.fields
-                if getattr(self, field.name) is None
-            ]
+        # Get attrs for REQUIRED FIELDS
+        null_fields = [
+            field for field in self.REQUIRED_FIELDS
+            if getattr(self, field) is None
+        ]
 
-            # Raise error if there are null values
-            if null_fields:
-                for null_field in null_fields:
-                    raise ValidationError(f"{null_field} field is required")
+        # Raise error if there are null values
+        if null_fields:
+            raise ValidationError(f"Field (s) {null_fields} are required")
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            self.__check_required_fields()
 
         return super().save(*args, **kwargs)
