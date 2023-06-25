@@ -24,6 +24,6 @@ def send_teacher_promotion_email(sender, created, instance, **kwargs):
                 'promoter': promoter_full_name,
                 'promotion_date': instance.promotion_date,
                 'first_name': user.first_name,
-                'manager_token': instance.token
+                'teacher_token': instance.token
             }
         )

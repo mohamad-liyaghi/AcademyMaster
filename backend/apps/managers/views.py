@@ -11,9 +11,9 @@ from drf_spectacular.utils import extend_schema, extend_schema_view
 from managers.models import Manager
 from managers.permissions import (
     IsManager,
-    CanPromotePermission,
-    IsManagerPromoter,
-    CanDemotePermission
+    CanAddManager,
+    CanDeleteManager,
+    CanChangeManager,
 )
 from managers.serializers import (
     ManagerCreateSerializer,
@@ -37,7 +37,7 @@ from managers.serializers import (
     ),
 )
 class ManagerCreateView(CreateAPIView):
-    permission_classes = [IsAuthenticated, CanPromotePermission]
+    permission_classes = [IsAuthenticated, IsManager, CanAddManager]
     serializer_class = ManagerCreateSerializer
 
     def get_serializer_context(self):
@@ -69,7 +69,7 @@ class ManagerCreateView(CreateAPIView):
     ),
 )
 class ManagerUpdateView(UpdateAPIView):
-    permission_classes = [IsAuthenticated, IsManagerPromoter]
+    permission_classes = [IsAuthenticated, IsManager, CanChangeManager]
     serializer_class = ManagerUpdateSerializer
 
     def get_object(self):
@@ -84,7 +84,6 @@ class ManagerUpdateView(UpdateAPIView):
 @extend_schema_view(
     delete=extend_schema(
         description='''Delete a manager.''',
-        request=ManagerCreateSerializer,
         responses={
             '200': 'ok',
             '403': 'Permission denied',
@@ -94,7 +93,7 @@ class ManagerUpdateView(UpdateAPIView):
     ),
 )
 class ManagerDeleteView(DestroyAPIView):
-    permission_classes = [IsAuthenticated, CanDemotePermission]
+    permission_classes = [IsAuthenticated, IsManager, CanDeleteManager]
 
     def get_object(self):
         manager = get_object_or_404(
