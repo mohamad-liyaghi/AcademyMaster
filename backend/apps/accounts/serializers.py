@@ -65,6 +65,7 @@ class AccountVerifySerializer(serializers.ModelSerializer):
 
     def _activate_user(self, user):
         user.is_active = True
+        user.save()
         return user
 
 
