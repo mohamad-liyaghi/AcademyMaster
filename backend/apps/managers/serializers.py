@@ -1,5 +1,6 @@
-from rest_framework import serializers
 from django.contrib.auth.models import Permission
+from django.contrib.auth import get_user_model
+from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from managers.models import Manager
 
@@ -11,6 +12,10 @@ class PermissionSerializer(serializers.ModelSerializer):
 
 
 class ManagerCreateSerializer(serializers.ModelSerializer):
+    user = serializers.SlugRelatedField(
+        slug_field='token',
+        queryset=get_user_model().objects.all()
+    )
     permissions = serializers.ListField(
         child=serializers.CharField(),
         write_only=True,
