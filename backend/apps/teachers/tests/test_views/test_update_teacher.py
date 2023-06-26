@@ -26,6 +26,8 @@ class TestTeacherUpdateView:
             {'description': updated_description}
         )
         assert response.status_code == status.HTTP_200_OK
+        self.teacher.teacher.refresh_from_db()
+        assert self.teacher.teacher.description == updated_description
 
     def test_update_other_teachers(self, api_client, superuser):
         api_client.force_authenticate(superuser)
