@@ -80,7 +80,7 @@ class TeacherUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Teacher
         fields = [
-            'promotion_date',
+            'description',
             'contact_links',
         ]
 

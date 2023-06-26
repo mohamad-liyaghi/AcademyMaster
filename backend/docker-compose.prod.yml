@@ -1,5 +1,8 @@
 version: '3.9'
 
+x-environment: &DJANGO_SETTINGS_MODULE
+    DJANGO_SETTINGS_MODULE: 'config.settings.production'
+
 services:
   backend:
     build:
@@ -11,11 +14,12 @@ services:
       - 8000:8000
     volumes:
       - .:/backend
+      - .env.prod.sample:/backend/.env
     restart: on-failure
     networks:
       - main
     environment:
-      - DJANGO_SETTINGS_MODULE=config.settings.production
+      *DJANGO_SETTINGS_MODULE
     depends_on:
       - database
       - rabbitmq
@@ -32,9 +36,9 @@ services:
     networks:
       - main
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=1234EErr
-      - POSTGRES_DB=academy_master_production
+      - POSTGRES_DB=$DATABASE_NAME
+      - POSTGRES_USER=$DATABASE_USER
+      - POSTGRES_PASSWORD=$DATABASE_PASSWORD
 
   test_database:
     image: postgres:12
@@ -45,9 +49,9 @@ services:
     networks:
       - main
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=1234EErr
-      - POSTGRES_DB=academy_master_production_test
+      - POSTGRES_DB=$TEST_DATABASE_NAME
+      - POSTGRES_USER=$TEST_DATABASE_USER
+      - POSTGRES_PASSWORD=$TEST_DATABASE_PASSWORD
 
   celery:
     build: 
@@ -64,6 +68,8 @@ services:
       - .:/backend
     networks:
       - main    
+    environment:
+      *DJANGO_SETTINGS_MODULE
     
   celery-beat:
     build: 
@@ -79,7 +85,9 @@ services:
     volumes:
       - .:/backend
     networks:
-      - main    
+      - main 
+    environment:
+      *DJANGO_SETTINGS_MODULE   
 
   rabbitmq:
       image: rabbitmq:3.10-management-alpine

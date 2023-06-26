@@ -1,10 +1,11 @@
 from rest_framework import serializers
 from django.shortcuts import get_object_or_404
+from rest_framework.exceptions import ValidationError
 from accounts.exceptions import (
     DuplicateUserException,
     PendingVerificationException,
-    InvalidVerificationCodeException,
-    AlreadyVerifiedException
+    AlreadyVerifiedException,
+    DuplicationVerificationCodeException
 
 )
 from accounts.models import Account, VerificationCode
@@ -22,25 +23,21 @@ class AccountRegisterSerializer(serializers.ModelSerializer):
         fields = ["email", "first_name", "last_name", "password"]
 
     def validate_email(self, value):
-        '''
-            Ensure user with email does not exist
-        '''
-
+        # Check if email exists
         email = value
         account = Account.objects.filter(email=email).first()
 
         if account:
+            # Raise appropriate exception
             if account.is_active:
                 raise DuplicateUserException()
 
-            VerificationCode.objects.check_or_create(user=account)
             raise PendingVerificationException()
 
         return value
 
     def create(self, validated_data):
-        user = Account.objects.create_user(**validated_data)
-        return user
+        return Account.objects.create_user(**validated_data)
 
 
 class AccountVerifySerializer(serializers.ModelSerializer):
@@ -56,11 +53,37 @@ class AccountVerifySerializer(serializers.ModelSerializer):
         if user.is_active:
             raise AlreadyVerifiedException()
 
-        verify_code = VerificationCode.objects.verify(user=user, code=code)
+        verify_code, message = VerificationCode.objects.verify(
+            user=user, code=code
+        )
 
         if not verify_code:
-            raise InvalidVerificationCodeException()
+            raise ValidationError(str(message))
 
+        self._activate_user(user)
+        return user
+
+    def _activate_user(self, user):
         user.is_active = True
         user.save()
         return user
+
+
+class ResendCodeSerializer(serializers.ModelSerializer):
+    user = serializers.SlugRelatedField(
+        slug_field='token',
+        queryset=Account.objects.filter(is_active=False)
+    )
+
+    class Meta:
+        model = VerificationCode
+        fields = ['user']
+
+    def resend_code(self, user):
+        if user.is_active:
+            raise ValidationError('User is active.')
+
+        if VerificationCode.objects.re_generate(user=user):
+            return True
+
+        raise DuplicationVerificationCodeException()

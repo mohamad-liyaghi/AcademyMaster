@@ -20,6 +20,7 @@ from teachers.serializers import (
     TeacherListSerializer
 )
 from teachers.models import Teacher
+from managers.permissions import IsManager
 
 
 @extend_schema_view(
@@ -35,7 +36,7 @@ from teachers.models import Teacher
     ),
 )
 class TeacherCreateView(CreateAPIView):
-    permission_classes = [IsAuthenticated, CanAddTeacher]
+    permission_classes = [IsAuthenticated, IsManager, CanAddTeacher]
     serializer_class = TeacherCreateSerializer
 
     def get_serializer_context(self):
@@ -103,7 +104,6 @@ class TeacherUpdateView(UpdateAPIView):
 @extend_schema_view(
     delete=extend_schema(
         description='''Delete a teacher only by manager/admins.''',
-        request=TeacherRetrieveSerializer,
         responses={
             '201': 'ok',
             '403': 'Permission denied',
@@ -113,7 +113,7 @@ class TeacherUpdateView(UpdateAPIView):
     ),
 )
 class TeacherDeleteView(DestroyAPIView):
-    permission_classes = [IsAuthenticated, CanDeleteTeacher]
+    permission_classes = [IsAuthenticated, IsManager, CanDeleteTeacher]
 
     def get_object(self):
         teacher = get_object_or_404(
@@ -123,6 +123,16 @@ class TeacherDeleteView(DestroyAPIView):
         return teacher
 
 
+@extend_schema_view(
+    get=extend_schema(
+        description='''List of site teachers.''',
+        responses={
+            '201': 'ok',
+            '403': 'User not logged in',
+        },
+        tags=['Teachers'],
+    ),
+)
 class TeacherListView(ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = TeacherListSerializer

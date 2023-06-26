@@ -1,89 +1,87 @@
 import pytest
 from django.db.utils import IntegrityError
 from django.core.exceptions import ValidationError
-from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
 from managers.models import Manager
-from core.tests import user, superuser, manager, teacher
 
 
 @pytest.mark.django_db
 class TestManagerModel:
+    def test_create_manager(self, active_account):
+        Manager.objects.create(user=active_account)
+        assert active_account.is_manager()
 
-
-    def test_promote_manager(self, user):
-        Manager.objects.create(user=user)
-        assert user.is_manager()
-
-    def test_duplicate_promote_manager(self, manager):
+    def test_duplicate_create_manager(self, manager_account):
+        '''A user can only once promote as manager'''
         with pytest.raises(IntegrityError):
-            Manager.objects.create(user=manager)
+            Manager.objects.create(user=manager_account)
 
-    def test_promote_manager_no_permission(self, manager, user):
-        assert not manager.has_perm(Manager.get_permission('add'))
+    def test_promote_by_non_accessed(self, manager_account, active_account):
+        '''Only Admin/Manager with add_manager perm can promote'''
+        assert not manager_account.has_perm(
+            perm_object=Manager.get_permission('add')
+        )
         with pytest.raises(ValidationError):
-            Manager.objects.create(user=manager, promoted_by=user)
+            Manager.objects.create(
+                user=active_account, promoted_by=manager_account
+            )
 
-    def test_promote_manager_with_permission(self, user):
-        manager_user = get_user_model().objects.create_superuser(
-            email='another@fake.com',
-            password='1234EErr'
+    def test_prmote_by_accessed_manager(
+            self, active_account, accessed_manager_account
+    ):
+        assert accessed_manager_account.has_perm(
+            perm_object=Manager.get_permission('add')
         )
 
-        manager = Manager.objects.create_with_permissions(
-            user=manager_user,
-            permissions=[
-                Manager.get_permission('add')
-            ]
+        Manager.objects.create(
+            user=active_account,
+            promoted_by=accessed_manager_account
+        )
+        assert active_account.is_manager()
+        assert active_account.manager.promoted_by == accessed_manager_account
+
+    def test_promote_manager_by_admin(self, superuser, active_account):
+
+        Manager.objects.create(
+            user=active_account, promoted_by=superuser
+        )
+        assert active_account.is_manager()
+        assert active_account.manager.promoted_by == superuser
+
+    def test_remove_permission(self, manager_account):
+        manager_account.user_permissions.add(Manager.get_permission('add'))
+        assert manager_account.has_perm(
+            perm_object=Manager.get_permission('add')
         )
 
-        assert manager_user.has_perm(
-            Manager.get_permission('add', return_str=True)
-        )
-
-        Manager.objects.create(user=user, promoted_by=manager_user)
-        assert user.manager.promoted_by == manager_user
-
-    def test_promote_manager_by_admin(self, superuser, user):
-
-        Manager.objects.create(user=user, promoted_by=superuser)
-        assert user.manager.promoted_by == superuser
-
-    def test_remove_permission(self, manager):
-        manager.user_permissions.add(Manager.get_permission('add'))
-        assert manager.user_permissions.filter(
-            codename=Manager.get_permission('add').codename
-        ).exists()
-
-        manager.user_permissions.remove(
+        manager_account.user_permissions.remove(
             Manager.get_permission('add')
         )
-        assert not manager.has_perm(Manager.get_permission('add'))
-
-    def test_remove_permission_after_deletion(self, manager):
-        manager.user_permissions.add(
-            Manager.get_permission('add')
+        assert not manager_account.has_perm(
+            perm_object=Manager.get_permission('add')
         )
-        manager = get_object_or_404(get_user_model(), id=manager.id)
-        assert manager.user_permissions.filter(
-            codename=Manager.get_permission('add').codename
-        ).exists()
 
-        Manager.objects.get(user=manager).delete()
+    def test_remove_permission_after_deletion(self, accessed_manager_account):
+        '''Remove a user permissoin when its manager instance gets deleted'''
+        assert accessed_manager_account.has_perm(
+            perm_object=Manager.get_permission('add')
+        )
 
-        assert not manager.has_perm(Manager.get_permission('add', return_str=True))
+        Manager.objects.get(user=accessed_manager_account).delete()
 
-    def test_create_manager_with_permission(self, user):
-        user.is_active = True
-        user.save()
+        assert not accessed_manager_account.has_perm(
+            perm_object=Manager.get_permission('add')
+        )
 
+    def test_create_manager_with_permission(self, active_account):
         Manager.objects.create_with_permissions(
-            user=user,
+            user=active_account,
             permissions=[
                 Manager.get_permission('add')
             ]
         )
-        assert user.has_perm('managers.add_manager')
-        user_id = user.id
-        user = get_object_or_404(get_user_model(), id=user_id)
-        assert user.has_perm(Manager.get_permission('add', return_str=True))
+        assert active_account.has_perm(
+            perm_object=Manager.get_permission('add')
+        )
+        assert active_account.has_perm(
+            perm_object=Manager.get_permission('add')
+        )

@@ -14,3 +14,10 @@ DATABASES = {
         'PORT': config('TEST_DATABASE_PORT')
     }
 }
+
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    }
+}

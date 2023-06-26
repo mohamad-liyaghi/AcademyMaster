@@ -7,41 +7,38 @@ class IsManager(BasePermission):
         return request.user.is_manager()
 
 
-class CanPromotePermission(BasePermission):
+class CanAddManager(BasePermission):
     """
     Only admins and managers with can_promote permission can access the page
     """
+    message = 'You cannot promote managers.'
 
     def has_permission(self, request, view):
-        user = request.user
-        return (
-            user.is_manager() and user.has_perm(Manager.get_permission('add'))
+        return request.user.has_perm(
+            perm_object=Manager.get_permission('add')
         )
 
 
-class CanDemotePermission(BasePermission):
+class CanDeleteManager(BasePermission):
     """
     Only admins and managers with can_demote perm can access the page
     """
 
-    def has_permission(self, request, view):
-        user = request.user
+    message = 'You cannot delete this manager.'
 
-        return (
-            user.is_manager() and user.has_perm(
-                Manager.get_permission('delete', return_str=True)
-            )
+    def has_permission(self, request, view):
+        return request.user.has_perm(
+            perm_object=Manager.get_permission('delete')
         )
 
 
-class IsManagerPromoter(BasePermission):
+class CanChangeManager(BasePermission):
     """
     Only Promoter and admins can update managers permissions
     """
+    message = 'You cannot update this manager.'
 
     def has_object_permission(self, request, view, obj):
-        user = request.user
-        return (
-            user.is_admin() or
-            user.is_manager() and obj.promoted_by == user
+        return request.user.has_perm(
+            perm_object=Manager.get_permission('change')
         )

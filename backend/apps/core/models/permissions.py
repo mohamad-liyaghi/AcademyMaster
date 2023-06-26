@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import Permission
-from django.http import Http404
 from django.core.exceptions import ValidationError
+from django.core.cache import cache
 
 
 class AbstractPermission(models.Model):
@@ -9,22 +9,33 @@ class AbstractPermission(models.Model):
         abstract = True
 
     @classmethod
-    def get_permission(cls, action, return_str=False):
-        '''
-        Return a permission related to a class
-        :return_str: return the codename or the object
-        '''
+    def get_permission(cls, action):
+        """
+        Return a permission object related to the given action and model class.
+
+        The permission object name is constructed by appending
+        the given action to the class name in lowercase.
+
+        Examples:
+        get_permission('add', Course) -> add_course permission
+        """
         codename = f'{action}_{cls.__name__.lower()}'
 
-        try:
-            permission = Permission.objects.get(codename=codename)
-            if return_str:
-                return f'{cls._meta.app_label}.{codename}'
+        # Check cache first
+        permission = cache.get(codename)
 
+        if permission:
             return permission
 
-        except Http404:
-            raise ValueError("Permission not fount")
+        # Get from database
+        try:
+            permission = Permission.objects.get(codename=codename)
+        except Permission.DoesNotExist:
+            raise ValueError("Permission not found")
+
+        # Set cache for 24 hours and return permission
+        cache.set(codename, permission, timeout=60 * 60 * 24)
+        return permission
 
     def _validate_promoter(self) -> None:
         '''
@@ -39,7 +50,7 @@ class AbstractPermission(models.Model):
         if not self.promoted_by.is_manager():
             raise ValidationError("Promoter must be a manager.")
 
-        if not self.promoted_by.user_permissions.filter(
-            codename=self.__class__.get_permission('add').codename
+        if not self.promoted_by.has_perm(
+            perm_object=self.__class__.get_permission('add')
         ):
             raise ValidationError("Permission denied for promoting.")

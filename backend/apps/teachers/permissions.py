@@ -7,12 +7,11 @@ class CanAddTeacher(BasePermission):
     Only admins and managers with teachers.add_teacher,
     perm can promote teachers
     '''
+    message = 'You dont have permission to add teacher'
+
     def has_permission(self, request, view):
-        user = request.user
-        return (
-            user.is_manager() and user.has_perm(
-                Teacher.get_permission('add', return_str=True)
-            )
+        return request.user.has_perm(
+            perm_object=Teacher.get_permission('add')
         )
 
 
@@ -21,12 +20,11 @@ class CanDeleteTeacher(BasePermission):
     Only admins and managers with teachers.delete_teacher,
     perm can delete teachers
     '''
+    message = 'You dont have permission to delete teacher'
+
     def has_permission(self, request, view):
-        user = request.user
-        return (
-            user.is_manager() and user.has_perm(
-                Teacher.get_permission('delete', return_str=True)
-            )
+        return request.user.has_perm(
+            perm_object=Teacher.get_permission('delete')
         )
 
 
