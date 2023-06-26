@@ -1,5 +1,8 @@
 version: '3.9'
 
+x-environment: &DJANGO_SETTINGS_MODULE
+    DJANGO_SETTINGS_MODULE: 'config.settings.local'
+
 services:
   backend:
     build:
@@ -16,7 +19,7 @@ services:
     networks:
       - main
     environment:
-      - DJANGO_SETTINGS_MODULE=config.settings.local
+      *DJANGO_SETTINGS_MODULE
     depends_on:
       - database
       - rabbitmq
@@ -64,6 +67,8 @@ services:
         condition: service_healthy
     volumes:
       - .:/backend
+    environment:
+      *DJANGO_SETTINGS_MODULE
     networks:
       - main  
   celery-beat:
@@ -77,6 +82,8 @@ services:
         condition: service_started
       rabbitmq:
         condition: service_healthy
+    environment:
+      *DJANGO_SETTINGS_MODULE
     volumes:
       - .:/backend
     networks:

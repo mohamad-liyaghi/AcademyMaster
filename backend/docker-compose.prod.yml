@@ -1,5 +1,8 @@
 version: '3.9'
 
+x-environment: &DJANGO_SETTINGS_MODULE
+    DJANGO_SETTINGS_MODULE: 'config.settings.production'
+
 services:
   backend:
     build:
@@ -16,7 +19,7 @@ services:
     networks:
       - main
     environment:
-      - DJANGO_SETTINGS_MODULE=config.settings.production
+      *DJANGO_SETTINGS_MODULE
     depends_on:
       - database
       - rabbitmq
@@ -65,6 +68,8 @@ services:
       - .:/backend
     networks:
       - main    
+    environment:
+      *DJANGO_SETTINGS_MODULE
     
   celery-beat:
     build: 
@@ -80,7 +85,9 @@ services:
     volumes:
       - .:/backend
     networks:
-      - main    
+      - main 
+    environment:
+      *DJANGO_SETTINGS_MODULE   
 
   rabbitmq:
       image: rabbitmq:3.10-management-alpine
