@@ -55,5 +55,16 @@ class Course(AbstractToken, AbstractPermission):
 
     price = models.PositiveIntegerField(default=10000)
 
+    @property
+    def get_days_display(self):
+        """Returns a list representation of the selected days of the week."""
+        return [WeekDays(day).label for day in self.days if day]
+
     def __str__(self) -> str:
         return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            # Check user has perm for assigning classes
+            self._validate_creator(creator=self.assigned_by)
+        return super().save(*args, **kwargs)
