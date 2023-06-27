@@ -3,11 +3,25 @@ from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from core.models import AbstractToken, AbstractPermission, WeekDays
 from teachers.models import Teacher
+from .course_status import CourseStatus
+from .course_level import CourseLevel
 
 
 class Course(AbstractToken, AbstractPermission):
     title = models.CharField(max_length=250)
     description = models.TextField(max_length=300)
+    location = models.CharField(max_length=150)
+
+    instructor = models.ForeignKey(
+        Teacher,
+        on_delete=models.SET_NULL,
+        null=True
+    )
+
+    assigned_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
 
     start_date = models.DateField()
     end_date = models.DateField()
@@ -32,7 +46,6 @@ class Course(AbstractToken, AbstractPermission):
         choices=CourseLevel.choices,
         default=CourseLevel.A1
     )
-    price = models.PositiveIntegerField(default=10000)
 
     status = models.CharField(
         max_length=2,
@@ -40,15 +53,7 @@ class Course(AbstractToken, AbstractPermission):
         default=CourseStatus.ENROLLING
     )
 
-    instructor = models.ForeignKey(
-        Teacher,
-        on_delete=models.SET_NULL,
-        null=True
-    )
-    assigned_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE
-    )
+    price = models.PositiveIntegerField(default=10000)
 
     def __str__(self) -> str:
         return self.title
