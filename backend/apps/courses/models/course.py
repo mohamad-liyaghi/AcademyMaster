@@ -73,3 +73,7 @@ class Course(AbstractToken, AbstractPermission):
             # Check user has perm for assigning classes
             self._validate_creator(creator=self.assigned_by)
         return super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        # TODO: Check enrollments
+        return super().delete(*args, **kwargs)

@@ -2,13 +2,15 @@ from django.shortcuts import get_object_or_404
 from rest_framework.generics import (
     CreateAPIView,
     RetrieveAPIView,
-    UpdateAPIView
+    UpdateAPIView,
+    DestroyAPIView
 )
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from courses.permissions import (
     CanAddCourse,
     CanUpdateCourse,
+    CanDeleteCourse,
 )
 from courses.serializers import (
     CourseCreateSerializer,
@@ -73,7 +75,7 @@ class CourseRetrieveView(RetrieveAPIView):
             '403': 'Permission denied',
             '404': 'Not found',
         },
-        tags=['Teachers'],
+        tags=['Courses'],
     ),
     patch=extend_schema(
         description='''Update an enrolling course.''',
@@ -89,6 +91,30 @@ class CourseRetrieveView(RetrieveAPIView):
 class CourseUpdateView(UpdateAPIView):
     permission_classes = [IsAuthenticated, IsManager, CanUpdateCourse]
     serializer_class = CourseUpdateSerializer
+
+    def get_object(self):
+        course = get_object_or_404(
+            Course,
+            token=self.kwargs['course_token']
+        )
+        self.check_object_permissions(self.request, course)
+        return course
+
+
+# TODO update status
+@extend_schema_view(
+    delete=extend_schema(
+        description='''Delete a course.''',
+        responses={
+            '201': 'ok',
+            '403': 'Permission denied',
+            '404': 'Not found',
+        },
+        tags=['Courses'],
+    ),
+)
+class CourseDeleteView(DestroyAPIView):
+    permission_classes = [IsAuthenticated, IsManager, CanDeleteCourse]
 
     def get_object(self):
         course = get_object_or_404(

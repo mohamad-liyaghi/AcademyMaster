@@ -3,6 +3,7 @@ from courses.views import (
     CourseCreateView,
     CourseRetrieveView,
     CourseUpdateView,
+    CourseDeleteView
 )
 
 app_name = 'courses'
@@ -18,6 +19,11 @@ v1_urlpatterns = [
         '<str:course_token>/update/',
         CourseUpdateView.as_view(),
         name='update_course'
+    ),
+    path(
+        '<str:course_token>/delete/',
+        CourseDeleteView.as_view(),
+        name='delete_course'
     ),
 ]
 
