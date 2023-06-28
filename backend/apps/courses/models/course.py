@@ -15,7 +15,8 @@ class Course(AbstractToken, AbstractPermission):
     instructor = models.ForeignKey(
         Teacher,
         on_delete=models.SET_NULL,
-        null=True
+        null=True,
+        related_name='courses'
     )
 
     assigned_by = models.ForeignKey(
@@ -65,6 +66,7 @@ class Course(AbstractToken, AbstractPermission):
 
     def save(self, *args, **kwargs):
         if not self.pk:
+            self.days = list(self.days)
             # Check user has perm for assigning classes
             self._validate_creator(creator=self.assigned_by)
         return super().save(*args, **kwargs)
