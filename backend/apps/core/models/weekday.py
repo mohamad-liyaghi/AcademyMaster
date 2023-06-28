@@ -6,7 +6,7 @@ class WeekDays(models.TextChoices):
     SATURDAY = (0, 'Saturday')
     SUNDAY = (1, 'Sunday')
     MONDAY = (2, 'Monday')
-    TUESDAY = (3, 'Tuesday'),
+    TUESDAY = (3, 'Tuesday')
     WEDNESDAY = (4, 'Wednesday')
     THURSDAY = (5, 'Thursday')
     FRIDAY = (6, 'Friday')

@@ -59,7 +59,10 @@ class Course(AbstractToken, AbstractPermission):
     @property
     def get_days_display(self):
         """Returns a list representation of the selected days of the week."""
-        return [WeekDays(day).label for day in self.days if day]
+        return [
+            WeekDays.choices[int(day)][1] for day in self.days
+            if self.days
+        ]
 
     def __str__(self) -> str:
         return self.title

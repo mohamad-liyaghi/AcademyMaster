@@ -38,7 +38,6 @@ class TestCreateCourseView:
         response = api_client.post(
             self.url_path, self.data, format='json'
         )
-        print(response.json())
         assert response.status_code == status.HTTP_201_CREATED
         assert Course.objects.count() == 1
 

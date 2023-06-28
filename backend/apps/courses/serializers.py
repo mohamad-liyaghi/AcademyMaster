@@ -52,3 +52,39 @@ class CourseCreateSerializer(serializers.ModelSerializer):
             return super().create(validated_data)
         except Exception as e:
             raise ValueError(str(e))
+
+
+class CourseTeacherSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField()
+
+    class Meta:
+        model = Teacher
+        fields = [
+            'user',
+            'token',
+        ]
+
+
+class CourseRetrieveSerializer(serializers.ModelSerializer):
+    instructor = CourseTeacherSerializer()
+    assigned_by = serializers.StringRelatedField()
+    prerequisite = serializers.StringRelatedField()
+
+    class Meta:
+        model = Course
+        fields = [
+            'title',
+            'description',
+            'location',
+            'instructor',
+            'assigned_by',
+            'start_date',
+            'end_date',
+            'schedule',
+            'get_days_display',
+            'session_count',
+            'prerequisite',
+            'level',
+            'status',
+            'price'
+        ]
