@@ -1,16 +1,19 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.generics import (
     CreateAPIView,
-    RetrieveAPIView
+    RetrieveAPIView,
+    UpdateAPIView
 )
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from courses.permissions import (
     CanAddCourse,
+    CanUpdateCourse,
 )
 from courses.serializers import (
     CourseCreateSerializer,
     CourseRetrieveSerializer,
+    CourseUpdateSerializer
 )
 from courses.models import Course
 from managers.permissions import IsManager
@@ -59,3 +62,38 @@ class CourseRetrieveView(RetrieveAPIView):
             ),
             token=self.kwargs['course_token']
         )
+
+
+@extend_schema_view(
+    put=extend_schema(
+        description='''Update an enrolling course.''',
+        request=CourseUpdateSerializer,
+        responses={
+            '201': 'ok',
+            '403': 'Permission denied',
+            '404': 'Not found',
+        },
+        tags=['Teachers'],
+    ),
+    patch=extend_schema(
+        description='''Update an enrolling course.''',
+        request=CourseUpdateSerializer,
+        responses={
+            '201': 'ok',
+            '403': 'Permission denied',
+            '404': 'Not found',
+        },
+        tags=['Courses'],
+    ),
+)
+class CourseUpdateView(UpdateAPIView):
+    permission_classes = [IsAuthenticated, IsManager, CanUpdateCourse]
+    serializer_class = CourseUpdateSerializer
+
+    def get_object(self):
+        course = get_object_or_404(
+            Course,
+            token=self.kwargs['course_token']
+        )
+        self.check_object_permissions(self.request, course)
+        return course

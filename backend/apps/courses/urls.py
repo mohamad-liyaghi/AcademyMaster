@@ -1,7 +1,8 @@
 from django.urls import path, include
 from courses.views import (
     CourseCreateView,
-    CourseRetrieveView
+    CourseRetrieveView,
+    CourseUpdateView,
 )
 
 app_name = 'courses'
@@ -12,6 +13,11 @@ v1_urlpatterns = [
         '<str:course_token>/',
         CourseRetrieveView.as_view(),
         name='retrieve_course'
+    ),
+    path(
+        '<str:course_token>/update/',
+        CourseUpdateView.as_view(),
+        name='update_course'
     ),
 ]
 

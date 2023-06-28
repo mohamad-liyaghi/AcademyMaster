@@ -4,7 +4,8 @@ from teachers.models import Teacher
 from core.models import WeekDays
 
 
-class CourseCreateSerializer(serializers.ModelSerializer):
+class BaseCourseSerializer(serializers.ModelSerializer):
+    # TODO opt the queries
     prerequisite = serializers.SlugRelatedField(
         slug_field='token',
         queryset=Course.objects.only('token'),
@@ -19,6 +20,9 @@ class CourseCreateSerializer(serializers.ModelSerializer):
     days = serializers.MultipleChoiceField(
         choices=WeekDays.choices
     )
+
+
+class CourseCreateSerializer(BaseCourseSerializer):
 
     class Meta:
         model = Course
@@ -82,6 +86,26 @@ class CourseRetrieveSerializer(serializers.ModelSerializer):
             'end_date',
             'schedule',
             'get_days_display',
+            'session_count',
+            'prerequisite',
+            'level',
+            'status',
+            'price'
+        ]
+
+
+class CourseUpdateSerializer(BaseCourseSerializer):
+    class Meta:
+        model = Course
+        fields = [
+            'title',
+            'description',
+            'location',
+            'instructor',
+            'start_date',
+            'end_date',
+            'schedule',
+            'days',
             'session_count',
             'prerequisite',
             'level',
