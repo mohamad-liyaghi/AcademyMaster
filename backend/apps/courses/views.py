@@ -3,7 +3,8 @@ from rest_framework.generics import (
     CreateAPIView,
     RetrieveAPIView,
     UpdateAPIView,
-    DestroyAPIView
+    DestroyAPIView,
+    ListAPIView
 )
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema, extend_schema_view
@@ -15,7 +16,8 @@ from courses.permissions import (
 from courses.serializers import (
     CourseCreateSerializer,
     CourseRetrieveSerializer,
-    CourseUpdateSerializer
+    CourseUpdateSerializer,
+    CourseListSerializer
 )
 from courses.models import Course
 from managers.permissions import IsManager
@@ -123,3 +125,24 @@ class CourseDeleteView(DestroyAPIView):
         )
         self.check_object_permissions(self.request, course)
         return course
+
+
+@extend_schema_view(
+    get=extend_schema(
+        description='''List of all courses.''',
+        request=CourseListSerializer,
+        responses={
+            '200': 'ok',
+            '403': 'Permission denied',
+        },
+        tags=['Courses'],
+    ),
+)
+class CourseListView(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = CourseListSerializer
+
+    def get_queryset(self):
+        return Course.objects.select_related(
+            'instructor', 'instructor__user'
+        ).order_by('-start_date')

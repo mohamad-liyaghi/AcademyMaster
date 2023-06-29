@@ -3,12 +3,14 @@ from courses.views import (
     CourseCreateView,
     CourseRetrieveView,
     CourseUpdateView,
-    CourseDeleteView
+    CourseDeleteView,
+    CourseListView
 )
 
 app_name = 'courses'
 
 v1_urlpatterns = [
+    path('', CourseListView.as_view(), name='list_courses'),
     path('create/', CourseCreateView.as_view(), name='create_course'),
     path(
         '<str:course_token>/',

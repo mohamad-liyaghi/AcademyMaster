@@ -38,8 +38,8 @@ class CourseCreateSerializer(BaseCourseSerializer):
             'days',
             'session_count',
             'prerequisite',
-            'level',
-            'status',
+            'get_level_display',
+            'get_status_display',
             'price',
             'token'
         ]
@@ -88,8 +88,8 @@ class CourseRetrieveSerializer(serializers.ModelSerializer):
             'get_days_display',
             'session_count',
             'prerequisite',
-            'level',
-            'status',
+            'get_level_display',
+            'get_status_display',
             'price'
         ]
 
@@ -108,7 +108,26 @@ class CourseUpdateSerializer(BaseCourseSerializer):
             'days',
             'session_count',
             'prerequisite',
-            'level',
-            'status',
+            'get_level_display',
+            'get_status_display',
             'price'
+        ]
+
+
+class CourseListSerializer(serializers.ModelSerializer):
+    instructor = CourseTeacherSerializer()
+
+    class Meta:
+        model = Course
+        fields = [
+            'title',
+            'location',
+            'start_date',
+            'end_date',
+            'instructor',
+            'get_days_display',
+            'session_count',
+            'get_level_display',
+            'get_status_display',
+            'token'
         ]
