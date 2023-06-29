@@ -1,6 +1,6 @@
 version: '3.9'
 
-x-environment: &DJANGO_SETTINGS_MODULE
+x-environment: &COMMON_VARS
     DJANGO_SETTINGS_MODULE: 'config.settings.production'
 
 services:
@@ -19,12 +19,16 @@ services:
     networks:
       - main
     environment:
-      *DJANGO_SETTINGS_MODULE
+      *COMMON_VARS
     depends_on:
-      - database
-      - rabbitmq
-      - redis
-
+      elastic:
+          condition: service_healthy
+      database:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+      redis:
+        condition: service_started
   database:
     image: postgres:12
     container_name: academy-master-postgres
@@ -68,8 +72,10 @@ services:
       - .:/backend
     networks:
       - main    
+    env_file:
+      - .env.prod.sample
     environment:
-      *DJANGO_SETTINGS_MODULE
+      *COMMON_VARS
     
   celery-beat:
     build: 
@@ -86,8 +92,10 @@ services:
       - .:/backend
     networks:
       - main 
+    env_file:
+      - .env.prod.sample
     environment:
-      *DJANGO_SETTINGS_MODULE   
+      *COMMON_VARS
 
   rabbitmq:
       image: rabbitmq:3.10-management-alpine
@@ -114,6 +122,23 @@ services:
     
     ports:
       - 6379:6379
+    networks:
+      - main
+    restart: always
+  elastic:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.14.0
+    container_name: academy-master-elastic
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200"]
+      interval: 7s
+      timeout: 3s
+      retries: 3
+    ports:
+      - 9200:9200
     networks:
       - main
     restart: always

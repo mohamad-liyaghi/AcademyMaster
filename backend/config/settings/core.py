@@ -23,6 +23,7 @@ THIRD_PARTY_APPS = [
     'drf_spectacular',
     'drf_spectacular_sidecar',
     'rest_framework_simplejwt',
+    'django_elasticsearch_dsl',
 ]
 
 INSTALLED_APPS = [
@@ -140,3 +141,9 @@ EMAIL_PORT = config("EMAIL_PORT")
 DEFAULT_FROM_EMAIL = config("EMAIL_FROM")
 
 AUTH_USER_MODEL = 'accounts.Account'
+
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': config('ELASTIC_HOST'),
+    }
+}

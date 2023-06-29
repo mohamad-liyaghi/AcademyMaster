@@ -8,6 +8,7 @@ from rest_framework.generics import (
 )
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema, extend_schema_view
+from elasticsearch_dsl import Q
 from courses.permissions import (
     CanAddCourse,
     CanUpdateCourse,
@@ -20,6 +21,7 @@ from courses.serializers import (
     CourseListSerializer
 )
 from courses.models import Course
+from courses.documents import CourseDocument
 from managers.permissions import IsManager
 
 
@@ -139,10 +141,24 @@ class CourseDeleteView(DestroyAPIView):
     ),
 )
 class CourseListView(ListAPIView):
+
     permission_classes = [IsAuthenticated]
     serializer_class = CourseListSerializer
 
     def get_queryset(self):
+        # Filter it there is a search query
+        if self.request.query_params.get('search'):
+            search_query = self.request.query_params.get('search')
+            return CourseDocument.search().query(
+                Q(
+                    'multi_match', query=search_query,
+                    fields=[
+                            'title',
+                            'description',
+                        ]
+                )
+            ).to_queryset()
+
         return Course.objects.select_related(
             'instructor', 'instructor__user'
         ).order_by('-start_date')
