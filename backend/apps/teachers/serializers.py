@@ -21,19 +21,16 @@ class TeacherCreateSerializer(serializers.ModelSerializer):
             'token': {'read_only': True}
         }
 
-    def create(self, validated_data):
-        user = validated_data['user']
-
-        # Raise error for promoting admins/managers
-        if not user.is_student():
+    def validate_user(self, value):
+        '''Raise error if user is not a student.'''
+        if not value.is_student():
             raise ValidationError('You cannot promote non-student users.')
 
-        teacher = Teacher.objects.create(
-            user=user,
-            promoted_by=self.context['request'].user,
-        )
+        return value
 
-        return teacher
+    def create(self, validated_data):
+        validated_data.setdefault('promoted_by', self.context['request'].user)
+        return super().create(validated_data)
 
 
 class TeacherProfileSerializer(serializers.ModelSerializer):

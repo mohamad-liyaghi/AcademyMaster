@@ -110,7 +110,6 @@ class CourseUpdateView(UpdateAPIView):
         return course
 
 
-# TODO update status
 @extend_schema_view(
     delete=extend_schema(
         description='''Delete a course.''',

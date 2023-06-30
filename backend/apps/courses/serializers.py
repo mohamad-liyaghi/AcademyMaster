@@ -5,7 +5,6 @@ from core.models import WeekDays
 
 
 class BaseCourseSerializer(serializers.ModelSerializer):
-    # TODO opt the queries
     prerequisite = serializers.SlugRelatedField(
         slug_field='token',
         queryset=Course.objects.only('token'),
