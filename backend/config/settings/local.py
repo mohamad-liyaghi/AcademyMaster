@@ -43,7 +43,15 @@ CELERY_BEAT_SCHEDULE = {
     'auto_delete_deactiavted_users': {
         'task': 'apps.accounts.tasks.delete_deactivated_users',
         'schedule': timedelta(minutes=5),
-    }
+    },
+    'auto_change_course_status_to_in_progress': {
+        'task': 'apps.courses.tasks.change_course_status_to_in_progress',
+        'schedule': timedelta(minutes=5),
+    },
+    'auto_change_course_status_to_completed': {
+        'task': 'apps.courses.tasks.change_course_status_to_completed',
+        'schedule': timedelta(minutes=5),
+    },
 }
 
 

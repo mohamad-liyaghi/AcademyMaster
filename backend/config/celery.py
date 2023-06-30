@@ -8,6 +8,7 @@ celery.config_defaults = {'broker_connection_retry_on_startup': True}
 celery.autodiscover_tasks(
     [
         'apps.core.tasks',
-        'apps.accounts.task'
+        'apps.accounts.task',
+        'apps.courses.tasks',
      ],
 )
