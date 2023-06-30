@@ -15,6 +15,7 @@ LOCAL_APPS = [
     'apps.profiles.apps.ProfilesConfig',
     'apps.managers.apps.ManagersConfig',
     'apps.teachers.apps.TeachersConfig',
+    'apps.courses.apps.CoursesConfig',
 ]
 
 THIRD_PARTY_APPS = [
@@ -22,6 +23,7 @@ THIRD_PARTY_APPS = [
     'drf_spectacular',
     'drf_spectacular_sidecar',
     'rest_framework_simplejwt',
+    'django_elasticsearch_dsl',
 ]
 
 INSTALLED_APPS = [
@@ -139,3 +141,9 @@ EMAIL_PORT = config("EMAIL_PORT")
 DEFAULT_FROM_EMAIL = config("EMAIL_FROM")
 
 AUTH_USER_MODEL = 'accounts.Account'
+
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': config('ELASTIC_HOST'),
+    }
+}

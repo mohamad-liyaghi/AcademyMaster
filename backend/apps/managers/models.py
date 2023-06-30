@@ -33,7 +33,7 @@ class Manager(AbstractToken, AbstractPermission):
     def save(self, *args, **kwargs):
         if not self.pk and self.promoted_by:
             # Check permissions
-            self._validate_promoter()
+            self._validate_creator(creator=self.promoted_by)
 
         return super().save(*args, **kwargs)
 

@@ -25,12 +25,13 @@ from managers.permissions import IsManager
 
 @extend_schema_view(
     post=extend_schema(
-        description='''Add a new teacher.''',
+        description='''Create a new teacher by admin/managers.''',
         request=TeacherCreateSerializer,
         responses={
             '201': 'ok',
             '400': 'Invalid data',
-            '403': 'Permission denied',
+            '401': 'Unauthorized',
+            '403': 'Permission denied for adding teachers',
         },
         tags=['Teachers'],
     ),
@@ -45,11 +46,11 @@ class TeacherCreateView(CreateAPIView):
 
 @extend_schema_view(
     get=extend_schema(
-        description='''Detail page of a teacher.''',
+        description='''Retrieve a teacher.''',
         request=TeacherRetrieveSerializer,
         responses={
-            '201': 'ok',
-            '403': 'Permission denied',
+            '200': 'ok',
+            '401': 'Unauthorized',
             '404': 'Not found',
         },
         tags=['Teachers'],
@@ -71,8 +72,9 @@ class TeacherRetrieveView(RetrieveAPIView):
         description='''Update teacher contact links/description.''',
         request=TeacherUpdateSerializer,
         responses={
-            '201': 'ok',
-            '403': 'Permission denied',
+            '200': 'ok',
+            '401': 'Unauthorized',
+            '403': 'Permission denied for updating teachers',
             '404': 'Not found',
         },
         tags=['Teachers'],
@@ -81,8 +83,9 @@ class TeacherRetrieveView(RetrieveAPIView):
         description='''Update teacher contact links/description.''',
         request=TeacherUpdateSerializer,
         responses={
-            '201': 'ok',
-            '403': 'Permission denied',
+            '200': 'ok',
+            '401': 'Unauthorized',
+            '403': 'Permission denied for updating teachers',
             '404': 'Not found',
         },
         tags=['Teachers'],
@@ -105,8 +108,9 @@ class TeacherUpdateView(UpdateAPIView):
     delete=extend_schema(
         description='''Delete a teacher only by manager/admins.''',
         responses={
-            '201': 'ok',
-            '403': 'Permission denied',
+            '204': 'ok',
+            '401': 'Unauthorized',
+            '403': 'Permission denied for deleting teachers',
             '404': 'Not found',
         },
         tags=['Teachers'],
@@ -125,10 +129,10 @@ class TeacherDeleteView(DestroyAPIView):
 
 @extend_schema_view(
     get=extend_schema(
-        description='''List of site teachers.''',
+        description='''List of teachers all.''',
         responses={
-            '201': 'ok',
-            '403': 'User not logged in',
+            '200': 'ok',
+            '401': 'Unauthorized',
         },
         tags=['Teachers'],
     ),

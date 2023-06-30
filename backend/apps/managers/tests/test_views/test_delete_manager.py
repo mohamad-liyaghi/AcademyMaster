@@ -10,8 +10,9 @@ class TestManagerDeleteView:
     @pytest.fixture(autouse=True)
     def setup(self, manager_account):
         self.manager = manager_account
+        self.url_name = 'managers:delete_manager'
         self.url_path = reverse(
-                'managers:delete_manager',
+                self.url_name,
                 kwargs={'manager_token': self.manager.manager.token}
             )
 
@@ -49,3 +50,12 @@ class TestManagerDeleteView:
         )
         resp = api_client.delete(self.url_path)
         assert resp.status_code == status.HTTP_403_FORBIDDEN
+
+    def test_delete_non_existing_manager(self, api_client, superuser):
+        api_client.force_authenticate(superuser)
+        url_path = reverse(
+                self.url_name,
+                kwargs={'manager_token': 'invalid_token'}
+            )
+        resp = api_client.delete(url_path)
+        assert resp.status_code == status.HTTP_404_NOT_FOUND

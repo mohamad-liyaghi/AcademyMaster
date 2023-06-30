@@ -82,3 +82,8 @@ class TestTeacherCreateView:
         response = api_client.post(self.url_path, self.data)
         assert not teacher_account.is_student()
         assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_promote_teacher_bad_data(self, api_client, superuser):
+        api_client.force_authenticate(superuser)
+        response = api_client.post(self.url_path, {})
+        assert response.status_code == status.HTTP_400_BAD_REQUEST

@@ -12,24 +12,24 @@ from profiles.permissions import IsProfileOwner, IsNonStudent
 
 @extend_schema_view(
     put=extend_schema(
-        description='''Update own profile.''',
+        description='''Update profile.''',
         request=ProfileUpdateSerializer,
         responses={
-            '200': 'Success.',
+            '200': 'ok',
             '400': 'Invalid Data.',
             '401': 'User not authenticated.',
-            '403': 'Attempting to update others profile..',
+            '403': 'Attempting to update others profile.',
         },
         tags=['Profiles'],
     ),
     patch=extend_schema(
-        description='''Update own profile.''',
+        description='''Update profile.''',
         request=ProfileUpdateSerializer,
         responses={
-            '200': 'Success.',
+            '200': 'ok',
             '400': 'Invalid Data.',
             '401': 'User not authenticated.',
-            '403': 'Attempting to update others profile..',
+            '403': 'Attempting to update others profile.',
         },
         tags=['Profiles'],
     ),
@@ -51,12 +51,13 @@ class ProfileUpdateView(UpdateAPIView):
 
 @extend_schema_view(
     get=extend_schema(
-        description='''Retrieve a profile.''',
+        description='''Retrieve a profile page by non-students.''',
         request=ProfileRetrieveSerializer,
         responses={
             '200': 'Success.',
             '401': 'User not authenticated.',
-            '403': 'Student attempting to get others profile',
+            '403': 'User is a student.',
+            '404': 'Profile not found.',
         },
         tags=['Profiles'],
     ),

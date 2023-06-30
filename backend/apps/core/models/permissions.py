@@ -37,20 +37,20 @@ class AbstractPermission(models.Model):
         cache.set(codename, permission, timeout=60 * 60 * 24)
         return permission
 
-    def _validate_promoter(self) -> None:
+    def _validate_creator(self, creator) -> None:
         '''
             Only admins and managers can promote users.
             Promoters should have the add object permission though
         '''
 
         # admins can promote managers
-        if self.promoted_by.is_admin():
+        if creator.is_admin():
             return
 
-        if not self.promoted_by.is_manager():
+        if not creator.is_manager():
             raise ValidationError("Promoter must be a manager.")
 
-        if not self.promoted_by.has_perm(
+        if not creator.has_perm(
             perm_object=self.__class__.get_permission('add')
         ):
-            raise ValidationError("Permission denied for promoting.")
+            raise ValidationError("Permission denied for creating.")

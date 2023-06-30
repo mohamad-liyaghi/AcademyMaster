@@ -40,3 +40,12 @@ class TestObtainTokenView:
             self.url_path, self.data, format='json'
         )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_get_access_token_inactive_user(
+            self, deactive_account, api_client
+    ):
+        self.data['email'] = deactive_account.email
+        response = api_client.post(
+            self.url_path, self.data, format='json'
+        )
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED

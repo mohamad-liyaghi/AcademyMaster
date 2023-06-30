@@ -18,8 +18,8 @@ from rest_framework_simplejwt.views import (
         description='''Register a new user.''',
         request=AccountRegisterSerializer,
         responses={
-            '200': 'User already exists and pending to verification',
             '201': 'ok',
+            '202': 'User already exists, but not verified',
             '400': 'An active user already exists',
         },
         tags=['Authentication'],
@@ -31,12 +31,13 @@ class UserRegisterView(CreateAPIView):
 
 @extend_schema_view(
     post=extend_schema(
-        description='''Verify an account.''',
+        description='''Verify deactive account.''',
         request=AccountVerifySerializer,
         responses={
-            '200': 'User already exists and pending to verification',
-            '409': 'User is already verified',
-            '400': 'Invalid token',
+            '200': 'ok',
+            '400': 'Invalid data',
+            '404': 'User not found',
+            '409': 'User is already verified'
         },
         tags=['Authentication'],
     ),
@@ -62,9 +63,10 @@ class UserVerifyView(APIView):
         description='''Resend Verification Code.''',
         request=AccountVerifySerializer,
         responses={
-            '201': 'New Verification Code generated',
-            '200': 'An active code already exists.',
+            '201': 'New Verification Code sent to user',
             '400': 'Invalid Data',
+            '404': 'User not found',
+            '409': 'An active code already sent to user',
         },
         tags=['Authentication'],
     ),
@@ -85,10 +87,11 @@ class ResendCodeView(APIView):
 
 @extend_schema_view(
     post=extend_schema(
-        description='''Return Access/Refresh Token''',
+        description='''Get Access/Refresh Token''',
         responses={
             '200': 'Success',
             '400': 'Invalid data',
+            '401': 'Unauthorized',
         },
         tags=['Authentication'],
     ),

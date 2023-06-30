@@ -67,7 +67,15 @@ CELERY_BEAT_SCHEDULE = {
     'auto_delete_deactivated_users': {
         'task': 'apps.accounts.tasks.delete_deactivated_users',
         'schedule': crontab(hour=5, minute=0),
-    }
+    },
+    'auto_change_course_status_to_in_progress': {
+        'task': 'apps.courses.tasks.change_course_status_to_in_progress',
+        'schedule': crontab(hour=6, minute=0),
+    },
+    'auto_change_course_status_to_completed': {
+        'task': 'apps.courses.tasks.change_course_status_to_completed',
+        'schedule': crontab(hour=7, minute=0),
+    },
 }
 
 MEDIA_ROOT = 'media/'

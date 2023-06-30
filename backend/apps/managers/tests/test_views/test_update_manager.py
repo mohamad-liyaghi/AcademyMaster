@@ -10,8 +10,9 @@ class TestManagerUpdateView:
     @pytest.fixture(autouse=True)
     def setup(self, manager_account):
         self.manager = manager_account
+        self.url_name = 'managers:update_manager'
         self.url_path = reverse(
-                'managers:update_manager',
+                self.url_name,
                 kwargs={'manager_token': self.manager.manager.token}
             )
 
@@ -74,3 +75,12 @@ class TestManagerUpdateView:
         )
         response = api_client.put(self.url_path, self.data)
         assert response.status_code == status.HTTP_200_OK
+
+    def test_update_non_exist_manager(self, api_client, superuser):
+        api_client.force_authenticate(superuser)
+        url = reverse(
+            self.url_name,
+            kwargs={'manager_token': 'non-exist-token'}
+        )
+        response = api_client.put(url, self.data)
+        assert response.status_code == status.HTTP_404_NOT_FOUND
