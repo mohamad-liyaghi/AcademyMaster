@@ -48,7 +48,7 @@ class TestDeleteCourseView:
         self.course.status = CourseStatus.COMPLETED
         self.course.save()
         response = api_client.delete(self.url_path)
-        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     def test_delete_in_progress_without_enrollments(self):
         pass

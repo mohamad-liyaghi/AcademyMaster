@@ -53,3 +53,12 @@ class TestRetrieveProfileView:
         )
         response = api_client.get(url)
         assert response.status_code == status.HTTP_200_OK
+
+    def test_get_non_exist_profile(self, superuser, api_client):
+        api_client.force_authenticate(user=superuser)
+        url = reverse(
+            self.url_path,
+            kwargs={'profile_token': 'non_exist_token'}
+        )
+        response = api_client.get(url)
+        assert response.status_code == status.HTTP_404_NOT_FOUND

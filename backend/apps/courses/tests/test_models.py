@@ -1,7 +1,7 @@
 import pytest
 from datetime import date
 from django.core.exceptions import ValidationError
-from courses.models import Course
+from courses.models import Course, CourseStatus
 from core.models import WeekDays
 
 
@@ -53,3 +53,13 @@ class TestCourseModel:
         assert course.get_days_display == [
             WeekDays.SATURDAY.label, WeekDays.SUNDAY.label
         ]
+
+    def test_delete_with_status_completed(
+            self, accessed_manager_account
+    ):
+        self.data['status'] = CourseStatus.COMPLETED
+        course = Course.objects.create(
+            **self.data, assigned_by=accessed_manager_account
+        )
+        with pytest.raises(ValidationError):
+            course.delete()

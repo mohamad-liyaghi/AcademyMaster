@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from courses.models import Course
+from courses.models import Course, CourseStatus
 from teachers.models import Teacher
 from core.models import WeekDays
 
@@ -112,6 +112,13 @@ class CourseUpdateSerializer(BaseCourseSerializer):
             'get_status_display',
             'price'
         ]
+
+    def update(self, instance, validated_data):
+        if instance.status != CourseStatus.ENROLLING:
+            raise serializers.ValidationError(
+                'You cannot change status to ENROLLING'
+            )
+        return super().update(instance, validated_data)
 
 
 class CourseListSerializer(serializers.ModelSerializer):

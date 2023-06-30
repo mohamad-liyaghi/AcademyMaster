@@ -28,10 +28,10 @@ from managers.serializers import (
         description='''Add a new manager.''',
         request=ManagerCreateSerializer,
         responses={
-            '201': 'ok',
+            '201': 'created',
             '400': 'Invalid data',
-            '403': 'Permission denied',
-            '404': 'Not found',
+            '401': 'Unauthorized',
+            '403': 'Permission denied for promoting managers',
         },
         tags=['Managers'],
     ),
@@ -51,8 +51,9 @@ class ManagerCreateView(CreateAPIView):
         responses={
             '200': 'ok',
             '400': 'Invalid data',
+            '401': 'Unauthorized',
             '403': 'Permission denied',
-            '404': 'Not found',
+            '404': 'Manager not found',
         },
         tags=['Managers'],
     ),
@@ -62,8 +63,9 @@ class ManagerCreateView(CreateAPIView):
         responses={
             '200': 'ok',
             '400': 'Invalid data',
+            '401': 'Unauthorized',
             '403': 'Permission denied',
-            '404': 'Not found',
+            '404': 'Manager not found',
         },
         tags=['Managers'],
     ),
@@ -85,9 +87,10 @@ class ManagerUpdateView(UpdateAPIView):
     delete=extend_schema(
         description='''Delete a manager.''',
         responses={
-            '200': 'ok',
-            '403': 'Permission denied',
-            '404': 'Not found',
+            '204': 'ok',
+            '401': 'Unauthorized',
+            '403': 'Permission denied for deleting managers',
+            '404': 'Manager not found',
         },
         tags=['Managers'],
     ),
@@ -105,11 +108,12 @@ class ManagerDeleteView(DestroyAPIView):
 
 @extend_schema_view(
     get=extend_schema(
-        description='''Detail page of an admin.''',
+        description='''Retrieve a manager by admin/managers.''',
         responses={
             '200': 'ok',
+            '401': 'Unauthorized',
             '403': 'Permission denied',
-            '404': 'Not found',
+            '404': 'Manager not found',
         },
         tags=['Managers'],
     ),
@@ -131,6 +135,7 @@ class ManagerRetrieveView(RetrieveAPIView):
         description='''List of managers.''',
         responses={
             '200': 'ok',
+            '401': 'Unauthorized',
             '403': 'Permission denied',
         },
         tags=['Managers'],

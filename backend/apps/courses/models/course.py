@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
+from django.core.exceptions import ValidationError
 from core.models import AbstractToken, AbstractPermission, WeekDays
 from teachers.models import Teacher
 from .course_status import CourseStatus
@@ -76,4 +77,8 @@ class Course(AbstractToken, AbstractPermission):
 
     def delete(self, *args, **kwargs):
         # TODO: Check enrollments
+        if self.status != CourseStatus.ENROLLING:
+            raise ValidationError(
+                f'Cannot delete a course with status of {self.status}.'
+            )
         return super().delete(*args, **kwargs)
