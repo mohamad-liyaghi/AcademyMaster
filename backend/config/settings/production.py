@@ -76,6 +76,10 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'apps.courses.tasks.change_course_status_to_completed',
         'schedule': crontab(hour=7, minute=0),
     },
+    'auto_delete_pending_enrollment': {
+        'task': 'apps.enrollments.tasks.auto_delete_pending_enrollment',
+        'schedule': crontab(hour=7, minute=30),
+    },
 }
 
 MEDIA_ROOT = 'media/'
