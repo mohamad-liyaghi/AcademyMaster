@@ -16,6 +16,7 @@ LOCAL_APPS = [
     'apps.managers.apps.ManagersConfig',
     'apps.teachers.apps.TeachersConfig',
     'apps.courses.apps.CoursesConfig',
+    'apps.enrollments.apps.EnrollmentsConfig',
 ]
 
 THIRD_PARTY_APPS = [
