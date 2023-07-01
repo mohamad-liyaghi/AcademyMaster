@@ -1,0 +1,14 @@
+{% block subject %}
+A new enrollment has been created.
+{% endblock subject %}
+
+{% block html_body %}
+<p>Dear {{ first_name }},</p>
+
+<p>A new enrollment has been created for you at {{enrollment_date}} for course `{{course_title}}`.</p>
+
+{# TODO add enrollment detail page #}
+
+<p>The Academy Master Team</p>
+
+{% endblock html_body %}

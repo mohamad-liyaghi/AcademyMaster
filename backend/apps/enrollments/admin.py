@@ -1,3 +1,7 @@
 from django.contrib import admin
+from enrollments.models import Enrollment
 
-# Register your models here.
+
+@admin.register(Enrollment)
+class EnrollmentAdmin(admin.ModelAdmin):
+    list_display = ('user', 'course', 'created_at')
