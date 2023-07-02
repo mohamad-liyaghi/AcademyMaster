@@ -22,3 +22,20 @@ class EnrollmentCreateSerializer(serializers.ModelSerializer):
             return Enrollment.objects.create(**validated_data)
         except Exception as e:
             raise ValidationError(str(e))
+
+
+class EnrollmentCourseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Course
+        fields = ('title', 'token')
+        read_only_fields = ('title', 'token')
+
+
+class EnrollmentRetrieveSerializer(serializers.ModelSerializer):
+    course = EnrollmentCourseSerializer()
+    user = serializers.StringRelatedField()
+
+    class Meta:
+        model = Enrollment
+        fields = ('course', 'user', 'status', 'created_at')
+        read_only_fields = ('course', 'user', 'status', 'created_at')
