@@ -23,7 +23,6 @@ class TestEnrollmentRetrieveView:
         assert response.status_code == status.HTTP_200_OK
 
     def test_retrieve_by_manager(self, api_client, accessed_manager_account):
-        api_client.force_authenticate(user=accessed_manager_account)
         api_client.force_authenticate(accessed_manager_account)
         response = api_client.get(self.url_path)
         assert response.status_code == status.HTTP_200_OK

@@ -39,3 +39,10 @@ class EnrollmentRetrieveSerializer(serializers.ModelSerializer):
         model = Enrollment
         fields = ('course', 'user', 'status', 'created_at')
         read_only_fields = ('course', 'user', 'status', 'created_at')
+
+
+class EnrollmentUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Enrollment
+        fields = ('status', 'created_at')
+        read_only_fields = ('created_at',)
