@@ -3,6 +3,7 @@ from rest_framework.generics import (
     CreateAPIView,
     RetrieveAPIView,
     UpdateAPIView,
+    ListAPIView,
 )
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema, extend_schema_view
@@ -16,6 +17,7 @@ from .serializers import (
     EnrollmentCreateSerializer,
     EnrollmentRetrieveSerializer,
     EnrollmentUpdateSerializer,
+    EnrollmentListSerializer,
 )
 from .models import Enrollment
 
@@ -103,3 +105,33 @@ class EnrollmentUpdateView(UpdateAPIView):
         )
         self.check_object_permissions(self.request, enrollment)
         return enrollment
+
+
+@extend_schema_view(
+    get=extend_schema(
+        description='''List all enrollments.''',
+        responses={
+            '200': 'ok',
+            '401': 'Unauthorized',
+            '403': 'Permission denied',
+        },
+        tags=['Enrollments'],
+    ),
+)
+class EnrollmentListView(ListAPIView):
+    permission_classes = (IsAuthenticated, IsManagerOrStudent)
+    serializer_class = EnrollmentListSerializer
+
+    def get_queryset(self):
+        '''
+        Return all enrollments if user is manager, otherwise return
+        user enrollments.
+        '''
+        enrollments = Enrollment.objects.select_related(
+            'course', 'user', 'user__profile'
+        ).order_by('-created_at')
+
+        if self.request.user.is_student():
+            return enrollments.filter(user=self.request.user)
+
+        return enrollments

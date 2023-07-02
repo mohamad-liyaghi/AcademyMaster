@@ -1,5 +1,6 @@
 from django.urls import path, include
 from enrollments.views import (
+    EnrollmentListView,
     EnrollmentCreateView,
     EnrollmentRetrieveView,
     EnrollmentUpdateView,
@@ -8,6 +9,7 @@ from enrollments.views import (
 app_name = 'enrollments'
 
 v1_urlpatterns = [
+    path('', EnrollmentListView.as_view(), name='enrollment_list'),
     path('create/', EnrollmentCreateView.as_view(), name='create_enrollment'),
     path(
         '<str:enrollment_token>/',
