@@ -52,6 +52,10 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'apps.courses.tasks.change_course_status_to_completed',
         'schedule': timedelta(minutes=5),
     },
+    'auto_delete_pending_enrollment': {
+        'task': 'apps.enrollments.tasks.auto_delete_pending_enrollment',
+        'schedule': timedelta(minutes=5),
+    },
 }
 
 
