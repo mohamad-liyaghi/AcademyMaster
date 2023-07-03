@@ -8,7 +8,8 @@ from .enrollment_status import EnrollmentStatus
 
 class Enrollment(AbstractToken):
     course = models.ForeignKey(
-        Course, on_delete=models.CASCADE
+        Course, on_delete=models.CASCADE,
+        related_name='enrollments'
     )
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,

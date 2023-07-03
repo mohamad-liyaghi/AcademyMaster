@@ -31,12 +31,11 @@ class CanUpdateCourse(BasePermission):
 class CanDeleteCourse(BasePermission):
     '''
     Only course assigner and managers with courses.delete_course perm
-    can update unfinished courses
+    can delete unfinished courses
     '''
-    message = 'Permisson denied for deleting this course.'
+    message = 'You dont have permission to delete this course.'
 
     def has_object_permission(self, request, view, obj):
-        # TODO: Check enrollments
         return request.user == obj.assigned_by or request.user.has_perm(
             perm_object=Course.get_permission('delete')
         )

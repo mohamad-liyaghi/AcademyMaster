@@ -7,8 +7,7 @@ A new enrollment has been created.
 
 <p>A new enrollment has been created for you at {{enrollment_date}} for course `{{course_title}}`.</p>
 
-{# TODO add enrollment detail page #}
-
+<a href="{% url 'enrollments:retrieve_enrollment' enrollment_token %}">Click here to view your enrollment</a>
 <p>The Academy Master Team</p>
 
 {% endblock html_body %}

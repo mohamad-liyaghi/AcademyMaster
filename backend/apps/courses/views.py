@@ -134,11 +134,22 @@ class CourseDeleteView(DestroyAPIView):
         return course
 
     def destroy(self, request, *args, **kwargs):
-        if self.get_object().status != CourseStatus.ENROLLING:
+        course = self.get_object()
+
+        # check if course is enrolling
+        if course.status != CourseStatus.ENROLLING:
             return Response(
                 {'detail': 'Cannot delete in-progress/completed courses.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+        # Check if there are any enrollments
+        if course.enrollments.exists():
+            return Response(
+                "Cannot delete courses with enrollments.",
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         return super().destroy(request, *args, **kwargs)
 
 

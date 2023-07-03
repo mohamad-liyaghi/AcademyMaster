@@ -63,3 +63,7 @@ class TestCourseModel:
         )
         with pytest.raises(ValidationError):
             course.delete()
+
+    def test_delete_course_with_enrollment(self, create_enrollment):
+        with pytest.raises(ValidationError):
+            create_enrollment.course.delete()

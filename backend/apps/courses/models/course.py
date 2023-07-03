@@ -76,7 +76,11 @@ class Course(AbstractToken, AbstractPermission):
         return super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        # TODO: Check enrollments
+        if self.enrollments.exists():
+            raise ValidationError(
+                'Cannot delete a course with enrollments.'
+            )
+
         if self.status != CourseStatus.ENROLLING:
             raise ValidationError(
                 f'Cannot delete a course with status of {self.status}.'
