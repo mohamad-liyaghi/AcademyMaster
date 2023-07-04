@@ -1,8 +1,9 @@
 from django.db import models
 from django.conf import settings
+from django.core.exceptions import PermissionDenied
 from core.models import AbstractToken
-from courses.models import Course
-from enrollments.models import Enrollment
+from courses.models import Course, CourseStatus
+from enrollments.models import Enrollment, EnrollmentStatus
 
 
 class Activity(AbstractToken):
@@ -36,5 +37,27 @@ class Activity(AbstractToken):
     def save(self, *args, **kwargs):
         if not self.pk:
             self.course = self.enrollment.course
+            self.user = self.enrollment.user
+            self.final_mark = None
+            self.__validate_enrollment()
+
+        if self.final_mark:
+            self.__validate_final_mark()
 
         return super().save(*args, **kwargs)
+
+    def __validate_enrollment(self):
+        '''Make sure the enrollment is successfull.'''
+        if self.enrollment.status != EnrollmentStatus.SUCCESS:
+            raise PermissionDenied(
+                'You can only create an activity for a successfull enrollment.'
+            )
+
+    def __validate_final_mark(self):
+        '''
+        Only activities with course status of COMPLETED can have final_mark.
+        '''
+        if self.course.status != CourseStatus.COMPLETED:
+            raise PermissionDenied(
+                'You can only add a final mark for a finished course.'
+            )
