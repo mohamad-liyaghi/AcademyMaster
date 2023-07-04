@@ -63,13 +63,3 @@ class VerificationCodeManager(models.Manager):
         verification_code.retry_count += 1
         verification_code.save()
         return False, "Invalid code"
-
-    def re_generate(self, user) -> bool:
-        '''Re generate verification code if verification code is expired'''
-        verification_code = user.verification_codes.first()
-
-        if not verification_code or verification_code.is_expired():
-            self.create(account=user)
-            return True
-
-        return False

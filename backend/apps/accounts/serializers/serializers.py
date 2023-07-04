@@ -1,12 +1,17 @@
 from rest_framework import serializers
 from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import ValidationError
-from accounts.exceptions import (
+from accounts.serializers.exceptions import (
     DuplicateUserException,
     PendingVerificationException,
     AlreadyVerifiedException,
     DuplicationVerificationCodeException
 
+)
+
+from accounts.models.exceptions import (
+    DuplicationCodeException,
+    ActiveUserCodeException
 )
 from accounts.models import Account, VerificationCode
 
@@ -79,11 +84,12 @@ class ResendCodeSerializer(serializers.ModelSerializer):
         model = VerificationCode
         fields = ['user']
 
-    def resend_code(self, user):
-        if user.is_active:
-            raise ValidationError('User is active.')
+    def create(self, validated_data):
+        try:
+            return super().create(validated_data)
 
-        if VerificationCode.objects.re_generate(user=user):
-            return True
+        except DuplicationCodeException:
+            raise DuplicationVerificationCodeException()
 
-        raise DuplicationVerificationCodeException()
+        except ActiveUserCodeException:
+            raise ValidationError('User is already active')

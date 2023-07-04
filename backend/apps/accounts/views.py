@@ -71,18 +71,9 @@ class UserVerifyView(APIView):
         tags=['Authentication'],
     ),
 )
-class ResendCodeView(APIView):
+class ResendCodeView(CreateAPIView):
     '''Resend a new verification code for the user'''
     serializer_class = ResendCodeSerializer
-
-    def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.resend_code(user=serializer.validated_data['user'])
-        return Response(
-            'A new code generated and sent to user',
-            status=status.HTTP_201_CREATED
-        )
 
 
 @extend_schema_view(

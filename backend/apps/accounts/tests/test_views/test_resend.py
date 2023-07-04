@@ -20,7 +20,7 @@ class TestCodeResendView:
             self.url_path,
             {'user': deactive_account.token}, format='json'
         )
-
+        print(response.json())
         assert response.status_code == status.HTTP_201_CREATED
         assert deactive_account.verification_codes.count() == 2
 

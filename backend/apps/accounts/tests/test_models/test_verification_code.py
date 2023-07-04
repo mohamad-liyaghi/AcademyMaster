@@ -2,6 +2,10 @@ import pytest
 from datetime import timedelta
 from django.utils import timezone
 from accounts.models import VerificationCode
+from accounts.models.exceptions import (
+    DuplicationCodeException,
+    ActiveUserCodeException
+)
 
 
 @pytest.mark.django_db
@@ -58,3 +62,15 @@ class TestVerificationCodeModel:
             code=verification_code.code
         )
         assert not verified_code[0]
+
+    def test_create_verification_code_twice(self, deactive_account):
+        verification_code = deactive_account.verification_codes.first()
+
+        assert not verification_code.is_expired()
+        with pytest.raises(DuplicationCodeException):
+            VerificationCode.objects.create(user=deactive_account)
+
+    def test_create_verification_for_active_user(self, active_account):
+        assert active_account.is_active
+        with pytest.raises(ActiveUserCodeException):
+            VerificationCode.objects.create(user=active_account)
