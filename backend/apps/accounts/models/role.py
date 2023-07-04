@@ -44,9 +44,9 @@ class AccountRole(models.Model):
 
         try:
             # Check user has 1 to 1 rel with any manager obj
-            self.manager
-            self._set_cached_role('manager')
-            return True
+            if self.manager.id:
+                self._set_cached_role('manager')
+                return True
         except Exception:
             return False
 
@@ -63,9 +63,9 @@ class AccountRole(models.Model):
 
         try:
             # Check user has 1 to 1 rel with any teacher obj
-            self.teacher
-            self._set_cached_role('teacher')
-            return True
+            if self.teacher.id:
+                self._set_cached_role('teacher')
+                return True
 
         except Exception:
             return False

@@ -42,11 +42,7 @@ class CourseCreateSerializer(BaseCourseSerializer):
             'price',
             'token'
         ]
-
-        extra_kwargs = {
-            'assigned_by': {'read_only': True},
-            'token': {'read_only': True}
-        }
+        read_only_fields = ('assigned_by', 'token')
 
     def create(self, validated_data):
         # Set request.user as course assigner

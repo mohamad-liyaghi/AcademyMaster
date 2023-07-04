@@ -1,6 +1,6 @@
 import pytest
 from django.db.utils import IntegrityError
-from django.core.exceptions import ValidationError
+from django.core.exceptions import PermissionDenied
 from managers.models import Manager
 
 
@@ -20,7 +20,7 @@ class TestManagerModel:
         assert not manager_account.has_perm(
             perm_object=Manager.get_permission('add')
         )
-        with pytest.raises(ValidationError):
+        with pytest.raises(PermissionDenied):
             Manager.objects.create(
                 user=active_account, promoted_by=manager_account
             )

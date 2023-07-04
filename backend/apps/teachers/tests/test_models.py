@@ -1,6 +1,6 @@
 import pytest
 from django.db.utils import IntegrityError
-from django.core.exceptions import ValidationError
+from django.core.exceptions import PermissionDenied
 from teachers.models import Teacher
 
 
@@ -38,7 +38,7 @@ class TestTeacherModel:
             perm_object=Teacher.get_permission('add')
         )
 
-        with pytest.raises(ValidationError):
+        with pytest.raises(PermissionDenied):
             Teacher.objects.create(
                 user=active_account, promoted_by=manager_account
             )

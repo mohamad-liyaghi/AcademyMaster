@@ -1,6 +1,6 @@
 import pytest
 from datetime import date
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, PermissionDenied
 from courses.models import Course, CourseStatus
 from core.models import WeekDays
 
@@ -27,14 +27,14 @@ class TestCourseModel:
 
     def test_create_course_by_teacher(self, teacher_account):
         '''Only manager/admins with add_course perm can add courses'''
-        with pytest.raises(ValidationError):
+        with pytest.raises(PermissionDenied):
             Course.objects.create(
                 **self.data, assigned_by=teacher_account
             )
 
     def test_create_course_by_manager(self, manager_account):
         '''Only manager/admins with add_course perm can add courses'''
-        with pytest.raises(ValidationError):
+        with pytest.raises(PermissionDenied):
             Course.objects.create(
                 **self.data, assigned_by=manager_account
             )

@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.core.exceptions import PermissionDenied
 from core.models import AbstractPermission, AbstractToken
 
 
@@ -34,6 +35,8 @@ class Teacher(AbstractToken, AbstractPermission):
 
     def save(self, *args, **kwargs):
         if not self.pk and self.promoted_by:
+            if not self.user.is_student():
+                raise PermissionDenied("Promoted user must be student.")
             # Check for permissions
             self._validate_creator(creator=self.promoted_by)
         return super().save(*args, **kwargs)

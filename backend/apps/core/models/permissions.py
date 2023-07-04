@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import Permission
-from django.core.exceptions import ValidationError
+from django.core.exceptions import PermissionDenied
 from django.core.cache import cache
 
 
@@ -48,9 +48,9 @@ class AbstractPermission(models.Model):
             return
 
         if not creator.is_manager():
-            raise ValidationError("Promoter must be a manager.")
+            raise PermissionDenied("Promoter must be a manager.")
 
         if not creator.has_perm(
             perm_object=self.__class__.get_permission('add')
         ):
-            raise ValidationError("Permission denied for creating.")
+            raise PermissionDenied("Permission denied for creating.")

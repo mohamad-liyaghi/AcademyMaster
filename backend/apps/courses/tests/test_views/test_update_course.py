@@ -25,7 +25,6 @@ class TestUpdateCourseView:
     def test_update_by_admin(self, api_client, superuser):
         api_client.force_authenticate(superuser)
         response = api_client.patch(self.url_path, self.data)
-        print(response.json())
         assert response.status_code == status.HTTP_200_OK
 
     def test_update_by_accessed_manager(

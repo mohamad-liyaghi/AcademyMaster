@@ -17,9 +17,7 @@ class TeacherCreateSerializer(serializers.ModelSerializer):
             'user',
             'token'
         ]
-        extra_kwargs = {
-            'token': {'read_only': True}
-        }
+        read_only_fields = ('token',)
 
     def validate_user(self, value):
         '''Raise error if user is not a student.'''

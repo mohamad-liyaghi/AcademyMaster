@@ -28,24 +28,16 @@ class ManagerCreateSerializer(serializers.ModelSerializer):
         model = Manager
         fields = ['user', 'permissions', 'token']
 
-    def validate_user(self, value):
-        '''Checks if the user is not already a manager or an admin.'''
-        if value.is_admin():
-            raise ValidationError('Admins cannot become managers.')
-
-        if value.is_manager():
-            raise ValidationError('Managers cannot become managers twice.')
-
-        return value
-
     def create(self, validated_data):
-        manager = Manager.objects.create_with_permissions(
-            user=validated_data['user'],
-            promoted_by=self.context['request'].user,
-            codenames=validated_data.get('permissions', None),
-        )
+        try:
+            return Manager.objects.create_with_permissions(
+                user=validated_data['user'],
+                promoted_by=self.context['request'].user,
+                codenames=validated_data.get('permissions', None),
+            )
 
-        return manager
+        except Exception as e:
+            raise ValidationError(e)
 
 
 class ManagerUpdateSerializer(serializers.ModelSerializer):
