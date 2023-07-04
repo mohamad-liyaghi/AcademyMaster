@@ -1,0 +1,17 @@
+{% block subject %}
+Checkout your new activity!
+{% endblock subject %}
+
+{% block html_body %}
+<p>Dear {{ first_name }},</p>
+
+<p>A new activity has jsut created for you for `{{ course_title }}` </p>
+
+
+
+<p>From now on you can check your activities such as final mark and attendance on page below.</p>
+{# TODO add link to the page #}
+
+<p>Thanks,</p> 
+<p>The Academy Master Team</p>
+{% endblock html_body %}
