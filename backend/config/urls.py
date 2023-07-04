@@ -11,6 +11,7 @@ LOCAL_APP_URLS = [
     path('teachers/', include('apps.teachers.urls')),
     path('courses/', include('apps.courses.urls')),
     path('enrollments/', include('apps.enrollments.urls')),
+    path('activities/', include('apps.activities.urls')),
 ]
 
 THIRD_PARTY_URLS = [
