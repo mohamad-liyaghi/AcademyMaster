@@ -9,8 +9,9 @@ class TestRetrieveActivityView:
     @pytest.fixture(autouse=True)
     def setup(self, get_activity):
         self.activity = get_activity
+        self.url_name = 'activities:retrieve_activity'
         self.url_path = reverse(
-            'activities:retrieve_activity',
+            self.url_name,
             kwargs={'activity_token': get_activity.token}
         )
 
@@ -43,3 +44,12 @@ class TestRetrieveActivityView:
         assert active_account != self.activity.user
         response = api_client.get(self.url_path)
         assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    def test_retrieve_not_found(self, api_client):
+        self.url_path = reverse(
+            self.url_name,
+            kwargs={'activity_token': 'invalid_token'}
+        )
+        api_client.force_authenticate(user=self.activity.user)
+        response = api_client.get(self.url_path)
+        assert response.status_code == status.HTTP_404_NOT_FOUND
