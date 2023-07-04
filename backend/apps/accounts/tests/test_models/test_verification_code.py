@@ -2,7 +2,7 @@ import pytest
 from datetime import timedelta
 from django.utils import timezone
 from accounts.models import VerificationCode
-from accounts.models.exceptions import (
+from accounts.exceptions.models import (
     DuplicationCodeException,
     ActiveUserCodeException
 )

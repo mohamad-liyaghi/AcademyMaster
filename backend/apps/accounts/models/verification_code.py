@@ -2,7 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 from datetime import timedelta
-from accounts.models.exceptions import (
+from accounts.exceptions.models import (
     DuplicationCodeException,
     ActiveUserCodeException
 )

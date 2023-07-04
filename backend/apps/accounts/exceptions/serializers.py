@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.exceptions import APIException
 
 
-class DuplicateUserException(APIException):
+class UserAlreadyExistsException(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = 'A user with this email address already exists.'
     default_code = 'user_exists'
@@ -20,6 +20,6 @@ class AlreadyVerifiedException(APIException):
     detail = 'User is already verified.'
 
 
-class DuplicationVerificationCodeException(APIException):
+class DuplicationCodeException(APIException):
     status_code = status.HTTP_409_CONFLICT
     detail = 'An active verification code for given account already exists.'
