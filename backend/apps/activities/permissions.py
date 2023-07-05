@@ -17,3 +17,14 @@ class CanUpdateActivity(BasePermission):
 
     def has_object_permission(self, request, view, obj):
         return obj.course.instructor.user == request.user
+
+
+class IsCourseInstructor(BasePermission):
+    '''Only the course instructor can retrieve activities of a course'''
+    message = 'You dont have permission to retrieve activities of this course'
+
+    def has_object_permission(self, request, view, obj):
+        return (
+            request.user.is_manager() or
+            obj.instructor.user == request.user
+        )

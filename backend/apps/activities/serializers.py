@@ -37,3 +37,18 @@ class ActivityUpdateSerializer(serializers.ModelSerializer):
             return super().update(instance, validated_data)
         except Exception as e:
             raise serializers.ValidationError(str(e))
+
+
+class ActivityListSerializer(serializers.ModelSerializer):
+
+    course = serializers.StringRelatedField()
+    user = serializers.StringRelatedField()
+
+    class Meta:
+        model = Activity
+        fields = (
+            'course',
+            'user',
+            'token',
+        )
+        read_only_fields = fields

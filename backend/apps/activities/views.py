@@ -1,16 +1,19 @@
 from django.shortcuts import get_object_or_404
-from rest_framework.generics import RetrieveAPIView, UpdateAPIView
+from rest_framework.generics import RetrieveAPIView, UpdateAPIView, ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from activities.permissions import (
     CanRetrieveActivity,
-    CanUpdateActivity
+    CanUpdateActivity,
+    IsCourseInstructor,
 )
 from activities.serializers import (
     ActivityRetrieveSerializer,
     ActivityUpdateSerializer,
+    ActivityListSerializer,
 )
 from activities.models import Activity
+from courses.models import Course
 
 
 @extend_schema_view(
@@ -34,7 +37,8 @@ class ActivityRetrieveView(RetrieveAPIView):
     def get_object(self):
         activity = get_object_or_404(
             Activity.objects.select_related('user', 'course', 'enrollment'),
-            token=self.kwargs['activity_token']
+            token=self.kwargs['activity_token'],
+            course__token=self.kwargs['course_token'],
         )
         self.check_object_permissions(self.request, activity)
         return activity
@@ -71,7 +75,39 @@ class ActivityUpdateView(UpdateAPIView):
     def get_object(self):
         activity = get_object_or_404(
             Activity.objects.select_related('user', 'course', 'enrollment'),
-            token=self.kwargs['activity_token']
+            token=self.kwargs['activity_token'],
+            course__token=self.kwargs['course_token'],
         )
         self.check_object_permissions(self.request, activity)
         return activity
+
+
+@extend_schema_view(
+    get=extend_schema(
+        description='''List all activities of a course.''',
+        responses={
+            '200': 'ok',
+            '403': 'Forbidden',
+            '401': 'Unauthorized',
+            '404': 'Not found',
+        },
+        tags=['Activities'],
+    ),
+)
+class CourseActivityListView(ListAPIView):
+    '''List all activities of a course'''
+    serializer_class = ActivityListSerializer
+    permission_classes = [IsAuthenticated, IsCourseInstructor]
+
+    def get_queryset(self):
+        # TODO optimize these queries
+        course = get_object_or_404(
+            Course.objects.select_related('instructor'),
+            token=self.kwargs['course_token']
+        )
+
+        # Check user permissions
+        self.check_object_permissions(self.request, course)
+
+        # Access the prefetched activities directly
+        return course.activities.select_related('user', 'course').all()

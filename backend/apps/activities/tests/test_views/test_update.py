@@ -13,7 +13,10 @@ class TestUpdateActivityView:
         self.url_name = 'activities:update_activity'
         self.url_path = reverse(
             self.url_name,
-            kwargs={'activity_token': get_activity.token}
+            kwargs={
+                'activity_token': get_activity.token,
+                'course_token': get_activity.course.token
+            }
         )
         self.data = {
             'attendance': {'session 1': True, 'session 2': False},
@@ -63,7 +66,10 @@ class TestUpdateActivityView:
         api_client.force_authenticate(self.activity.course.instructor.user)
         url_path = reverse(
             self.url_name,
-            kwargs={'activity_token': 'invalid_token'}
+            kwargs={
+                'activity_token': 'invalid_token',
+                'course_token': 'invalid_course_token'
+            }
         )
         response = api_client.patch(url_path, self.data, format='json')
         assert response.status_code == status.HTTP_404_NOT_FOUND
