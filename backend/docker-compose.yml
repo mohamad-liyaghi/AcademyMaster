@@ -38,14 +38,12 @@ services:
     restart: on-failure
     ports:
       - 5432:5432
+    env_file:
+      - .env.local.sample
     volumes:
       - postgres-data:/var/lib/postgresql/data  
     networks:
       - main
-    environment:
-      - POSTGRES_DB=$DATABASE_NAME
-      - POSTGRES_USER=$DATABASE_USER
-      - POSTGRES_PASSWORD=$DATABASE_PASSWORD
 
   test_database:
     image: postgres:12
@@ -53,12 +51,12 @@ services:
     restart: on-failure
     ports:
       - 5431:5432
+    env_file:
+      - .env.local.sample
     networks:
       - main
     environment:
-      - POSTGRES_DB=$TEST_DATABASE_NAME
-      - POSTGRES_USER=$TEST_DATABASE_USER
-      - POSTGRES_PASSWORD=$TEST_DATABASE_PASSWORD
+      - "POSTGRES_HOST_AUTH_METHOD=trust"
 
   celery:
     build: 
