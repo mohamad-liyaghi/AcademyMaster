@@ -61,7 +61,7 @@ class TeacherRetrieveView(RetrieveAPIView):
 
     def get_object(self):
         return get_object_or_404(
-            Teacher.objects.select_related('user'),
+            Teacher.objects.select_related('user', 'user__profile'),
             token=self.kwargs['teacher_token']
         )
 
@@ -141,4 +141,6 @@ class TeacherListView(ListAPIView):
     serializer_class = TeacherListSerializer
 
     def get_queryset(self):
-        return Teacher.objects.all().order_by('-promotion_date')
+        return Teacher.objects.select_related(
+            'user', 'user__profile'
+        ).all().order_by('-promotion_date')

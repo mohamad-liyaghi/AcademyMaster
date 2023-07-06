@@ -2,9 +2,14 @@ from rest_framework import serializers
 from courses.models import Course, CourseStatus
 from teachers.models import Teacher
 from core.models import WeekDays
+from core.serializers import (
+    InstructorRelationSerializer,
+    CourseRelationSerializer,
+    UserProfileRelationSerializer
+)
 
 
-class BaseCourseSerializer(serializers.ModelSerializer):
+class BaseCourseCreateSerializer(serializers.ModelSerializer):
     prerequisite = serializers.SlugRelatedField(
         slug_field='token',
         queryset=Course.objects.only('token'),
@@ -21,7 +26,7 @@ class BaseCourseSerializer(serializers.ModelSerializer):
     )
 
 
-class CourseCreateSerializer(BaseCourseSerializer):
+class CourseCreateSerializer(BaseCourseCreateSerializer):
 
     class Meta:
         model = Course
@@ -53,21 +58,10 @@ class CourseCreateSerializer(BaseCourseSerializer):
             raise ValueError(str(e))
 
 
-class CourseTeacherSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField()
-
-    class Meta:
-        model = Teacher
-        fields = [
-            'user',
-            'token',
-        ]
-
-
 class CourseRetrieveSerializer(serializers.ModelSerializer):
-    instructor = CourseTeacherSerializer()
-    assigned_by = serializers.StringRelatedField()
-    prerequisite = serializers.StringRelatedField()
+    instructor = InstructorRelationSerializer()
+    assigned_by = UserProfileRelationSerializer()
+    prerequisite = CourseRelationSerializer()
 
     class Meta:
         model = Course
@@ -89,7 +83,7 @@ class CourseRetrieveSerializer(serializers.ModelSerializer):
         ]
 
 
-class CourseUpdateSerializer(BaseCourseSerializer):
+class CourseUpdateSerializer(BaseCourseCreateSerializer):
     class Meta:
         model = Course
         fields = [
@@ -117,7 +111,7 @@ class CourseUpdateSerializer(BaseCourseSerializer):
 
 
 class CourseListSerializer(serializers.ModelSerializer):
-    instructor = CourseTeacherSerializer()
+    instructor = InstructorRelationSerializer()
 
     class Meta:
         model = Course

@@ -1,13 +1,17 @@
 from rest_framework import serializers
 from activities.models import Activity
+from core.serializers import (
+    CourseRelationSerializer,
+    UserProfileRelationSerializer,
+    EnrollmentRelationSerializer
+)
 
 
-# TODO make serializers for course/user/enrollt
 class ActivityRetrieveSerializer(serializers.ModelSerializer):
 
-    course = serializers.StringRelatedField()
-    user = serializers.StringRelatedField()
-    enrollment = serializers.StringRelatedField()
+    course = CourseRelationSerializer()
+    user = UserProfileRelationSerializer()
+    enrollment = EnrollmentRelationSerializer()
 
     class Meta:
         model = Activity
@@ -41,8 +45,8 @@ class ActivityUpdateSerializer(serializers.ModelSerializer):
 
 class ActivityListSerializer(serializers.ModelSerializer):
 
-    course = serializers.StringRelatedField()
-    user = serializers.StringRelatedField()
+    course = CourseRelationSerializer()
+    user = UserProfileRelationSerializer()
 
     class Meta:
         model = Activity

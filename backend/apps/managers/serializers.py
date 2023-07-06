@@ -3,12 +3,10 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from managers.models import Manager
-
-
-class PermissionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Permission
-        fields = ['codename']
+from core.serializers import (
+    PermissionSerializer,
+    UserProfileRelationSerializer
+)
 
 
 class ManagerCreateSerializer(serializers.ModelSerializer):
@@ -22,11 +20,10 @@ class ManagerCreateSerializer(serializers.ModelSerializer):
         required=False
     )
 
-    token = serializers.CharField(read_only=True)
-
     class Meta:
         model = Manager
         fields = ['user', 'permissions', 'token']
+        read_only_fields = ['token']
 
     def create(self, validated_data):
         try:
@@ -37,7 +34,7 @@ class ManagerCreateSerializer(serializers.ModelSerializer):
             )
 
         except Exception as e:
-            raise ValidationError(e)
+            raise ValidationError(str(e))
 
 
 class ManagerUpdateSerializer(serializers.ModelSerializer):
@@ -61,6 +58,7 @@ class ManagerUpdateSerializer(serializers.ModelSerializer):
 
 
 class ManagerRetrieveSerializer(serializers.ModelSerializer):
+    user = UserProfileRelationSerializer()
     # list of manager's permissions
     permissions = serializers.SerializerMethodField(
         method_name='get_permissions'
@@ -76,16 +74,12 @@ class ManagerRetrieveSerializer(serializers.ModelSerializer):
         ]
 
     def get_permissions(self, value):
-        permissions = Permission.objects.filter(
-            user=value.user,
-        )
-
-        serializer = PermissionSerializer(permissions, many=True)
-        return serializer.data
+        permissions = Permission.objects.filter(user=value.user)
+        return PermissionSerializer(permissions, many=True).data
 
 
 class ManagerListSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField()
+    user = UserProfileRelationSerializer()
 
     class Meta:
         model = Manager

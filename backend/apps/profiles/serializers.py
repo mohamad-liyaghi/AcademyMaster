@@ -1,8 +1,8 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from django.core.exceptions import ValidationError as ModelValidationError
-from django.contrib.auth import get_user_model
 from profiles.models import Profile
+from core.serializers import UserRelationSerializer
 
 
 class ProfileUpdateSerializer(serializers.ModelSerializer):
@@ -48,17 +48,8 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
             )
 
 
-class ProfileUserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = get_user_model()
-        fields = [
-            'first_name',
-            'last_name'
-        ]
-
-
 class ProfileRetrieveSerializer(serializers.ModelSerializer):
-    user = ProfileUserSerializer()
+    user = UserRelationSerializer()
 
     class Meta:
         model = Profile

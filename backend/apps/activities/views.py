@@ -36,7 +36,9 @@ class ActivityRetrieveView(RetrieveAPIView):
 
     def get_object(self):
         activity = get_object_or_404(
-            Activity.objects.select_related('user', 'course', 'enrollment'),
+            Activity.objects.select_related(
+                'user', 'course', 'enrollment', 'user__profile'
+            ),
             token=self.kwargs['activity_token'],
             course__token=self.kwargs['course_token'],
         )
@@ -102,7 +104,9 @@ class CourseActivityListView(ListAPIView):
     def get_queryset(self):
         # TODO optimize these queries
         course = get_object_or_404(
-            Course.objects.select_related('instructor'),
+            Course.objects.select_related(
+                'instructor',
+            ),
             token=self.kwargs['course_token']
         )
 
@@ -110,4 +114,6 @@ class CourseActivityListView(ListAPIView):
         self.check_object_permissions(self.request, course)
 
         # Access the prefetched activities directly
-        return course.activities.select_related('user', 'course').all()
+        return course.activities.select_related(
+            'user', 'user__profile'
+        ).all()

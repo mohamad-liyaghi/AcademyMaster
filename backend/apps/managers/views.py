@@ -124,7 +124,7 @@ class ManagerRetrieveView(RetrieveAPIView):
 
     def get_object(self):
         manager = get_object_or_404(
-            Manager,
+            Manager.objects.select_related('user', 'user__profile'),
             token=self.kwargs['manager_token']
         )
         return manager
@@ -146,4 +146,6 @@ class ManagerListView(ListAPIView):
     serializer_class = ManagerListSerializer
 
     def get_queryset(self):
-        return Manager.objects.all().order_by('-promotion_date')
+        return Manager.objects.select_related(
+            'user', 'user__profile'
+        ).all().order_by('-promotion_date')
