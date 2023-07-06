@@ -1,24 +1,27 @@
-from rest_framework.permissions import BasePermission
+from core.permissions import IsNonStudent, IsObjectOwner
 
 
-class IsProfileOwner(BasePermission):
+class CanUpdateProfile(IsObjectOwner):
     """
-    Only profile owner can update its profile info.
+    Only profile owner can update profile.
     """
+    message = 'Only profile owner can perform this action.'
 
     def has_object_permission(self, request, view, obj):
-        return (obj.user == request.user)
+        user = request.user
+        return self._is_object_owner(user, obj)
 
 
-class IsNonStudent(BasePermission):
+class CanRetrieveProfile(IsNonStudent, IsObjectOwner):
     """
-    Student can only view their profiles.
-    This permission doesnt accept their request for
-    viewing others profile page.
+    Only non-students such as admin/manager/teacher and the profile owner
+    can retrieve profile.
     """
+    message = 'Only non-students and profile owner can perform this action.'
+
+    def has_permission(self, request, view):
+        return True
 
     def has_object_permission(self, request, view, obj):
-        if request.user == obj.user:
-            return True
-
-        return not request.user.is_student()
+        user = request.user
+        return self._is_object_owner(user, obj) or self._is_non_student(user)

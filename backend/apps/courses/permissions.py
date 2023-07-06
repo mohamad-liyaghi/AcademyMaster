@@ -1,8 +1,8 @@
-from rest_framework.permissions import BasePermission
 from courses.models import Course
+from core.permissions import IsManager
 
 
-class CanAddCourse(BasePermission):
+class CanAddCourse(IsManager):
     '''
     Only admins and managers with courses.add_course,
     perm can add courses
@@ -10,32 +10,32 @@ class CanAddCourse(BasePermission):
     message = 'You dont have permission to add course.'
 
     def has_permission(self, request, view):
-        return request.user.has_perm(
+        return self._is_manager(request.user) and request.user.has_perm(
             perm_object=Course.get_permission('add')
         )
 
 
-class CanUpdateCourse(BasePermission):
+class CanUpdateCourse(IsManager):
     '''
-    Only course assigner and managers with courses.change_course perm
+    Only managers with courses.change_course perm
     can update unfinished courses
     '''
     message = 'Permission denied for updating course.'
 
     def has_object_permission(self, request, view, obj):
-        return request.user == obj.assigned_by or request.user.has_perm(
+        return self._is_manager(request.user) and request.user.has_perm(
             perm_object=Course.get_permission('change')
         )
 
 
-class CanDeleteCourse(BasePermission):
+class CanDeleteCourse(IsManager):
     '''
-    Only course assigner and managers with courses.delete_course perm
+    Only managers with courses.delete_course perm
     can delete unfinished courses
     '''
     message = 'You dont have permission to delete this course.'
 
     def has_object_permission(self, request, view, obj):
-        return request.user == obj.assigned_by or request.user.has_perm(
+        return self._is_manager(request.user) and request.user.has_perm(
             perm_object=Course.get_permission('delete')
         )

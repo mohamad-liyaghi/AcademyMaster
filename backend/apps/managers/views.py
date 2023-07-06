@@ -10,7 +10,6 @@ from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from managers.models import Manager
 from managers.permissions import (
-    IsManager,
     CanAddManager,
     CanDeleteManager,
     CanChangeManager,
@@ -21,6 +20,7 @@ from managers.serializers import (
     ManagerRetrieveSerializer,
     ManagerListSerializer
 )
+from core.permissions import IsManager
 
 
 @extend_schema_view(
@@ -37,7 +37,7 @@ from managers.serializers import (
     ),
 )
 class ManagerCreateView(CreateAPIView):
-    permission_classes = [IsAuthenticated, IsManager, CanAddManager]
+    permission_classes = [IsAuthenticated, CanAddManager]
     serializer_class = ManagerCreateSerializer
 
     def get_serializer_context(self):
@@ -71,7 +71,7 @@ class ManagerCreateView(CreateAPIView):
     ),
 )
 class ManagerUpdateView(UpdateAPIView):
-    permission_classes = [IsAuthenticated, IsManager, CanChangeManager]
+    permission_classes = [IsAuthenticated, CanChangeManager]
     serializer_class = ManagerUpdateSerializer
 
     def get_object(self):
@@ -96,7 +96,7 @@ class ManagerUpdateView(UpdateAPIView):
     ),
 )
 class ManagerDeleteView(DestroyAPIView):
-    permission_classes = [IsAuthenticated, IsManager, CanDeleteManager]
+    permission_classes = [IsAuthenticated, CanDeleteManager]
 
     def get_object(self):
         manager = get_object_or_404(

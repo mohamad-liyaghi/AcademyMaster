@@ -1,25 +1,18 @@
-from rest_framework.permissions import BasePermission
+from core.permissions import IsStudent, IsManager, IsObjectOwner
 
 
-class AllowStudentOnly(BasePermission):
-    '''Allow only student to access this view'''
-    message = 'Only student can access this page'
-
-    def has_permission(self, request, view):
-        return request.user.is_student()
-
-
-class IsManagerOrStudent(BasePermission):
-    '''Allow only manager and student to access the page'''
-    message = 'Only manager and student can access this page'
-
-    def has_permission(self, request, view):
-        return request.user.is_manager() or request.user.is_student()
-
-
-class IsObjectOwner(BasePermission):
+class CanRetrieveEnrollment(IsObjectOwner, IsManager, IsStudent):
     '''Allow only managers and object owner to access the object'''
     message = 'Only object owner can access this object'
 
+    def has_permission(self, request, view):
+        return (
+            self._is_manager(request.user) or
+            self._is_student(request.user)
+        )
+
     def has_object_permission(self, request, view, obj):
-        return request.user.is_manager() or obj.user == request.user
+        return (
+                self._is_manager(request.user) or
+                self._is_object_owner(request.user, obj)
+            )

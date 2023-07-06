@@ -24,7 +24,6 @@ from courses.serializers import (
 )
 from courses.models import Course, CourseStatus
 from courses.documents import CourseDocument
-from managers.permissions import IsManager
 
 
 @extend_schema_view(
@@ -41,7 +40,7 @@ from managers.permissions import IsManager
     ),
 )
 class CourseCreateView(CreateAPIView):
-    permission_classes = [IsAuthenticated, IsManager, CanAddCourse]
+    permission_classes = [IsAuthenticated, CanAddCourse]
     serializer_class = CourseCreateSerializer
 
     def get_serializer_context(self):
@@ -98,7 +97,7 @@ class CourseRetrieveView(RetrieveAPIView):
     ),
 )
 class CourseUpdateView(UpdateAPIView):
-    permission_classes = [IsAuthenticated, IsManager, CanUpdateCourse]
+    permission_classes = [IsAuthenticated, CanUpdateCourse]
     serializer_class = CourseUpdateSerializer
 
     def get_object(self):
@@ -123,7 +122,7 @@ class CourseUpdateView(UpdateAPIView):
     ),
 )
 class CourseDeleteView(DestroyAPIView):
-    permission_classes = [IsAuthenticated, IsManager, CanDeleteCourse]
+    permission_classes = [IsAuthenticated, CanDeleteCourse]
 
     def get_object(self):
         course = get_object_or_404(

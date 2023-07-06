@@ -11,7 +11,7 @@ from drf_spectacular.utils import extend_schema, extend_schema_view
 from teachers.permissions import (
     CanAddTeacher,
     CanDeleteTeacher,
-    IsObjectOwner,
+    CanUpdateTeacher,
 )
 from teachers.serializers import (
     TeacherCreateSerializer,
@@ -20,7 +20,6 @@ from teachers.serializers import (
     TeacherListSerializer
 )
 from teachers.models import Teacher
-from managers.permissions import IsManager
 
 
 @extend_schema_view(
@@ -37,7 +36,7 @@ from managers.permissions import IsManager
     ),
 )
 class TeacherCreateView(CreateAPIView):
-    permission_classes = [IsAuthenticated, IsManager, CanAddTeacher]
+    permission_classes = [IsAuthenticated, CanAddTeacher]
     serializer_class = TeacherCreateSerializer
 
     def get_serializer_context(self):
@@ -92,7 +91,7 @@ class TeacherRetrieveView(RetrieveAPIView):
     ),
 )
 class TeacherUpdateView(UpdateAPIView):
-    permission_classes = [IsAuthenticated, IsObjectOwner]
+    permission_classes = [IsAuthenticated, CanUpdateTeacher]
     serializer_class = TeacherUpdateSerializer
 
     def get_object(self):
@@ -117,7 +116,7 @@ class TeacherUpdateView(UpdateAPIView):
     ),
 )
 class TeacherDeleteView(DestroyAPIView):
-    permission_classes = [IsAuthenticated, IsManager, CanDeleteTeacher]
+    permission_classes = [IsAuthenticated, CanDeleteTeacher]
 
     def get_object(self):
         teacher = get_object_or_404(

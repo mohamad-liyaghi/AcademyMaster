@@ -7,7 +7,7 @@ from profiles.serializers import (
     ProfileUpdateSerializer,
     ProfileRetrieveSerializer
 )
-from profiles.permissions import IsProfileOwner, IsNonStudent
+from profiles.permissions import CanUpdateProfile, CanRetrieveProfile
 
 
 @extend_schema_view(
@@ -36,7 +36,7 @@ from profiles.permissions import IsProfileOwner, IsNonStudent
 )
 class ProfileUpdateView(UpdateAPIView):
     serializer_class = ProfileUpdateSerializer
-    permission_classes = [IsAuthenticated, IsProfileOwner]
+    permission_classes = [IsAuthenticated, CanUpdateProfile]
     queryset = Profile.objects.all()
 
     def get_object(self):
@@ -64,7 +64,7 @@ class ProfileUpdateView(UpdateAPIView):
 )
 class ProfileRetrieveView(RetrieveAPIView):
     serializer_class = ProfileRetrieveSerializer
-    permission_classes = [IsAuthenticated, IsNonStudent]
+    permission_classes = [IsAuthenticated, CanRetrieveProfile]
 
     def get_object(self):
         profile = get_object_or_404(

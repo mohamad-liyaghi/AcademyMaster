@@ -9,9 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema, extend_schema_view
 
 from .permissions import (
-    AllowStudentOnly,
-    IsManagerOrStudent,
-    IsObjectOwner,
+    CanRetrieveEnrollment,
 )
 from .serializers import (
     EnrollmentCreateSerializer,
@@ -20,6 +18,7 @@ from .serializers import (
     EnrollmentListSerializer,
 )
 from .models import Enrollment
+from core.permissions import IsStudent, IsManager
 
 
 @extend_schema_view(
@@ -36,7 +35,7 @@ from .models import Enrollment
     ),
 )
 class EnrollmentCreateView(CreateAPIView):
-    permission_classes = (IsAuthenticated, AllowStudentOnly)
+    permission_classes = (IsAuthenticated, IsStudent)
     serializer_class = EnrollmentCreateSerializer
 
     def get_serializer_context(self):
@@ -56,7 +55,7 @@ class EnrollmentCreateView(CreateAPIView):
     ),
 )
 class EnrollmentRetrieveView(RetrieveAPIView):
-    permission_classes = (IsAuthenticated, IsManagerOrStudent, IsObjectOwner)
+    permission_classes = (IsAuthenticated, CanRetrieveEnrollment)
     serializer_class = EnrollmentRetrieveSerializer
 
     def get_object(self):
@@ -95,7 +94,7 @@ class EnrollmentRetrieveView(RetrieveAPIView):
     ),
 )
 class EnrollmentUpdateView(UpdateAPIView):
-    permission_classes = (IsAuthenticated, IsObjectOwner)
+    permission_classes = (IsAuthenticated, CanRetrieveEnrollment)
     serializer_class = EnrollmentUpdateSerializer
 
     def get_object(self):
@@ -119,7 +118,7 @@ class EnrollmentUpdateView(UpdateAPIView):
     ),
 )
 class EnrollmentListView(ListAPIView):
-    permission_classes = (IsAuthenticated, IsManagerOrStudent)
+    permission_classes = (IsAuthenticated, IsManager | IsStudent)
     serializer_class = EnrollmentListSerializer
 
     def get_queryset(self):

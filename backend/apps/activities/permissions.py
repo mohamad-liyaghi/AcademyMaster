@@ -1,14 +1,21 @@
 from rest_framework.permissions import BasePermission
+from core.permissions import IsObjectOwner, IsNonStudent
 
 
-class CanRetrieveActivity(BasePermission):
+class CanRetrieveActivity(IsObjectOwner, IsNonStudent):
     '''Non students and the activity's owner can retrieve the activity'''
 
     message = 'You do not have permission to retrieve this activity'
 
+    def has_permission(self, request, view):
+        return True
+
     def has_object_permission(self, request, view, obj):
         user = request.user
-        return not user.is_student() or user == obj.user
+        return (
+                self._is_object_owner(user=user, obj=obj) or
+                self._is_non_student(request.user)
+            )
 
 
 class CanUpdateActivity(BasePermission):
