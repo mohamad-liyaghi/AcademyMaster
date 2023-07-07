@@ -8,9 +8,9 @@ from rest_framework.generics import (
 )
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema, extend_schema_view
-from elasticsearch_dsl import Q
 from rest_framework.response import Response
 from rest_framework import status
+from django.db.models import Case, When, Value
 from courses.permissions import (
     CanAddCourse,
     CanUpdateCourse,
@@ -169,20 +169,27 @@ class CourseListView(ListAPIView):
     serializer_class = CourseListSerializer
 
     def get_queryset(self):
-        # Filter it there is a search query
-        if (search_query := self.request.query_params.get('search')):
+        # Define the related fields
+        related_fields = ['instructor', 'instructor__user']
+
+        # Get all courses
+        courses = Course.objects.select_related(*related_fields)
+
+        # Check if there is a search query
+        search_query = self.request.query_params.get('search')
+        if search_query:
+            # Perform search and return queryset
             return CourseDocument.search().query(
-                Q(
-                    'multi_match', query=search_query,
-                    fields=[
-                            'title',
-                            'description',
-                        ]
-                )
-            ).to_queryset()
+                'multi_match', query=search_query,
+                fields=['title', 'description']
+            ).to_queryset().select_related(*related_fields)
 
-        return Course.objects.select_related(
-            'instructor', 'instructor__user'
-        ).order_by('-start_date')
-
-# TODO get only enrolling courses
+        # Order the courses by status and return the queryset
+        return courses.order_by(
+            '-start_date',
+            Case(
+                When(status=CourseStatus.ENROLLING, then=Value(0)),
+                When(status=CourseStatus.IN_PROGRESS, then=Value(1)),
+                When(status=CourseStatus.COMPLETED, then=Value(2)),
+            ),
+        )
