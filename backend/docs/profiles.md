@@ -1,20 +1,21 @@
 # Profiles Application Documentation
 
-The Profiles application is responsible for handling user profiles within the Academy Master project. It provides the necessary models, views, and permissions to manage user profiles and their associated information.
+## Introduction
+
+The Profiles application is responsible for handling user profiles within the Academy Master project. After a user creates an account, a profile object is created for them. The profile object contains additional information about the user, such as their profile picture, date of birth, and phone number.
 
 ## Table of Contents
-
-1. [Models](#models)
-    - [Profile](#profile)
-2. [Signals](#signals)
-    - [Create Profile for Active User](#create-profile-for-active-user)
-3. [Views](#views)
-    - [ProfileDetail](#profiledetail)
-    - [ProfileUpdate](#profileupdate)
-4. [Permissions](#permissions)
-    - [IsProfileOwner](#isprofileowner)
-    - [IsNonStudent](#isnonstudent)
-5. [Tests](#tests)
+- [Models](#models)
+  - [Profile](#profile)
+- [Signals](#signals)
+  - [Create Profile for Active User](#create-profile-for-active-user)
+- [Views](#views)
+  - [Profile Detail](#profile-detail)
+  - [Update Profile](#update-profile)
+- [Permissions](#permissions)
+  - [CanUpdateProfile](#canupdateprofile)
+  - [CanRetrieveProfile](#canretrieveprofile)
+- [Tests](#tests)
 
 ## Models
 
@@ -24,41 +25,43 @@ The `Profile` model represents a user profile. It contains the following fields:
 
 - `user`: A one-to-one relationship to the associated `Account` model.
 - `avatar`: An optional image field for the user's profile picture.
-- `birth_date`: An optional date field for the user's date of birth.
+- `birth_date`: A date field for the user's date of birth.
 - `passport_id`: A char field for saving users passport id.
 - `phone_number`: A char field that only accepts numbers with IR pattern.
-- `age`: A property that extracts age from users birth date.
+- `age`: A property that extracts age from the user's birth date.
+- `__check_required_fields()`: A method that checks if all the data fields are filled.
 
 ## Signals
 
 ### Create Profile for Active User
 
-This signal is triggered when a new user account is activated (i.e., email verification is complete). It creates a new profile associated with the activated user account.
+The `create_profile_for_active_user` signal is triggered when a new user account is activated (i.e., email verification is complete). It creates a new profile associated with the activated user account.
 
 ## Views
 
-### ProfileDetail
+### Profile Detail
 
-The `ProfileDetail` view is responsible for displaying a user's profile information. This view is accessible only to the profile owner and users with the `teacher` or `manager` role.
+The `ProfileRetrieveView` is responsible for displaying a user's profile information. This view is accessible only to the profile owner and users with the `teacher` or `manager` role.
 
-### ProfileUpdate
+### Update Profile
 
-The `ProfileUpdate` view is responsible for handling updates to a user's profile information. Only the profile owner can update their profile.
-
+The `ProfileUpdateView` is responsible for handling updates to a user's profile information. Only the profile owner can update their profile.
 
 ## Permissions
 
-### IsProfileOwner
+### CanUpdateProfile
 
-This permission class checks if the requesting user is the owner of the profile they are trying to access or modify.
+Make sure that the requesting user is the profile owner.
 
-### IsNonStudent
+### CanRetrieveProfile
 
-This permission class checks if the requesting user has a role other than `student`. This is used to restrict access to certain views for users with the `teacher` or `manager` role.
+Make sure that the requesting user is the profile owner or has the `teacher` or `manager` role.
 
 ## Tests
 
-The Profiles application is well-tested. To run the tests for the Profiles application, use the following command:
+The tests for the Profiles application can be found in the `apps/profiles` directory.
+
+Run them with the following command:
 
 ```
 pytest apps/profiles/
