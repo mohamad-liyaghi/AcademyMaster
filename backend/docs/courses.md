@@ -1,148 +1,125 @@
 # Courses Application Documentation
 
-The Courses application is responsible for managing courses and their related data within the Academy Master project. It provides the necessary models, views, and utilities to manage courses, course levels, and course statuses.
+The Courses application is a crucial component of the Academy Master project, responsible for managing courses and their associated data. This document provides a comprehensive overview of the application's models, views, permissions, documents, Celery Beat tasks, and tests.
 
 ## Table of Contents
 
-1. [Models](#models)
-    - [Course](#course)
-    - [CourseLevel](#courselevel)
-    - [CourseStatus](#coursestatus)
-2. [Views](#views)
-    - [CourseCreateView](#coursecreateview)
-    - [CourseRetrieveView](#courseretrieveview)
-    - [CourseUpdateView](#courseupdateview)
-    - [CourseDeleteView](#coursedeleteview)
-    - [CourseListView](#courselistview)
-3. [Permissions](#permissions)
-    - [CanAddCourse](#canaddcourse)
-    - [CanUpdateCourse](#canupdatecourse)
-    - [CanDeleteCourse](#candeletecourse)
-4. [Documents](#documents)
-    - [CourseDocument](#coursedocument)
-5. [Celery Beat Tasks](#celerybeattasks)
-    - [change_course_status_to_in_progress](#changecoursestatustoinprogress)
-    - [change_course_status_to_completed](#changecoursestatustocompleted)
+- [Models](#models)
+  - [Course](#course)
+  - [CourseLevel](#courselevel)
+  - [CourseStatus](#coursestatus)
+- [Views](#views)
+  - [CourseCreateView](#coursecreateview)
+  - [CourseRetrieveView](#courseretrieveview)
+  - [CourseUpdateView](#courseupdateview)
+  - [CourseDeleteView](#coursedeleteview)
+  - [CourseListView](#courselistview)
+- [Permissions](#permissions)
+  - [CanAddCourse](#canaddcourse)
+  - [CanUpdateCourse](#canupdatecourse)
+  - [CanDeleteCourse](#candeletecourse)
+- [Documents](#documents)
+  - [CourseDocument](#coursedocument)
+- [Celery Beat Tasks](#celery-beat-tasks)
+  - [change_course_status_to_in_progress](#change_course_status_to_in_progress)
+  - [change_course_status_to_completed](#change_course_status_to_completed)
+- [Tests](#tests)
 
 ## Models
 
 ### Course
 
-The `Course` model represents a course within the Academy Master project and contains the following fields:
-
-- `title`: A char field containing the course title.
-- `description`: A text field containing the course description.
-- `location`: A char field containing the course location.
-- `instructor`: A foreign key relationship to the associated `Teacher` model.
-- `assigned_by`: A foreign key relationship to the `Account` model of the user who assigned the course.
-- `start_date`: A date field representing the course start date.
-- `end_date`: A date field representing the course end date.
-- `schedule`: A JSON field containing the course schedule.
-- `days`: An ArrayField of `core.WeekDays` choices representing the course days.
-- `session_count`: An integer field representing the number of sessions in the course.
-- `prerequisite`: A foreign key relation containing the course prerequisite object id.
-- `level`: A field using the `CourseLevel` TextChoices.
-- `status`: A field using the `CourseStatus` TextChoices.
-- `price`: An INT field representing the course price.
+The `Course` model represents a course within the Academy Master project. It contains various fields to store information about the course, such as title, description, location, instructor, start date, end date, schedule, days, session count, prerequisite, level, status, and price.
 
 ### CourseLevel
 
-`CourseLevel` is a TextChoices field with the following choices:
-
-- A1 - Beginner
-- A2 - Elementary
-- B1 - Pre-Intermediate
-- B2 - Intermediate
-- C1 - Upper-Intermediate
-- C2 - Advance
+`CourseLevel` is a TextChoices field that represents the different levels of a course. It includes choices such as A1 (Beginner), A2 (Elementary), B1 (Pre-Intermediate), B2 (Intermediate), C1 (Upper-Intermediate), and C2 (Advanced).
 
 ### CourseStatus
 
-`CourseStatus` is a TextChoices field with the following choices:
-
-- ENROLLING
-- IN_PROGRESS
-- COMPLETED
+`CourseStatus` is a TextChoices field that represents the status of a course. It includes choices such as ENROLLING, IN_PROGRESS, and COMPLETED.
 
 ## Views
 
 ### CourseCreateView
 
-This view is responsible for creating new courses and assigning them to a teacher. The expected responses are:
+`CourseCreateView` is responsible for creating new courses and assigning them to a teacher. It accepts a POST request with the necessary data and returns the following responses:
 
-- '201': 'ok'
-- '400': 'Invalid data'
-- '401': 'Unauthorized'
-- '403': 'Permission denied'
+- '201': 'Created' - The course was successfully created.
+- '400': 'Bad Request' - The request data is invalid.
+- '401': 'Unauthorized' - The user is not authorized to create a course.
+- '403': 'Forbidden' - The user does not have permission to create a course.
 
 ### CourseRetrieveView
 
-This view is responsible for retrieving a course's details. The expected responses are:
+`CourseRetrieveView` is responsible for retrieving a course's details. It accepts a GET request and returns the following responses:
 
-- '200': 'ok'
-- '401': 'Unauthorized'
-- '404': 'Not found'
+- '200': 'OK' - The course details were successfully retrieved.
+- '401': 'Unauthorized' - The user is not authorized to access the course.
+- '404': 'Not Found' - The requested course does not exist.
 
 ### CourseUpdateView
 
-This view is responsible for updating an existing course's information. The expected responses are:
+`CourseUpdateView` is responsible for updating an existing course's information. It accepts a PUT/PATCH request with the updated data and returns the following responses:
 
-- '200': 'ok'
-- '400': 'Course is not enrolling'
-- '403': 'Permission denied'
-- '404': 'Not found'
+- '200': 'OK' - The course was successfully updated.
+- '400': 'Bad Request' - The request data is invalid or the course is not in the ENROLLING status.
+- '401': 'Unauthorized' - The user is not authorized to update the course.
+- '403': 'Forbidden' - The user does not have permission to update the course.
+- '404': 'Not Found' - The requested course does not exist.
 
 ### CourseDeleteView
 
-This view is responsible for deleting a course. The expected responses are:
+`CourseDeleteView` is responsible for deleting a course. It accepts a DELETE request and returns the following responses:
 
-- '204': 'ok'
-- '400': 'Cannot delete in-progress/completed courses.'
-- '403': 'Permission denied'
-- '404': 'Not found'
+- '204': 'No Content' - The course was successfully deleted.
+- '400': 'Bad Request' - The course cannot be deleted if it is in progress or completed.
+- '403': 'Forbidden' - The user does not have permission to delete the course.
+- '404': 'Not Found' - The requested course does not exist.
 
 ### CourseListView
 
-This view is responsible for listing all courses and their associated information. It also accepts a search query parameter (`search`) to search courses via Elasticsearch. The expected responses are:
+`CourseListView` is responsible for listing all courses and their associated information. It also accepts a search query parameter (`search`) to search for courses using Elasticsearch. It returns the following responses:
 
-- '200': 'ok'
-- '401': 'Unauthorized'
+- '200': 'OK' - The list of courses was successfully retrieved.
+- '401': 'Unauthorized' - The user is not authorized to access the course list.
 
 ## Permissions
 
 ### CanAddCourse
 
-This permission allows only admins and managers with the `courses.add_course` permission to add new courses.
+`CanAddCourse` permission allows only managers with the `courses.add_course` permission to add new courses.
 
 ### CanUpdateCourse
 
-This permission allows only the course assigner and managers with the `courses.change_course` permission to update unfinished courses.
+`CanUpdateCourse` permission allows only managers with the `courses.change_course` permission to update unfinished courses.
 
 ### CanDeleteCourse
 
-This permission allows only the course assigner and managers with the `courses.delete_course` permission to update unfinished courses.
+`CanDeleteCourse` permission allows only managers with the `courses.delete_course` permission to delete unfinished courses.
 
 ## Documents
 
 ### CourseDocument
 
-This Elasticsearch document is responsible for searching courses by `title` and `description`.
+`CourseDocument` is an Elasticsearch document responsible for searching courses by their title and description.
 
 ## Celery Beat Tasks
 
 ### change_course_status_to_in_progress
 
-This task filters all courses with a status of `ENROLLING` and a start date of today and changes their status to `IN_PROGRESS`.
+`change_course_status_to_in_progress` task filters all courses with a status of `ENROLLING` and a start date of today. It changes their status to `IN_PROGRESS`.
 
 ### change_course_status_to_completed
 
-This task filters all courses with a status of `IN_PROGRESS` and an end date of today and changes theirstatus to `COMPLETED`.
-
+`change_course_status_to_completed` task filters all courses with a status of `IN_PROGRESS` and an end date of today. It changes their status to `COMPLETED`.
 
 ## Tests
 
-The Courses application is well-tested. To run the tests for the Profiles application, use the following command:
+The tests for the Courses application are located in the `apps/courses` directory. They can be run using the following command:
 
 ```
 pytest apps/courses/
 ```
+
+These tests ensure that all functionalities of the Courses application are working as expected.
