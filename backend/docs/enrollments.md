@@ -1,114 +1,78 @@
 # Enrollments Application Documentation
 
-The Enrollments application is responsible for managing enrollments and their related data within the Academy Master project. It provides the necessary models, views, and utilities to manage enrollments and enrollment statuses.
+The Enrollments application is responsible for managing enrollments and their related data within the Academy Master project. This document provides a comprehensive overview of the application's models, views, permissions, signals, Celery Beat tasks, and tests.
+Once a course is created, students can enroll in it. 
 
 ## Table of Contents
 
-1. [Models](#models)
-    - [Enrollment](#enrollment)
-    - [EnrollmentStatus](#enrollmentstatus)
-2. [Views](#views)
-    - [EnrollmentCreateView](#enrollmentcreateview)
-    - [EnrollmentRetrieveView](#enrollmentretrieveview)
-    - [EnrollmentUpdateView](#enrollmentupdateview)
-    - [EnrollmentListView](#enrollmentlistview)
-3. [Permissions](#permissions)
-    - [AllowStudentOnly](#allowstudentonly)
-    - [IsManagerOrStudent](#ismanagerorstudent)
-    - [IsObjectOwner](#isobjectowner)
-4. [Signals](#signals)
-    - [send_enrollment_email](#sendenrollmentemail)
-5. [Celery Beat Tasks](#celerybeattasks)
-    - [auto_delete_pending_enrollment](#autodeletependingenrollment)
+- [Models](#models)
+  - [Enrollment](#enrollment)
+  - [EnrollmentStatus](#enrollmentstatus)
+- [Views](#views)
+  - [EnrollmentCreateView](#enrollmentcreateview)
+  - [EnrollmentRetrieveView](#enrollmentretrieveview)
+  - [EnrollmentUpdateView](#enrollmentupdateview)
+  - [EnrollmentListView](#enrollmentlistview)
+- [Permissions](#permissions)
+  - [CanRetrieveEnrollment](#canretrieveenrollment)
+- [Signals](#signals)
+  - [send_enrollment_email](#send_enrollment_email)
+- [Celery Beat Tasks](#celery-beat-tasks)
+  - [auto_delete_pending_enrollment](#auto_delete_pending_enrollment)
+- [Tests](#tests)
 
 ## Models
 
 ### Enrollment
 
-The `Enrollment` model represents an enrollment within the Academy Master project and contains the following fields:
-
-- `course`: A foreign key relationship to the associated `Course` model.
-- `user`: A foreign key relationship to the `Account` model of the user who enrolled in the course.
-- `status`: A field using the `EnrollmentStatus` TextChoices.
-- `created_at`: A datetime field representing the enrollment creation date.
-- `price`: An INT field representing the enrollment price.
+The `Enrollment` model represents an enrollment within the Academy Master project. It contains fields such as course, user, status, created_at, and price.
 
 ### EnrollmentStatus
 
-`EnrollmentStatus` is a TextChoices field with the following choices:
-
-- PENDING
-- SUCCESS
-- FAILED
+`EnrollmentStatus` is a TextChoices field that represents the status of an enrollment. It includes choices such as PENDING, SUCCESS, and FAILED.
 
 ## Views
 
 ### EnrollmentCreateView
 
-This is responsible for creating new enrollments. Only students can create enrollments. The expected responses are:
-
-- '201': 'ok'
-- '400': 'Bad request'
-- '401': 'Unauthorized'
-- '403': 'Permission denied'
+`EnrollmentCreateView` is responsible for creating new enrollments. Only students can create enrollments. It accepts a POST request with the necessary data and returns responses based on the request's validity and the user's authorization.
 
 ### EnrollmentRetrieveView
 
-This view is responsible for retrieving an enrollment's details. The enrollment can be retrieved by the enrolled user or a manager. The expected responses are:
-
-- '200': 'ok'
-- '401': 'Unauthorized'
-- '403': 'Permission denied'
-- '404': 'Not found'
+`EnrollmentRetrieveView` is responsible for retrieving an enrollment's details. The enrollment can be retrieved by the enrolled user or a manager. It accepts a GET request and returns responses based on the request's validity and the user's authorization.
 
 ### EnrollmentUpdateView
 
-This view is responsible for updating an enrollment's status to success or failed. The expected responses are:
-
-- '200': 'ok'
-- '400': 'Bad request'
-- '401': 'Unauthorized'
-- '403': 'Permission denied'
-- '404': 'Not found'
+`EnrollmentUpdateView` is responsible for updating an enrollment's status to success or failed. It accepts a PUT/PATCH request with the updated data and returns responses based on the request's validity and the user's authorization.
 
 ### EnrollmentListView
 
-This view is responsible for listing all enrollments. If the user is a manager, all enrollments are listed. The expected responses are:
-
-- '200': 'ok'
-- '401': 'Unauthorized'
-- '403': 'Permission denied'
+`EnrollmentListView` is responsible for listing all enrollments. If the user is a manager, all enrollments are listed. It returns responses based on the user's login status and authorization.
 
 ## Permissions
 
-### AllowStudentOnly
+### CanRetrieveEnrollment
 
-This permission allows only students to access the view.
-
-### IsManagerOrStudent
-
-This permission allows only managers and students to access the page.
-
-### IsObjectOwner
-
-This permission allows only managers and the object owner to access the object.
+`CanRetrieveEnrollment` permission allows only managers and the object owner to retrieve an enrollment.
 
 ## Signals
 
 ### send_enrollment_email
 
-This signal is responsible for sending an email when an enrollment is created.
+The `send_enrollment_email` signal is responsible for sending an email when an enrollment is created.
 
 ## Celery Beat Tasks
 
 ### auto_delete_pending_enrollment
 
-This task deletes pending enrollments after a day without payment.
+The `auto_delete_pending_enrollment` task deletes pending enrollments after a day without payment.
 
 ## Tests
 
-The Enrollments application is well-tested. To run the tests for the Enrollments application, use the following command:
+The tests for the Enrollments application are located in the `enrollments/tests` folder. They can be run using the following command:
 
 ```
 pytest apps/enrollments/
 ```
+
+These tests ensure that all functionalities of the Enrollments application are working as expected.
