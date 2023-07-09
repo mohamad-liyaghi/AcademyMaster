@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.contrib.auth.models import Permission
+from core.models.permissions import AbstractPermission
 from django.db import models, transaction
 from typing import Optional
 
@@ -7,7 +7,9 @@ from typing import Optional
 class ManagerManager(models.Manager):
 
     def _get_permission_by_codename(self, codenames: str):
-        return Permission.objects.filter(codename__in=codenames)
+        return AbstractPermission.get_subclass_permissions().filter(
+            codename__in=codenames
+        )
 
     @transaction.atomic
     def create_with_permissions(
