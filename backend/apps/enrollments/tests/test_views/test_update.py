@@ -49,9 +49,11 @@ class TestEnrollmentUpdateView:
         response = api_client.put(self.url_path, self.data)
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
-    def test_update_not_found(self, api_client, active_account):
+    def test_update_not_found(
+            self, api_client, active_account, unique_uuid
+    ):
         api_client.force_authenticate(active_account)
-        url = reverse(self.url_name, kwargs={'enrollment_token': 'not-found'})
+        url = reverse(self.url_name, kwargs={'enrollment_token': unique_uuid})
         response = api_client.put(url, self.data)
         assert response.status_code == status.HTTP_404_NOT_FOUND
 

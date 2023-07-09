@@ -11,6 +11,7 @@ This documentation provides a comprehensive overview of the Core Module, which h
     - Send Email
 3. [Pytest Fixtures](#pytest-fixtures)
     - Client
+    - Unique UUID
 4. [Permissions](#permissions)
     - IsManager
     - IsTeacher
@@ -54,6 +55,9 @@ The `send_email` task is a background process responsible for sending emails thr
 
 ### Client
 The `api_client` fixture provides an `APIClient` client for testing API endpoints.
+
+### Unique UUID
+The `unique_uuid` fixture provides a unique uuid for testing based on the time.
 
 ## Permissions <a name="permissions"></a>
 

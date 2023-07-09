@@ -48,14 +48,16 @@ class TestRetrieveActivityView:
         response = api_client.get(self.url_path)
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
-    def test_retrieve_not_found(self, api_client):
+    def test_retrieve_not_found(self, api_client, unique_uuid):
         self.url_path = reverse(
             self.url_name,
             kwargs={
-                'activity_token': 'invalid_token',
-                'course_token': 'invalid_course_token'
+                'activity_token': unique_uuid,
+                'course_token': unique_uuid
             }
         )
         api_client.force_authenticate(user=self.activity.user)
         response = api_client.get(self.url_path)
         assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert unique_uuid != self.activity.token
+        assert unique_uuid != self.activity.course.token

@@ -62,13 +62,13 @@ class TestUpdateActivityView:
         assert response.status_code == status.HTTP_200_OK
         assert self.activity.final_mark == 50
 
-    def test_update_not_found(self, api_client):
+    def test_update_not_found(self, api_client, unique_uuid):
         api_client.force_authenticate(self.activity.course.instructor.user)
         url_path = reverse(
             self.url_name,
             kwargs={
-                'activity_token': 'invalid_token',
-                'course_token': 'invalid_course_token'
+                'activity_token': unique_uuid,
+                'course_token': unique_uuid
             }
         )
         response = api_client.patch(url_path, self.data, format='json')

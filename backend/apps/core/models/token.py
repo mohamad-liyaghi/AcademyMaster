@@ -1,15 +1,11 @@
 from django.db import models
-from core.utils import generate_unique_token
+import uuid
 
 
 class AbstractToken(models.Model):
-    token = models.CharField(max_length=32, unique=True)
+    token = models.UUIDField(
+        default=uuid.uuid4, editable=False, unique=True
+    )
 
     class Meta:
         abstract = True
-
-    def save(self, *args, **kwargs):
-        if not self.token:
-            self.token = generate_unique_token(self.__class__)
-
-        super().save(*args, **kwargs)

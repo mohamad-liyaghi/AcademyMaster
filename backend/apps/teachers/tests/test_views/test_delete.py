@@ -47,12 +47,12 @@ class TestTeacherDeleteView:
         response = api_client.delete(self.url_path)
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
-    def test_delete_invalid_teacher(self, api_client, superuser):
+    def test_delete_invalid_teacher(self, api_client, superuser, unique_uuid):
         api_client.force_authenticate(superuser)
         response = api_client.delete(
                 reverse(
                     self.url_name,
-                    kwargs={'teacher_token': 'invalid_token'}
+                    kwargs={'teacher_token': unique_uuid}
                 ),
             )
         assert response.status_code == status.HTTP_404_NOT_FOUND

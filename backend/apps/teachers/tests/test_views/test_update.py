@@ -35,12 +35,15 @@ class TestTeacherUpdateView:
         assert not superuser == self.teacher.teacher.user
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
-    def test_update_invalid_teacher(self, api_client, superuser):
+    def test_update_invalid_teacher(self, api_client, superuser, unique_uuid):
         api_client.force_authenticate(superuser)
+
+        assert unique_uuid != self.teacher.teacher.token
+
         response = api_client.put(
             reverse(
                 self.url_name,
-                kwargs={'teacher_token': 'Invalid Token'}
+                kwargs={'teacher_token': unique_uuid}
             )
         )
         assert response.status_code == status.HTTP_404_NOT_FOUND

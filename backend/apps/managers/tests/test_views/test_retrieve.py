@@ -36,11 +36,13 @@ class TestManagerRetrieveView:
         resp = api_client.get(self.url_path)
         assert resp.status_code == status.HTTP_403_FORBIDDEN
 
-    def test_retrieve_non_existing_manager(self, api_client, superuser):
+    def test_retrieve_non_existing_manager(
+            self, api_client, superuser, unique_uuid
+    ):
         api_client.force_authenticate(superuser)
         url_path = reverse(
                 self.url_name,
-                kwargs={'manager_token': 'invalid_token'}
+                kwargs={'manager_token': unique_uuid}
         )
         resp = api_client.get(url_path)
         assert resp.status_code == status.HTTP_404_NOT_FOUND

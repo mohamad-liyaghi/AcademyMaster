@@ -76,11 +76,13 @@ class TestManagerUpdateView:
         response = api_client.put(self.url_path, self.data)
         assert response.status_code == status.HTTP_200_OK
 
-    def test_update_non_exist_manager(self, api_client, superuser):
+    def test_update_non_exist_manager(
+            self, api_client, superuser, unique_uuid
+    ):
         api_client.force_authenticate(superuser)
         url = reverse(
             self.url_name,
-            kwargs={'manager_token': 'non-exist-token'}
+            kwargs={'manager_token': unique_uuid}
         )
         response = api_client.put(url, self.data)
         assert response.status_code == status.HTTP_404_NOT_FOUND
