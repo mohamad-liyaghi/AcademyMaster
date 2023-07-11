@@ -101,4 +101,11 @@ To run the backend of this project, ensure Docker and Docker-compose are install
 
 4. Open a browser and navigate to `http://localhost:8000/`.
 
+
+To run tests, execute the following command:
+
+```bash
+docker exec  -it academy-master-backend pytest
+```
+
 Enjoy using AcademyMaster!
