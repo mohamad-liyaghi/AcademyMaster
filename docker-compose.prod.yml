@@ -1,0 +1,67 @@
+version: '3.9'
+
+services:
+
+  backend:
+    networks:
+      - main
+    extends:
+      file: backend/docker-compose.prod.yml
+      service: backend
+    
+  database:
+  
+    networks:
+      - main
+    extends:
+      file: backend/docker-compose.prod.yml
+      service: database
+  
+  test_database:
+    networks:
+      - main
+    extends:
+      file: backend/docker-compose.prod.yml
+      service: test_database
+
+  rabbitmq:
+    networks:
+      - main
+    extends:
+      file: backend/docker-compose.prod.yml
+      service: rabbitmq
+  
+  redis:
+    networks:
+      - main
+    extends:
+      file: backend/docker-compose.prod.yml
+      service: redis
+  
+
+  elastic:
+    extends:
+      file: backend/docker-compose.prod.yml
+      service: elastic
+
+  celery:
+    extends:
+      file: backend/docker-compose.prod.yml
+      service: celery
+
+  celery-beat:
+    extends:
+      file: backend/docker-compose.prod.yml
+      service: celery-beat
+
+
+  # frontend:
+  #   extends:
+  #     file: frontend/docker-compose.prod.yml
+  #     service: frontend
+
+networks:
+  main:
+
+volumes:
+  postgres-data:

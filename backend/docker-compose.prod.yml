@@ -14,7 +14,7 @@ services:
       - 8000:8000
     volumes:
       - .:/backend
-      - .env.prod.sample:/backend/.env
+      - .env.prod:/backend/.env
     restart: on-failure
     networks:
       - main
@@ -36,7 +36,7 @@ services:
     ports:
       - 5432:5432
     env_file:
-      - .env.prod.sample
+      - .env.prod
     volumes:
       - postgres-data:/var/lib/postgresql/data  
     networks:
@@ -49,7 +49,7 @@ services:
     ports:
       - 5431:5432
     env_file:
-      - .env.prod.sample
+      - .env.prod
     networks:
       - main
     environment:
@@ -71,7 +71,7 @@ services:
     networks:
       - main    
     env_file:
-      - .env.prod.sample
+      - .env.prod
     environment:
       *COMMON_VARS
     
@@ -91,7 +91,7 @@ services:
     networks:
       - main 
     env_file:
-      - .env.prod.sample
+      - .env.prod
     environment:
       *COMMON_VARS
 
