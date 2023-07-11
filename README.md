@@ -23,10 +23,17 @@ Follow these simple steps to run the AcademyMaster backend:
     cd AcademyMaster/
     ```
 
-3. Execute the following command to run the project using Docker-compose:
+3. To run the project in development mode using Docker-compose, execute the following command:
     ```bash
     docker-compose up --build
     ```
+
+   If you want to run the project in production mode, use the following command instead:
+    ```bash
+    docker-compose -f docker-compose.prod.yml up --build
+    ```
+
+   This will build and start the containers required for the project to run in a production environment.
 
 4. Access the AcademyMaster API in a web browser at `http://localhost:8000/`.
 
