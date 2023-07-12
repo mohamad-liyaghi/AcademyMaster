@@ -34,6 +34,9 @@ class Activity(AbstractToken):
         unique_together = ['course', 'user']
         ordering = ['-created_at']
 
+    def __str__(self) -> str:
+        return f"Activity {self.user}"
+
     def save(self, *args, **kwargs):
         if not self.pk:
             self.course = self.enrollment.course

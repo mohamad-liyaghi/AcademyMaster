@@ -102,7 +102,6 @@ class CourseActivityListView(ListAPIView):
     permission_classes = [IsAuthenticated, IsCourseInstructor]
 
     def get_queryset(self):
-        # TODO optimize these queries
         course = get_object_or_404(
             Course.objects.select_related(
                 'instructor',

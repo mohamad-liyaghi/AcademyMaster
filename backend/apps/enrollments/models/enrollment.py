@@ -27,6 +27,9 @@ class Enrollment(AbstractToken):
     class Meta:
         ordering = ['-created_at']
 
+    def __str__(self) -> str:
+        return f"Enrollment {self.user}"
+
     def _validate_enrollment(self) -> None:
         existing_enrollment = Enrollment.objects.filter(
             course=self.course,

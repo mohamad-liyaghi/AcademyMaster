@@ -37,4 +37,9 @@ Follow these simple steps to run the AcademyMaster backend:
 
 4. Access the AcademyMaster API in a web browser at `http://localhost:8000/`.
 
+You can also load sample data by running the following command:
+```bash
+docker exec -it academy-master-backend python manage.py loaddata db.json
+```
+
 You're all set! Enjoy using AcademyMaster to manage your academic institution with ease.
