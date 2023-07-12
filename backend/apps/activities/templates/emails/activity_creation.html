@@ -9,8 +9,11 @@ Checkout your new activity!
 
 
 
-<p>From now on you can check your activities such as final mark and attendance on page below.</p>
-{# TODO add link to the page #}
+<p>
+    From now on you can check your activities such as final mark and attendance on
+     <a href="http://{{ default_domain }}{% url 'activities:retrieve_activity' course_token activity_token %}">This link</a>.
+</p>
+
 
 <p>Thanks,</p> 
 <p>The Academy Master Team</p>
