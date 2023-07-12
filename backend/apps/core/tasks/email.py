@@ -12,10 +12,6 @@ def send_email(
 ) -> None:
     '''Send email in the background using Celery'''
 
-    # Do not send emails while testing
-    if config('TESTING', default=False, cast=bool):
-        return
-
     # The defult domain for sending links in html message
     context.update({'default_domain': config('DEFAULT_DOMAIN')})
 
