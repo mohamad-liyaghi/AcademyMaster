@@ -1,4 +1,4 @@
-venv/
+backend/venv/
 TODO.md
 .env
 __pycache__
@@ -8,3 +8,4 @@ logs/critical.log
 !logs/.keep
 media/
 .idea/
+.pytest_cache/

@@ -8,15 +8,26 @@ services:
     extends:
       file: backend/docker-compose.yml
       service: backend
-    
+    depends_on:
+      elastic:
+        condition: service_started
+      database:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+      redis:
+        condition: service_started
+      smtp4dev:
+        condition: service_started
+
   database:
-  
+
     networks:
       - main
     extends:
       file: backend/docker-compose.yml
       service: database
-  
+
   test_database:
     networks:
       - main
@@ -30,20 +41,20 @@ services:
     extends:
       file: backend/docker-compose.yml
       service: rabbitmq
-  
+
   redis:
     networks:
       - main
     extends:
       file: backend/docker-compose.yml
       service: redis
-  
+
 
   elastic:
     extends:
       file: backend/docker-compose.yml
       service: elastic
-  
+
   smtp4dev:
     extends:
       file: backend/docker-compose.yml
@@ -56,11 +67,21 @@ services:
     extends:
       file: backend/docker-compose.yml
       service: celery
+    depends_on:
+      backend:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
 
   celery-beat:
     extends:
       file: backend/docker-compose.yml
       service: celery-beat
+    depends_on:
+      backend:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
 
 
   # frontend:

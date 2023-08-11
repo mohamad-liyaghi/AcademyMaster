@@ -1,0 +1,28 @@
+name: Academy Master Tests
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Build image and run container
+      run: |
+        docker-compose up --build -d
+
+    - name: Wait for backend container to prepare
+      uses: jakejarvis/wait-action@master
+      with:
+        time: '5s'
+
+    - name: Run tests
+      run: docker exec academy-master-backend pytest
