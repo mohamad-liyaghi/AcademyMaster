@@ -7,11 +7,11 @@ services:
 
   backend:
     restart: on-failure
-    command: sh docker/production/commands/setup.sh
+    command: sh ./docker/production/commands/setup.sh
     container_name: academy-master-backend
     build:
       context: .
-      dockerfile: docker/production/Dockerfile
+      dockerfile: ./backend/docker/production/Dockerfile
     ports:
       - "8000:8000"
     volumes:
@@ -116,9 +116,9 @@ services:
   celery:
     build:
       context: .
-      dockerfile: docker/production/Dockerfile
+      dockerfile: ./backend/docker/production/Dockerfile
     container_name: academy-master-celery
-    command: sh docker/production/commands/celery.sh
+    command: sh ./docker/production/commands/celery.sh
     volumes:
       - ./backend/:/backend
     environment:
@@ -136,9 +136,9 @@ services:
   celery-beat:
     build:
       context: .
-      dockerfile: docker/production/Dockerfile
+      dockerfile: ./backend/docker/production/Dockerfile
     container_name: academy-master-celery-beat
-    command: sh docker/production/commands/celery-beat.sh
+    command: sh ./docker/production/commands/celery-beat.sh
     env_file:
         - ./backend/.env.prod/
     environment:
