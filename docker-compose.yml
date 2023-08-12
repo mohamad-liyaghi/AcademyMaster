@@ -1,13 +1,26 @@
 version: '3.9'
 
+x-environment: &COMMON_VARS
+    DJANGO_SETTINGS_MODULE: 'config.settings.local'
+
 services:
 
   backend:
+    restart: on-failure
+    command: sh docker/local/commands/setup.sh
+    container_name: academy-master-backend
+    build:
+      context: .
+      dockerfile: docker/local/Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/:/backend
+      - ./backend/.env.local:/backend/.env
     networks:
       - main
-    extends:
-      file: backend/docker-compose.yml
-      service: backend
+    environment:
+      *COMMON_VARS
     depends_on:
       elastic:
         condition: service_started
@@ -21,52 +34,99 @@ services:
         condition: service_started
 
   database:
-
+    image: postgres:12
+    container_name: academy-master-postgres
+    restart: on-failure
+    ports:
+      - 5432:5432
+    env_file:
+      - ./backend/.env.local
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
     networks:
       - main
-    extends:
-      file: backend/docker-compose.yml
-      service: database
 
   test_database:
+    image: postgres:12
+    container_name: academy-master-postgres-test
+    restart: on-failure
+    ports:
+      - 5431:5432
     networks:
       - main
-    extends:
-      file: backend/docker-compose.yml
-      service: test_database
+    environment:
+      - "POSTGRES_HOST_AUTH_METHOD=trust"
 
   rabbitmq:
+    image: rabbitmq:3.10-management-alpine
+    hostname: rabbitmq
+    container_name: academy-master-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    env_file:
+      - ./backend/.env.local
     networks:
       - main
-    extends:
-      file: backend/docker-compose.yml
-      service: rabbitmq
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status" ]
+      interval: 3s
+      timeout: 3s
+      retries: 5
 
   redis:
+    image: redis:6.2-alpine
+    container_name: academy-master-redis
+
+    ports:
+      - 6379:6379
     networks:
       - main
-    extends:
-      file: backend/docker-compose.yml
-      service: redis
+    restart: always
 
 
   elastic:
-    extends:
-      file: backend/docker-compose.yml
-      service: elastic
-
-  smtp4dev:
-    extends:
-      file: backend/docker-compose.yml
-      service: smtp4dev
-
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.14.0
+    container_name: academy-master-elastic
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9200" ]
+      interval: 7s
+      timeout: 3s
+      retries: 3
+    ports:
+      - "9200:9200"
     networks:
       - main
+    restart: always
+
+  smtp4dev:
+    image: rnwood/smtp4dev:v3
+    container_name: academy-master-smtp4dev
+    ports:
+      - "5000:80"
+      - "25:25"
+    networks:
+      - main
+    restart: always
 
   celery:
-    extends:
-      file: backend/docker-compose.yml
-      service: celery
+    build:
+      context: .
+      dockerfile: docker/local/Dockerfile
+    container_name: academy-master-celery
+    command: sh docker/local/commands/celery.sh
+    volumes:
+      - ./backend/:/backend
+    environment:
+      *COMMON_VARS
+    env_file:
+      - ./backend/.env.local
+    networks:
+      - main
     depends_on:
       backend:
         condition: service_started
@@ -74,9 +134,19 @@ services:
         condition: service_healthy
 
   celery-beat:
-    extends:
-      file: backend/docker-compose.yml
-      service: celery-beat
+    build:
+      context: .
+      dockerfile: docker/local/Dockerfile
+    container_name: academy-master-celery-beat
+    command: sh docker/local/commands/celery-beat.sh
+    env_file:
+        - ./backend/.env.local
+    environment:
+      *COMMON_VARS
+    volumes:
+        - ./backend/:/backend
+    networks:
+      - main
     depends_on:
       backend:
         condition: service_started
