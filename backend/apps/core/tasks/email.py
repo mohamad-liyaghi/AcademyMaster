@@ -10,9 +10,11 @@ def send_email(
     subject: str,
     context: dict
 ) -> None:
-    '''Send email in the background using Celery'''
+    """
+    Send email to the specified recipient using the provided template and context.
+    """
 
-    # The defult domain for sending links in html message
+    # The default domain for sending links in html message
     context.update({'default_domain': config('DEFAULT_DOMAIN')})
 
     # Create an email message using the provided template and context
