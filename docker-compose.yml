@@ -2,16 +2,17 @@ version: '3.9'
 
 x-environment: &COMMON_VARS
     DJANGO_SETTINGS_MODULE: 'config.settings.local'
+    ENVIRONMENT: LOCAL
 
 services:
 
   backend:
     restart: on-failure
-    command: sh ./docker/local/commands/setup.sh
+    command: sh ./docker/commands/setup.sh
     container_name: academy-master-backend
     build:
       context: .
-      dockerfile: ./backend/docker/local/Dockerfile
+      dockerfile: ./backend/docker/Dockerfile
     ports:
       - "8000:8000"
     volumes:
@@ -116,9 +117,9 @@ services:
   celery:
     build:
       context: .
-      dockerfile: ./backend/docker/local/Dockerfile
+      dockerfile: ./backend/docker/Dockerfile
     container_name: academy-master-celery
-    command: sh ./docker/local/commands/celery.sh
+    command: sh ./docker/commands/celery.sh
     volumes:
       - ./backend/:/backend
     environment:
@@ -136,9 +137,9 @@ services:
   celery-beat:
     build:
       context: .
-      dockerfile: ./backend/docker/local/Dockerfile
+      dockerfile: ./backend/docker/Dockerfile
     container_name: academy-master-celery-beat
-    command: sh ./docker/local/commands/celery-beat.sh
+    command: sh ./docker/commands/celery-beat.sh
     env_file:
         - ./backend/.env.local
     environment:

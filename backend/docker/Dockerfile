@@ -10,7 +10,6 @@ WORKDIR /backend
 # Upgrade pip to the latest version
 RUN pip install --upgrade pip 
 
-
 # Copy the requirements file to the working directory
 COPY backend/requirements.txt .
 

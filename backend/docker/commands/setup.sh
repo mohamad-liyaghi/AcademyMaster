@@ -8,4 +8,8 @@ echo "Rebuilding search index..."
 python manage.py search_index --rebuild -f
 
 echo "Starting the server..."
-python manage.py runserver 0.0.0.0:8000
+if [[ $ENVIRONMENT == "PRODUCTION" ]]; then
+    gunicorn config.wsgi --bind 0.0.0.0:8000
+else
+    python manage.py runserver 0.0.0.0:8000
+fi
