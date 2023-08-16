@@ -13,6 +13,7 @@ The front-end of AcademyMaster is currently undergoing maintenance. We welcome c
 ## How to Run <a name="how-to-run"></a>
 Follow these simple steps to run the AcademyMaster backend:
 
+### Using docker-compose
 1. Clone the project repository:
     ```bash
     git clone https://github.com/mohamad-liyaghi/AcademyMaster.git
@@ -22,7 +23,6 @@ Follow these simple steps to run the AcademyMaster backend:
     ```bash
     cd AcademyMaster/
     ```
-
 3. To run the project in development mode using Docker-compose, execute the following command:
     ```bash
     docker-compose up --build
@@ -37,9 +37,36 @@ Follow these simple steps to run the AcademyMaster backend:
 
 4. Access the AcademyMaster API in a web browser at `http://localhost:8000/`.
 
+### Using k8s
+1. Clone the project repository:
+    ```bash
+    git clone https://github.com/mohamad-liyaghi/AcademyMaster.git
+    ```
+
+2. Change to the project directory:
+    ```bash
+    cd AcademyMaster/
+    ```
+
+3. Create a ConfigMap from .env file(use .env.prod for production).
+    ```bash
+    kubectl create configmap academy-master-env --from-env-file=./backend/.env.local
+    kubectl create configmap academy-master-env-file --from-file=.env=./backend/.env.local
+    ```
+
+4. Creating Deployments
+    ```bash
+    kubectl apply -f ./kubernetes
+    ```
+
+5. For accessing backend API you need to edit service object on backend.yaml with preferred type for you cluster or 
+use `http://backend:8000/` on nodes
+
+
 You can also load sample data by running the following command:
 ```bash
 docker exec -it academy-master-backend python manage.py loaddata db.json
 ```
+
 
 You're all set! Enjoy using AcademyMaster to manage your academic institution with ease.

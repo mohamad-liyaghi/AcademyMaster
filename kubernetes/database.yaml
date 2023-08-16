@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: academy-master-redis-dp
+  labels:
+    app: academy-master-redis
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: academy-master-redis
+
+  template:
+    metadata:
+      labels:
+        app: academy-master-redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:6.2-alpine
+          ports:
+            - containerPort: 6379
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+spec:
+  selector:
+    app: academy-master-redis
+  ports:
+  - protocol: TCP
+    port: 6379
+    targetPort: 6379
+
+--- 
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: academy-master-postgres-dp
+  labels:
+    app: academy-master-postgres
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: academy-master-postgres
+
+  template:
+    metadata:
+      labels:
+        app: academy-master-postgres
+    spec:
+      containers:
+        - name: postgres
+
+          envFrom:
+          - configMapRef:
+              name: academy-master-env
+
+          env:
+          - name: POSTGRES_USER
+            value: "$(DATABASE_USER)"
+          - name: POSTGRES_PASSWORD
+            value: "$(DATABASE_PASSWORD)"
+          - name: POSTGRES_DB
+            value: "$(DATABASE_NAME)"
+
+
+          volumeMounts:
+          - mountPath: /var/lib/postgresql/data
+            name: postgres-vol
+
+          image: postgres:12
+          ports:
+          - containerPort: 5432
+      volumes:
+      - name: postgres-vol
+        emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: database
+spec:
+  selector:
+    app: academy-master-postgres
+  ports:
+  - protocol: TCP
+    port: 5432
+    targetPort: 5432
