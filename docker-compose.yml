@@ -16,7 +16,6 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./backend/:/backend
       - ./backend/.env.local:/backend/.env
     networks:
       - main
@@ -120,8 +119,6 @@ services:
       dockerfile: ./backend/docker/Dockerfile
     container_name: academy-master-celery
     command: sh ./docker/commands/celery.sh
-    volumes:
-      - ./backend/:/backend
     environment:
       *COMMON_VARS
     env_file:
@@ -144,8 +141,6 @@ services:
         - ./backend/.env.local
     environment:
       *COMMON_VARS
-    volumes:
-        - ./backend/:/backend
     networks:
       - main
     depends_on:
