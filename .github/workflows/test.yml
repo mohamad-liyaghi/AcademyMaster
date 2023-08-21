@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  on_docker_compose:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,3 +26,27 @@ jobs:
 
     - name: Run tests
       run: docker exec academy-master-backend pytest
+  on_k8s:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Testing on a k8s Cluster
+        uses: helm/kind-action@v1.4.0
+      - name : Preparing cluster for backend
+        run: |
+          kubectl create configmap academy-master-env --from-env-file=./backend/.env.local
+          kubectl create configmap academy-master-env-file --from-file=.env=./backend/.env.local
+
+          kubectl run test-database --env "POSTGRES_HOST_AUTH_METHOD=trust" --image=postgres:12 --port=5432
+          kubectl expose pod test-database --port=5432 --target-port=5432 --name=test-database
+
+          kubectl apply -f ./kubernetes
+
+      - name: Wait for containers to prepare
+        run: |
+          kubectl wait --for=condition=ready pod --all
+
+      - name: Pytest
+        run: kubectl exec `kubectl get pod -l "app=academy-master-backend" -o jsonpath='{.items[0].metadata.name}'` -- pytest
