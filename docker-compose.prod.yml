@@ -2,16 +2,18 @@ version: '3.9'
 
 x-environment: &COMMON_VARS
     DJANGO_SETTINGS_MODULE: 'config.settings.production'
+    ENVIRONMENT: PRODUCTION
+
 
 services:
 
   backend:
     restart: on-failure
-    command: sh ./docker/production/commands/setup.sh
+    command: sh ./docker/commands/setup.sh
     container_name: academy-master-backend
     build:
       context: .
-      dockerfile: ./backend/docker/production/Dockerfile
+      dockerfile: ./backend/docker/Dockerfile
     ports:
       - "8000:8000"
     volumes:
@@ -116,9 +118,9 @@ services:
   celery:
     build:
       context: .
-      dockerfile: ./backend/docker/production/Dockerfile
+      dockerfile: ./backend/docker/Dockerfile
     container_name: academy-master-celery
-    command: sh ./docker/production/commands/celery.sh
+    command: sh ./docker/commands/celery.sh
     volumes:
       - ./backend/:/backend
     environment:
@@ -136,9 +138,9 @@ services:
   celery-beat:
     build:
       context: .
-      dockerfile: ./backend/docker/production/Dockerfile
+      dockerfile: ./backend/docker/Dockerfile
     container_name: academy-master-celery-beat
-    command: sh ./docker/production/commands/celery-beat.sh
+    command: sh ./docker/commands/celery-beat.sh
     env_file:
         - ./backend/.env.prod/
     environment:

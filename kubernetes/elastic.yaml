@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: academy-master-elastic-dp
+  labels:
+    app: academy-master-elastic
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: academy-master-elastic
+  template:
+    metadata:
+      labels:
+        app: academy-master-elastic
+    spec:
+      containers:
+      - name: elastic
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.14.0
+        ports:
+        - containerPort: 9200
+
+        env:
+          - name: discovery.type
+            value: "single-node"
+          - name: xpack.security.enabled
+            value: "false"
+          - name: ES_JAVA_OPTS
+            value: "-Xms512m -Xmx512m"
+
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 9200
+
+          initialDelaySeconds: 7
+          periodSeconds: 3
+          failureThreshold: 3
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: elastic
+spec:
+  selector:
+    app: academy-master-elastic
+  ports:
+    - protocol: TCP
+      port: 9200
+      targetPort: 9200
