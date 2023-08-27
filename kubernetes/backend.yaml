@@ -19,16 +19,6 @@ spec:
         image: mohammadbaj/academy_master:latest
         command: ["/bin/sh"]
         args: [ "/backend/docker/commands/setup.sh" ]
-        livenessProbe:
-          httpGet:
-            path: /
-            port: 8000
-
-          initialDelaySeconds: 10
-          timeoutSeconds: 20
-          periodSeconds: 3
-          failureThreshold: 5
-
 
         volumeMounts:
         - name: env-file
