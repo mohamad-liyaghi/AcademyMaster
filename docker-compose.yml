@@ -46,7 +46,7 @@ services:
     networks:
       - main
 
-  test_database:
+  test-database:
     image: postgres:12
     container_name: academy-master-postgres-test
     restart: on-failure
