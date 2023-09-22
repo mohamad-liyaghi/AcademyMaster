@@ -39,8 +39,8 @@ services:
     image: postgres:12
     container_name: academy-master-postgres
     restart: on-failure
-    ports:
-      - 5432:5432
+    expose:
+      - 5432
     env_file:
       - ./backend/.env.prod/
     volumes:
@@ -52,8 +52,8 @@ services:
     image: postgres:12
     container_name: academy-master-postgres-test
     restart: on-failure
-    ports:
-      - 5431:5432
+    expose:
+      - 5432
     networks:
       - main
     environment:
@@ -63,9 +63,9 @@ services:
     image: rabbitmq:3.10-management-alpine
     hostname: rabbitmq
     container_name: academy-master-rabbitmq
-    ports:
-      - "5672:5672"
-      - "15672:15672"
+    expose:
+      - 15672
+      - 5672
     env_file:
       - ./backend/.env.prod/
     networks:
@@ -79,9 +79,8 @@ services:
   redis:
     image: redis:6.2-alpine
     container_name: academy-master-redis
-
-    ports:
-      - 6379:6379
+    expose:
+      - 6379
     networks:
       - main
     restart: always
@@ -99,8 +98,8 @@ services:
       interval: 7s
       timeout: 3s
       retries: 3
-    ports:
-      - "9200:9200"
+    expose:
+      - 9200
     networks:
       - main
     restart: always
@@ -110,7 +109,8 @@ services:
     container_name: academy-master-smtp4dev
     ports:
       - "5000:80"
-      - "25:25"
+    expose:
+      - 25
     networks:
       - main
     restart: always
