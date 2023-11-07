@@ -19,7 +19,6 @@ class TestCodeResendView:
         response = api_client.post(
             self.url_path, {"user": inactive_account.token}, format="json"
         )
-        print(response.json())
         assert response.status_code == status.HTTP_201_CREATED
         assert inactive_account.verification_codes.count() == 2
 
