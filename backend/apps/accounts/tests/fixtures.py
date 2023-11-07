@@ -5,20 +5,26 @@ from core.tests.utils import create_account
 
 faker = Faker()
 
-
-@pytest.fixture
-def deactive_account():
-    return create_account()
+BASE_PASSWORD = "1234UserPASS"
 
 
-@pytest.fixture
-def active_account():
-    return create_account(is_active=True)
+@pytest.fixture(scope="session")
+def inactive_account(django_db_setup, django_db_blocker) -> Account:
+    """Return an inactive accounts instance."""
+    with django_db_blocker.unblock():
+        yield create_account(password=BASE_PASSWORD)
 
 
-@pytest.fixture
-def superuser():
-    return Account.objects.create_superuser(
-        email=faker.email(),
-        password=faker.password()
-    )
+@pytest.fixture(scope="session")
+def active_account(django_db_setup, django_db_blocker) -> Account:
+    """Return an active accounts instance."""
+    with django_db_blocker.unblock():
+        yield create_account(is_active=True, password=BASE_PASSWORD)
+
+
+@pytest.fixture(scope="session")
+def superuser(django_db_setup, django_db_blocker) -> Account:
+    with django_db_blocker.unblock():
+        yield Account.objects.create_superuser(
+            email=faker.email(), password=BASE_PASSWORD
+        )
