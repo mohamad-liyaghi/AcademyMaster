@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('managers', '0001_initial'),
+        ("managers", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='manager',
-            name='token',
+            model_name="manager",
+            name="token",
             field=models.CharField(default=534, max_length=32, unique=True),
             preserve_default=False,
         ),

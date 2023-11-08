@@ -5,30 +5,33 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('profiles', '0001_initial'),
+        ("profiles", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='profile',
-            name='address',
-            field=models.CharField(default='NO address were provided.', max_length=150),
+            model_name="profile",
+            name="address",
+            field=models.CharField(default="NO address were provided.", max_length=150),
         ),
         migrations.AlterField(
-            model_name='profile',
-            name='birth_date',
+            model_name="profile",
+            name="birth_date",
             field=models.DateField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='profile',
-            name='passport_id',
+            model_name="profile",
+            name="passport_id",
             field=models.CharField(default=None, max_length=15),
         ),
         migrations.AlterField(
-            model_name='profile',
-            name='phone_number',
-            field=models.CharField(max_length=13, null=True, validators=[django.core.validators.RegexValidator('^\\+98\\d{10}$')]),
+            model_name="profile",
+            name="phone_number",
+            field=models.CharField(
+                max_length=13,
+                null=True,
+                validators=[django.core.validators.RegexValidator("^\\+98\\d{10}$")],
+            ),
         ),
     ]

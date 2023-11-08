@@ -4,7 +4,7 @@ from rest_framework.generics import (
     UpdateAPIView,
     DestroyAPIView,
     RetrieveAPIView,
-    ListAPIView
+    ListAPIView,
 )
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema, extend_schema_view
@@ -18,22 +18,22 @@ from managers.serializers import (
     ManagerCreateSerializer,
     ManagerUpdateSerializer,
     ManagerRetrieveSerializer,
-    ManagerListSerializer
+    ManagerListSerializer,
 )
 from core.permissions import IsManager
 
 
 @extend_schema_view(
     post=extend_schema(
-        description='''Add a new manager.''',
+        description="""Add a new manager.""",
         request=ManagerCreateSerializer,
         responses={
-            '201': 'created',
-            '400': 'Invalid data',
-            '401': 'Unauthorized',
-            '403': 'Permission denied for promoting managers',
+            "201": "created",
+            "400": "Invalid data",
+            "401": "Unauthorized",
+            "403": "Permission denied for promoting managers",
         },
-        tags=['Managers'],
+        tags=["Managers"],
     ),
 )
 class ManagerCreateView(CreateAPIView):
@@ -41,33 +41,33 @@ class ManagerCreateView(CreateAPIView):
     serializer_class = ManagerCreateSerializer
 
     def get_serializer_context(self):
-        return {'request': self.request}
+        return {"request": self.request}
 
 
 @extend_schema_view(
     put=extend_schema(
-        description='''Update a managers permissions.''',
+        description="""Update a managers permissions.""",
         request=ManagerCreateSerializer,
         responses={
-            '200': 'ok',
-            '400': 'Invalid data',
-            '401': 'Unauthorized',
-            '403': 'Permission denied',
-            '404': 'Manager not found',
+            "200": "ok",
+            "400": "Invalid data",
+            "401": "Unauthorized",
+            "403": "Permission denied",
+            "404": "Manager not found",
         },
-        tags=['Managers'],
+        tags=["Managers"],
     ),
     patch=extend_schema(
-        description='''Update a managers permissions.''',
+        description="""Update a managers permissions.""",
         request=ManagerCreateSerializer,
         responses={
-            '200': 'ok',
-            '400': 'Invalid data',
-            '401': 'Unauthorized',
-            '403': 'Permission denied',
-            '404': 'Manager not found',
+            "200": "ok",
+            "400": "Invalid data",
+            "401": "Unauthorized",
+            "403": "Permission denied",
+            "404": "Manager not found",
         },
-        tags=['Managers'],
+        tags=["Managers"],
     ),
 )
 class ManagerUpdateView(UpdateAPIView):
@@ -75,47 +75,41 @@ class ManagerUpdateView(UpdateAPIView):
     serializer_class = ManagerUpdateSerializer
 
     def get_object(self):
-        manager = get_object_or_404(
-            Manager,
-            token=self.kwargs['manager_token']
-        )
+        manager = get_object_or_404(Manager, token=self.kwargs["manager_token"])
         self.check_object_permissions(self.request, manager)
         return manager
 
 
 @extend_schema_view(
     delete=extend_schema(
-        description='''Delete a manager.''',
+        description="""Delete a manager.""",
         responses={
-            '204': 'ok',
-            '401': 'Unauthorized',
-            '403': 'Permission denied for deleting managers',
-            '404': 'Manager not found',
+            "204": "ok",
+            "401": "Unauthorized",
+            "403": "Permission denied for deleting managers",
+            "404": "Manager not found",
         },
-        tags=['Managers'],
+        tags=["Managers"],
     ),
 )
 class ManagerDeleteView(DestroyAPIView):
     permission_classes = [IsAuthenticated, CanDeleteManager]
 
     def get_object(self):
-        manager = get_object_or_404(
-            Manager,
-            token=self.kwargs['manager_token']
-        )
+        manager = get_object_or_404(Manager, token=self.kwargs["manager_token"])
         return manager
 
 
 @extend_schema_view(
     get=extend_schema(
-        description='''Retrieve a manager by admin/managers.''',
+        description="""Retrieve a manager by admin/managers.""",
         responses={
-            '200': 'ok',
-            '401': 'Unauthorized',
-            '403': 'Permission denied',
-            '404': 'Manager not found',
+            "200": "ok",
+            "401": "Unauthorized",
+            "403": "Permission denied",
+            "404": "Manager not found",
         },
-        tags=['Managers'],
+        tags=["Managers"],
     ),
 )
 class ManagerRetrieveView(RetrieveAPIView):
@@ -124,21 +118,21 @@ class ManagerRetrieveView(RetrieveAPIView):
 
     def get_object(self):
         manager = get_object_or_404(
-            Manager.objects.select_related('user', 'user__profile'),
-            token=self.kwargs['manager_token']
+            Manager.objects.select_related("user", "user__profile"),
+            token=self.kwargs["manager_token"],
         )
         return manager
 
 
 @extend_schema_view(
     get=extend_schema(
-        description='''List of managers.''',
+        description="""List of managers.""",
         responses={
-            '200': 'ok',
-            '401': 'Unauthorized',
-            '403': 'Permission denied',
+            "200": "ok",
+            "401": "Unauthorized",
+            "403": "Permission denied",
         },
-        tags=['Managers'],
+        tags=["Managers"],
     ),
 )
 class ManagerListView(ListAPIView):
@@ -146,6 +140,8 @@ class ManagerListView(ListAPIView):
     serializer_class = ManagerListSerializer
 
     def get_queryset(self):
-        return Manager.objects.select_related(
-            'user', 'user__profile'
-        ).all().order_by('-promotion_date')
+        return (
+            Manager.objects.select_related("user", "user__profile")
+            .all()
+            .order_by("-promotion_date")
+        )

@@ -4,9 +4,9 @@ from accounts.models import Account, VerificationCode
 
 @admin.register(Account)
 class AccountAdmin(admin.ModelAdmin):
-    list_display = ['email', 'full_name', 'is_active']
+    list_display = ["email", "full_name", "is_active"]
 
 
 @admin.register(VerificationCode)
 class VerificationCodeAdmin(admin.ModelAdmin):
-    list_display = ['user', 'code', 'expire_at']
+    list_display = ["user", "code", "expire_at"]

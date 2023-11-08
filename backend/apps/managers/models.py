@@ -16,7 +16,7 @@ class Manager(AbstractToken, AbstractPermission):
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
-        related_name='promoted_managers',
+        related_name="promoted_managers",
     )
 
     promotion_date = models.DateTimeField(auto_now_add=True)
@@ -24,16 +24,15 @@ class Manager(AbstractToken, AbstractPermission):
     objects = ManagerManager()
 
     class Meta:
-        db_table = 'managers'
-        verbose_name = 'Manager'
-        verbose_name_plural = 'Managers'
+        db_table = "managers"
+        verbose_name = "Manager"
+        verbose_name_plural = "Managers"
 
     def __str__(self) -> str:
-        return f'{self.user} (Manager)'
+        return f"{self.user} (Manager)"
 
     def save(self, *args, **kwargs):
         if not self.pk and self.promoted_by:
-
             if not self.user.is_student():
                 raise PermissionDenied("Promoted user must be student.")
 

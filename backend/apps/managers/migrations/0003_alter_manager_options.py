@@ -4,14 +4,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('managers', '0002_manager_token'),
+        ("managers", "0002_manager_token"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='manager',
-            options={'verbose_name': 'Manager', 'verbose_name_plural': 'Managers'},
+            name="manager",
+            options={"verbose_name": "Manager", "verbose_name_plural": "Managers"},
         ),
     ]

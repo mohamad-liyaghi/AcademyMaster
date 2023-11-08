@@ -5,16 +5,15 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('courses', '0003_alter_course_days'),
-        ('activities', '0003_alter_activity_unique_together'),
+        ("courses", "0003_alter_course_days"),
+        ("activities", "0003_alter_activity_unique_together"),
     ]
 
     operations = [
         migrations.AlterUniqueTogether(
-            name='activity',
-            unique_together={('course', 'user')},
+            name="activity",
+            unique_together={("course", "user")},
         ),
     ]

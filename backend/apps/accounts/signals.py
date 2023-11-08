@@ -22,10 +22,10 @@ def send_verification_email(sender, created, instance, **kwargs):
         send_email.delay(
             template_path="emails/verification_code.html",
             to_email=user.email,
-            subject='Verify Your Account',
+            subject="Verify Your Account",
             context={
-                'verification_code': verification_code.code,
-                'first_name': user.first_name,
-                'expire_at': verification_code.expire_at,
-            }
+                "verification_code": verification_code.code,
+                "first_name": user.first_name,
+                "expire_at": verification_code.expire_at,
+            },
         )

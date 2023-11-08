@@ -17,21 +17,16 @@ class AbstractPermission(models.Model):
         """
 
         # First get from cache
-        permissions = cache.get('permissions')
+        permissions = cache.get("permissions")
 
         if not permissions:
             subclasses = AbstractPermission.__subclasses__()
-            model_names = [
-                subclass.__name__.lower() for subclass in subclasses
-            ]
-            app_labels = [
-                subclass._meta.app_label for subclass in subclasses
-            ]
+            model_names = [subclass.__name__.lower() for subclass in subclasses]
+            app_labels = [subclass._meta.app_label for subclass in subclasses]
             permissions = cls._get_permission_for_model(
-                app_labels=app_labels,
-                model_names=model_names
+                app_labels=app_labels, model_names=model_names
             )
-            cache.set('permissions', permissions, timeout=60 * 24)
+            cache.set("permissions", permissions, timeout=60 * 24)
 
         return permissions
 
@@ -46,7 +41,7 @@ class AbstractPermission(models.Model):
         Examples:
         get_permission('add', Course) -> add_course permission
         """
-        codename = f'{action}_{cls.__name__.lower()}'
+        codename = f"{action}_{cls.__name__.lower()}"
 
         # Check cache first
         permission = cache.get(codename)
@@ -54,9 +49,7 @@ class AbstractPermission(models.Model):
         if not permission:
             # Get from database
             try:
-                permission = cls.get_subclass_permissions().get(
-                    codename=codename
-                )
+                permission = cls.get_subclass_permissions().get(codename=codename)
             except Permission.DoesNotExist:
                 raise ValueError("Permission not found")
 
@@ -78,17 +71,15 @@ class AbstractPermission(models.Model):
         # Get content type ids of model
         content_type_ids = ContentType.objects.filter(
             model__in=model_names, app_label__in=app_labels
-        ).values_list('id', flat=True)
+        ).values_list("id", flat=True)
 
         # return permissions with given content type ids
-        return Permission.objects.filter(
-            content_type__id__in=content_type_ids
-        )
+        return Permission.objects.filter(content_type__id__in=content_type_ids)
 
     def _validate_creator(self, creator) -> None:
         """
-            Only admins and managers can promote users.
-            Promoters should have the add object permission though
+        Only admins and managers can promote users.
+        Promoters should have the add object permission though
         """
 
         # admins can promote managers
@@ -98,7 +89,5 @@ class AbstractPermission(models.Model):
         if not creator.is_manager():
             raise PermissionDenied("Promoter must be a manager.")
 
-        if not creator.has_perm(
-            perm_object=self.__class__.get_permission('add')
-        ):
+        if not creator.has_perm(perm_object=self.__class__.get_permission("add")):
             raise PermissionDenied("Permission denied for creating.")

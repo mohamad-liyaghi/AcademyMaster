@@ -3,18 +3,10 @@ from django.db import models
 
 
 class AccountManager(BaseUserManager):
-
-    def create_user(
-            self, email: str, password: str, is_active=False, **kwargs
-    ):
-
+    def create_user(self, email: str, password: str, is_active=False, **kwargs):
         email = self.normalize_email(email)
 
-        user = self.model(
-            email=email,
-            is_active=is_active,
-            **kwargs
-        )
+        user = self.model(email=email, is_active=is_active, **kwargs)
 
         user.set_password(password)
 
@@ -24,12 +16,7 @@ class AccountManager(BaseUserManager):
     def create_superuser(self, email: str, password: str, **kwargs):
         email = self.normalize_email(email)
 
-        user = self.model(
-            email=email,
-            is_active=True,
-            is_superuser=True,
-            **kwargs
-        )
+        user = self.model(email=email, is_active=True, is_superuser=True, **kwargs)
 
         user.set_password(password)
 
@@ -39,25 +26,27 @@ class AccountManager(BaseUserManager):
 
 
 class VerificationCodeManager(models.Manager):
-
     def verify(self, user, code: str) -> bool:
-        '''
+        """
         Verify a verification code
-        '''
+        """
         verification_code = user.verification_codes.first()
 
         if not verification_code:
             return False, "No verification code found"
 
         if verification_code.is_expired():
-            return False, 'Code is Expired.'
+            return False, "Code is Expired."
 
         if verification_code.code == code:
             if verification_code.retry_count >= 5:
-                return (False, f'Maximum retry exceeded, \
-                        wait until {verification_code.expire_at}')
+                return (
+                    False,
+                    f"Maximum retry exceeded, \
+                        wait until {verification_code.expire_at}",
+                )
             # If code is valid and retries are less than 5
-            return True, 'Code is valid'
+            return True, "Code is valid"
 
         # code is incorrect, update retry count
         verification_code.retry_count += 1

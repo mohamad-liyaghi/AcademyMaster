@@ -3,34 +3,28 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from managers.models import Manager
-from core.serializers import (
-    PermissionSerializer,
-    UserProfileRelationSerializer
-)
+from core.serializers import PermissionSerializer, UserProfileRelationSerializer
 
 
 class ManagerCreateSerializer(serializers.ModelSerializer):
     user = serializers.SlugRelatedField(
-        slug_field='token',
-        queryset=get_user_model().objects.all()
+        slug_field="token", queryset=get_user_model().objects.all()
     )
     permissions = serializers.ListField(
-        child=serializers.CharField(),
-        write_only=True,
-        required=False
+        child=serializers.CharField(), write_only=True, required=False
     )
 
     class Meta:
         model = Manager
-        fields = ['user', 'permissions', 'token']
-        read_only_fields = ['token']
+        fields = ["user", "permissions", "token"]
+        read_only_fields = ["token"]
 
     def create(self, validated_data):
         try:
             return Manager.objects.create_with_permissions(
-                user=validated_data['user'],
-                promoted_by=self.context['request'].user,
-                codenames=validated_data.get('permissions', None),
+                user=validated_data["user"],
+                promoted_by=self.context["request"].user,
+                codenames=validated_data.get("permissions", None),
             )
 
         except Exception as e:
@@ -39,20 +33,18 @@ class ManagerCreateSerializer(serializers.ModelSerializer):
 
 class ManagerUpdateSerializer(serializers.ModelSerializer):
     permissions = serializers.ListField(
-        child=serializers.CharField(),
-        write_only=True,
-        required=False
+        child=serializers.CharField(), write_only=True, required=False
     )
 
     class Meta:
         model = Manager
-        fields = ['permissions']
+        fields = ["permissions"]
 
     def update(self, instance, validated_data):
         Manager.objects.update_permission(
-                user=instance.user,
-                permissions=[],
-                codenames=validated_data.get('permissions', None)
+            user=instance.user,
+            permissions=[],
+            codenames=validated_data.get("permissions", None),
         )
         return super().update(instance, validated_data)
 
@@ -60,18 +52,11 @@ class ManagerUpdateSerializer(serializers.ModelSerializer):
 class ManagerRetrieveSerializer(serializers.ModelSerializer):
     user = UserProfileRelationSerializer()
     # list of manager's permissions
-    permissions = serializers.SerializerMethodField(
-        method_name='get_permissions'
-    )
+    permissions = serializers.SerializerMethodField(method_name="get_permissions")
 
     class Meta:
         model = Manager
-        fields = [
-            'user',
-            'promoted_by',
-            'promotion_date',
-            'permissions'
-        ]
+        fields = ["user", "promoted_by", "promotion_date", "permissions"]
 
     def get_permissions(self, value):
         permissions = Permission.objects.filter(user=value.user)
@@ -83,7 +68,4 @@ class ManagerListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Manager
-        fields = [
-            'user',
-            'token'
-        ]
+        fields = ["user", "token"]

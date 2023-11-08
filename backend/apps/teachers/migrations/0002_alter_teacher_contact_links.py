@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('teachers', '0001_initial'),
+        ("teachers", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='teacher',
-            name='contact_links',
+            model_name="teacher",
+            name="contact_links",
             field=models.JSONField(blank=True, null=True),
         ),
     ]

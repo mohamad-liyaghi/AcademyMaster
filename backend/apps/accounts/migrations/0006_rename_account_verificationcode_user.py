@@ -4,15 +4,14 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('accounts', '0005_remove_account_role'),
+        ("accounts", "0005_remove_account_role"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='verificationcode',
-            old_name='account',
-            new_name='user',
+            model_name="verificationcode",
+            old_name="account",
+            new_name="user",
         ),
     ]

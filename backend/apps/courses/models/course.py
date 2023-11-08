@@ -14,16 +14,10 @@ class Course(AbstractToken, AbstractPermission):
     location = models.CharField(max_length=150)
 
     instructor = models.ForeignKey(
-        Teacher,
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name='courses'
+        Teacher, on_delete=models.SET_NULL, null=True, related_name="courses"
     )
 
-    assigned_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE
-    )
+    assigned_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     start_date = models.DateField()
     end_date = models.DateField()
@@ -37,22 +31,15 @@ class Course(AbstractToken, AbstractPermission):
 
     session_count = models.PositiveSmallIntegerField(default=1)
     prerequisite = models.ForeignKey(
-        'self',
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True
+        "self", on_delete=models.SET_NULL, blank=True, null=True
     )
 
     level = models.CharField(
-        max_length=2,
-        choices=CourseLevel.choices,
-        default=CourseLevel.A1
+        max_length=2, choices=CourseLevel.choices, default=CourseLevel.A1
     )
 
     status = models.CharField(
-        max_length=2,
-        choices=CourseStatus.choices,
-        default=CourseStatus.ENROLLING
+        max_length=2, choices=CourseStatus.choices, default=CourseStatus.ENROLLING
     )
 
     price = models.PositiveIntegerField(default=10000)
@@ -60,10 +47,7 @@ class Course(AbstractToken, AbstractPermission):
     @property
     def get_days_display(self):
         """Returns a list representation of the selected days of the week."""
-        return [
-            WeekDays.choices[int(day)][1] for day in self.days
-            if self.days
-        ]
+        return [WeekDays.choices[int(day)][1] for day in self.days if self.days]
 
     def __str__(self) -> str:
         return self.title
@@ -77,12 +61,10 @@ class Course(AbstractToken, AbstractPermission):
 
     def delete(self, *args, **kwargs):
         if self.enrollments.exists():
-            raise ValidationError(
-                'Cannot delete a course with enrollments.'
-            )
+            raise ValidationError("Cannot delete a course with enrollments.")
 
         if self.status != CourseStatus.ENROLLING:
             raise ValidationError(
-                f'Cannot delete a course with status of {self.status}.'
+                f"Cannot delete a course with status of {self.status}."
             )
         return super().delete(*args, **kwargs)

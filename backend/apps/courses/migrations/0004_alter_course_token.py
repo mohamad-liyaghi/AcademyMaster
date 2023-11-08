@@ -5,15 +5,14 @@ import uuid
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('courses', '0003_alter_course_days'),
+        ("courses", "0003_alter_course_days"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='course',
-            name='token',
+            model_name="course",
+            name="token",
             field=models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
         ),
     ]

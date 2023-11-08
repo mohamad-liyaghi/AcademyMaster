@@ -3,7 +3,7 @@ from .verification_code import VerificationCode
 from .role import AccountRole
 
 __all__ = [
-    'Account',
-    'VerificationCode',
-    'AccountRole',
+    "Account",
+    "VerificationCode",
+    "AccountRole",
 ]

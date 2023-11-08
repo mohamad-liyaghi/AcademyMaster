@@ -11,8 +11,7 @@ def send_manager_promotion_email(sender, created, instance, **kwargs):
         manager = instance
         user = manager.user
         promoter_full_name = (
-            instance.promoted_by.full_name
-            if instance.promoted_by else None
+            instance.promoted_by.full_name if instance.promoted_by else None
         )
 
         send_email.delay(
@@ -20,9 +19,9 @@ def send_manager_promotion_email(sender, created, instance, **kwargs):
             to_email=user.email,
             subject="You've been promoted to Manager!",
             context={
-                'promotion_date': manager.promotion_date,
-                'promoter': promoter_full_name,
-                'first_name': user.first_name,
-                'manager_token': manager.token
-            }
+                "promotion_date": manager.promotion_date,
+                "promoter": promoter_full_name,
+                "first_name": user.first_name,
+                "manager_token": manager.token,
+            },
         )

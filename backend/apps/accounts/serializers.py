@@ -10,17 +10,14 @@ from accounts.exceptions.serializers import (
 
 from accounts.exceptions.models import (
     DuplicationCodeException as ModelDuplicationCodeException,
-    ActiveUserCodeException
+    ActiveUserCodeException,
 )
 from accounts.models import Account, VerificationCode
 
 
 class AccountRegisterSerializer(serializers.ModelSerializer):
-
     email = serializers.EmailField()
-    password = serializers.CharField(
-        style={'input_type': 'password'}, write_only=True
-    )
+    password = serializers.CharField(style={"input_type": "password"}, write_only=True)
 
     class Meta:
         model = Account
@@ -50,7 +47,7 @@ class AccountVerifySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = VerificationCode
-        fields = ['email', 'code']
+        fields = ["email", "code"]
 
     def verify_code(self, email: str, code: int):
         user = get_object_or_404(Account, email=email)
@@ -58,9 +55,7 @@ class AccountVerifySerializer(serializers.ModelSerializer):
         if user.is_active:
             raise AlreadyVerifiedException()
 
-        verify_code, message = VerificationCode.objects.verify(
-            user=user, code=code
-        )
+        verify_code, message = VerificationCode.objects.verify(user=user, code=code)
 
         if not verify_code:
             raise ValidationError(str(message))
@@ -76,13 +71,12 @@ class AccountVerifySerializer(serializers.ModelSerializer):
 
 class ResendCodeSerializer(serializers.ModelSerializer):
     user = serializers.SlugRelatedField(
-        slug_field='token',
-        queryset=Account.objects.filter(is_active=False)
+        slug_field="token", queryset=Account.objects.filter(is_active=False)
     )
 
     class Meta:
         model = VerificationCode
-        fields = ['user']
+        fields = ["user"]
 
     def create(self, validated_data):
         try:

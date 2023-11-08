@@ -3,7 +3,7 @@ from .permissions import AbstractPermission
 from .weekday import WeekDays
 
 __all__ = [
-    'AbstractToken',
-    'AbstractPermission',
-    'WeekDays',
+    "AbstractToken",
+    "AbstractPermission",
+    "WeekDays",
 ]

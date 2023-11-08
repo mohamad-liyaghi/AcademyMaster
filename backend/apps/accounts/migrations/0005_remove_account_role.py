@@ -4,14 +4,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('accounts', '0004_alter_verificationcode_expire_at'),
+        ("accounts", "0004_alter_verificationcode_expire_at"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='account',
-            name='role',
+            model_name="account",
+            name="role",
         ),
     ]

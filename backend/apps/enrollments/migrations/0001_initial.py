@@ -6,28 +6,54 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('courses', '0003_alter_course_days'),
+        ("courses", "0003_alter_course_days"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Enrollment',
+            name="Enrollment",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('token', models.CharField(max_length=32, unique=True)),
-                ('status', models.CharField(choices=[('p', 'Pending'), ('s', 'Success'), ('f', 'Failed')], default='p', max_length=1)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('price', models.PositiveBigIntegerField(default=0)),
-                ('course', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='courses.course')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='enrollments', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("token", models.CharField(max_length=32, unique=True)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[("p", "Pending"), ("s", "Success"), ("f", "Failed")],
+                        default="p",
+                        max_length=1,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("price", models.PositiveBigIntegerField(default=0)),
+                (
+                    "course",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="courses.course"
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="enrollments",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
     ]

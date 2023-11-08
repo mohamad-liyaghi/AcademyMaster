@@ -5,15 +5,29 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('courses', '0002_alter_course_instructor'),
+        ("courses", "0002_alter_course_instructor"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='course',
-            name='days',
-            field=django.contrib.postgres.fields.ArrayField(base_field=models.IntegerField(choices=[('0', 'Saturday'), ('1', 'Sunday'), ('2', 'Monday'), ('3', 'Tuesday'), ('4', 'Wednesday'), ('5', 'Thursday'), ('6', 'Friday')]), blank=True, null=True, size=7),
+            model_name="course",
+            name="days",
+            field=django.contrib.postgres.fields.ArrayField(
+                base_field=models.IntegerField(
+                    choices=[
+                        ("0", "Saturday"),
+                        ("1", "Sunday"),
+                        ("2", "Monday"),
+                        ("3", "Tuesday"),
+                        ("4", "Wednesday"),
+                        ("5", "Thursday"),
+                        ("6", "Friday"),
+                    ]
+                ),
+                blank=True,
+                null=True,
+                size=7,
+            ),
         ),
     ]

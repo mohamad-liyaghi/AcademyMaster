@@ -4,19 +4,18 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('accounts', '0002_verificationcode'),
+        ("accounts", "0002_verificationcode"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='verificationcode',
-            options={'ordering': ['expire_at']},
+            name="verificationcode",
+            options={"ordering": ["expire_at"]},
         ),
         migrations.RenameField(
-            model_name='verificationcode',
-            old_name='created_at',
-            new_name='expire_at',
+            model_name="verificationcode",
+            old_name="created_at",
+            new_name="expire_at",
         ),
     ]

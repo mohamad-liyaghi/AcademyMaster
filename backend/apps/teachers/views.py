@@ -4,7 +4,7 @@ from rest_framework.generics import (
     RetrieveAPIView,
     UpdateAPIView,
     DestroyAPIView,
-    ListAPIView
+    ListAPIView,
 )
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema, extend_schema_view
@@ -17,22 +17,22 @@ from teachers.serializers import (
     TeacherCreateSerializer,
     TeacherRetrieveSerializer,
     TeacherUpdateSerializer,
-    TeacherListSerializer
+    TeacherListSerializer,
 )
 from teachers.models import Teacher
 
 
 @extend_schema_view(
     post=extend_schema(
-        description='''Create a new teacher by admin/managers.''',
+        description="""Create a new teacher by admin/managers.""",
         request=TeacherCreateSerializer,
         responses={
-            '201': 'ok',
-            '400': 'Invalid data',
-            '401': 'Unauthorized',
-            '403': 'Permission denied for adding teachers',
+            "201": "ok",
+            "400": "Invalid data",
+            "401": "Unauthorized",
+            "403": "Permission denied for adding teachers",
         },
-        tags=['Teachers'],
+        tags=["Teachers"],
     ),
 )
 class TeacherCreateView(CreateAPIView):
@@ -40,19 +40,19 @@ class TeacherCreateView(CreateAPIView):
     serializer_class = TeacherCreateSerializer
 
     def get_serializer_context(self):
-        return {'request': self.request}
+        return {"request": self.request}
 
 
 @extend_schema_view(
     get=extend_schema(
-        description='''Retrieve a teacher.''',
+        description="""Retrieve a teacher.""",
         request=TeacherRetrieveSerializer,
         responses={
-            '200': 'ok',
-            '401': 'Unauthorized',
-            '404': 'Not found',
+            "200": "ok",
+            "401": "Unauthorized",
+            "404": "Not found",
         },
-        tags=['Teachers'],
+        tags=["Teachers"],
     ),
 )
 class TeacherRetrieveView(RetrieveAPIView):
@@ -61,33 +61,33 @@ class TeacherRetrieveView(RetrieveAPIView):
 
     def get_object(self):
         return get_object_or_404(
-            Teacher.objects.select_related('user', 'user__profile'),
-            token=self.kwargs['teacher_token']
+            Teacher.objects.select_related("user", "user__profile"),
+            token=self.kwargs["teacher_token"],
         )
 
 
 @extend_schema_view(
     put=extend_schema(
-        description='''Update teacher contact links/description.''',
+        description="""Update teacher contact links/description.""",
         request=TeacherUpdateSerializer,
         responses={
-            '200': 'ok',
-            '401': 'Unauthorized',
-            '403': 'Permission denied for updating teachers',
-            '404': 'Not found',
+            "200": "ok",
+            "401": "Unauthorized",
+            "403": "Permission denied for updating teachers",
+            "404": "Not found",
         },
-        tags=['Teachers'],
+        tags=["Teachers"],
     ),
     patch=extend_schema(
-        description='''Update teacher contact links/description.''',
+        description="""Update teacher contact links/description.""",
         request=TeacherUpdateSerializer,
         responses={
-            '200': 'ok',
-            '401': 'Unauthorized',
-            '403': 'Permission denied for updating teachers',
-            '404': 'Not found',
+            "200": "ok",
+            "401": "Unauthorized",
+            "403": "Permission denied for updating teachers",
+            "404": "Not found",
         },
-        tags=['Teachers'],
+        tags=["Teachers"],
     ),
 )
 class TeacherUpdateView(UpdateAPIView):
@@ -96,8 +96,7 @@ class TeacherUpdateView(UpdateAPIView):
 
     def get_object(self):
         teacher = get_object_or_404(
-            Teacher.objects.select_related('user'),
-            token=self.kwargs['teacher_token']
+            Teacher.objects.select_related("user"), token=self.kwargs["teacher_token"]
         )
         self.check_object_permissions(self.request, teacher)
         return teacher
@@ -105,14 +104,14 @@ class TeacherUpdateView(UpdateAPIView):
 
 @extend_schema_view(
     delete=extend_schema(
-        description='''Delete a teacher only by manager/admins.''',
+        description="""Delete a teacher only by manager/admins.""",
         responses={
-            '204': 'ok',
-            '401': 'Unauthorized',
-            '403': 'Permission denied for deleting teachers',
-            '404': 'Not found',
+            "204": "ok",
+            "401": "Unauthorized",
+            "403": "Permission denied for deleting teachers",
+            "404": "Not found",
         },
-        tags=['Teachers'],
+        tags=["Teachers"],
     ),
 )
 class TeacherDeleteView(DestroyAPIView):
@@ -120,20 +119,19 @@ class TeacherDeleteView(DestroyAPIView):
 
     def get_object(self):
         teacher = get_object_or_404(
-            Teacher.objects.select_related('user'),
-            token=self.kwargs['teacher_token']
+            Teacher.objects.select_related("user"), token=self.kwargs["teacher_token"]
         )
         return teacher
 
 
 @extend_schema_view(
     get=extend_schema(
-        description='''List of teachers all.''',
+        description="""List of teachers all.""",
         responses={
-            '200': 'ok',
-            '401': 'Unauthorized',
+            "200": "ok",
+            "401": "Unauthorized",
         },
-        tags=['Teachers'],
+        tags=["Teachers"],
     ),
 )
 class TeacherListView(ListAPIView):
@@ -141,6 +139,8 @@ class TeacherListView(ListAPIView):
     serializer_class = TeacherListSerializer
 
     def get_queryset(self):
-        return Teacher.objects.select_related(
-            'user', 'user__profile'
-        ).all().order_by('-promotion_date')
+        return (
+            Teacher.objects.select_related("user", "user__profile")
+            .all()
+            .order_by("-promotion_date")
+        )

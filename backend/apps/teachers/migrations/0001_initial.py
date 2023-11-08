@@ -6,7 +6,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -15,20 +14,48 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Teacher',
+            name="Teacher",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('token', models.CharField(max_length=32, unique=True)),
-                ('description', models.TextField(default='This teacher has not yet provided a description', max_length=250)),
-                ('promotion_date', models.DateTimeField(auto_now_add=True)),
-                ('contact_links', models.JSONField()),
-                ('promoted_by', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='promoted_teachers', to=settings.AUTH_USER_MODEL)),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("token", models.CharField(max_length=32, unique=True)),
+                (
+                    "description",
+                    models.TextField(
+                        default="This teacher has not yet provided a description",
+                        max_length=250,
+                    ),
+                ),
+                ("promotion_date", models.DateTimeField(auto_now_add=True)),
+                ("contact_links", models.JSONField()),
+                (
+                    "promoted_by",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="promoted_teachers",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Teacher',
-                'verbose_name_plural': 'Teachers',
-                'db_table': 'teachers',
+                "verbose_name": "Teacher",
+                "verbose_name_plural": "Teachers",
+                "db_table": "teachers",
             },
         ),
     ]

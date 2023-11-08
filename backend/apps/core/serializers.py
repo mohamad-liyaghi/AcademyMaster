@@ -8,53 +8,51 @@ from enrollments.models import Enrollment
 
 
 class PermissionSerializer(serializers.ModelSerializer):
-    '''Represent permission codenames'''
+    """Represent permission codenames"""
+
     class Meta:
         model = Permission
-        fields = ['codename']
+        fields = ["codename"]
 
 
 class UserRelationSerializer(serializers.ModelSerializer):
-    '''Represend user in relations'''
+    """Represend user in relations"""
 
     class Meta:
         model = get_user_model()
         fields = (
-            'first_name',
-            'last_name',
-            'email',
+            "first_name",
+            "last_name",
+            "email",
         )
 
 
 class ProfileRelationSerializer(serializers.ModelSerializer):
-    '''Represent base profile in relation fields'''
+    """Represent base profile in relation fields"""
+
     class Meta:
         model = Profile
         fields = (
-            'avatar',
-            'birth_date',
-            'token',
+            "avatar",
+            "birth_date",
+            "token",
         )
 
 
 class UserProfileRelationSerializer(UserRelationSerializer):
-    '''Represent user/profile in relation fields'''
+    """Represent user/profile in relation fields"""
+
     profile = ProfileRelationSerializer()
 
     class Meta:
         model = get_user_model()
-        fields = (
-            'first_name',
-            'last_name',
-            'email',
-            'profile'
-        )
+        fields = ("first_name", "last_name", "email", "profile")
 
     def get_user_profile(self, user):
-        '''
-            Return user profile
-            Some users may not have a profile, so return None
-        '''
+        """
+        Return user profile
+        Some users may not have a profile, so return None
+        """
         try:
             return user.profile
 
@@ -63,29 +61,32 @@ class UserProfileRelationSerializer(UserRelationSerializer):
 
 
 class InstructorRelationSerializer(serializers.ModelSerializer):
-    '''Represent course instructor in relations'''
+    """Represent course instructor in relations"""
+
     user = UserRelationSerializer()
 
     class Meta:
         model = Teacher
         fields = (
-            'user',
-            'token',
+            "user",
+            "token",
         )
 
 
 class CourseRelationSerializer(serializers.ModelSerializer):
-    '''Represent course basic info in in relations'''
+    """Represent course basic info in in relations"""
+
     class Meta:
         model = Course
         fields = (
-            'title',
-            'token',
+            "title",
+            "token",
         )
 
 
 class EnrollmentRelationSerializer(serializers.ModelSerializer):
-    '''Represent enrollment base info in relations'''
+    """Represent enrollment base info in relations"""
+
     class Meta:
         model = Enrollment
-        fields = ('created_at', 'get_status_display', 'token')
+        fields = ("created_at", "get_status_display", "token")

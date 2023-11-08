@@ -4,7 +4,7 @@ from rest_framework.generics import (
     RetrieveAPIView,
     UpdateAPIView,
     DestroyAPIView,
-    ListAPIView
+    ListAPIView,
 )
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema, extend_schema_view
@@ -28,15 +28,15 @@ from courses.documents import CourseDocument
 
 @extend_schema_view(
     post=extend_schema(
-        description='''Create a new course and assign to a teacher.''',
+        description="""Create a new course and assign to a teacher.""",
         request=CourseCreateSerializer,
         responses={
-            '201': 'ok',
-            '400': 'Invalid data',
-            '401': 'Unauthorized',
-            '403': 'Permission denied',
+            "201": "ok",
+            "400": "Invalid data",
+            "401": "Unauthorized",
+            "403": "Permission denied",
         },
-        tags=['Courses'],
+        tags=["Courses"],
     ),
 )
 class CourseCreateView(CreateAPIView):
@@ -44,19 +44,19 @@ class CourseCreateView(CreateAPIView):
     serializer_class = CourseCreateSerializer
 
     def get_serializer_context(self):
-        return {'request': self.request}
+        return {"request": self.request}
 
 
 @extend_schema_view(
     get=extend_schema(
-        description='''Retrieve a course.''',
+        description="""Retrieve a course.""",
         request=CourseRetrieveSerializer,
         responses={
-            '200': 'ok',
-            '401': 'Unauthorized',
-            '404': 'Not found',
+            "200": "ok",
+            "401": "Unauthorized",
+            "404": "Not found",
         },
-        tags=['Courses'],
+        tags=["Courses"],
     ),
 )
 class CourseRetrieveView(RetrieveAPIView):
@@ -66,34 +66,34 @@ class CourseRetrieveView(RetrieveAPIView):
     def get_object(self):
         return get_object_or_404(
             Course.objects.select_related(
-                'instructor', 'instructor__user', 'assigned_by', 'prerequisite'
+                "instructor", "instructor__user", "assigned_by", "prerequisite"
             ),
-            token=self.kwargs['course_token']
+            token=self.kwargs["course_token"],
         )
 
 
 @extend_schema_view(
     put=extend_schema(
-        description='''Update an enrolling course.''',
+        description="""Update an enrolling course.""",
         request=CourseUpdateSerializer,
         responses={
-            '200': 'ok',
-            '400': 'Course is not enrolling',
-            '403': 'Permission denied',
-            '404': 'Not found',
+            "200": "ok",
+            "400": "Course is not enrolling",
+            "403": "Permission denied",
+            "404": "Not found",
         },
-        tags=['Courses'],
+        tags=["Courses"],
     ),
     patch=extend_schema(
-        description='''Update an enrolling course.''',
+        description="""Update an enrolling course.""",
         request=CourseUpdateSerializer,
         responses={
-            '200': 'ok',
-            '400': 'Cannot delete in-progress/completed courses.',
-            '403': 'Permission denied',
-            '404': 'Not found',
+            "200": "ok",
+            "400": "Cannot delete in-progress/completed courses.",
+            "403": "Permission denied",
+            "404": "Not found",
         },
-        tags=['Courses'],
+        tags=["Courses"],
     ),
 )
 class CourseUpdateView(UpdateAPIView):
@@ -101,34 +101,28 @@ class CourseUpdateView(UpdateAPIView):
     serializer_class = CourseUpdateSerializer
 
     def get_object(self):
-        course = get_object_or_404(
-            Course,
-            token=self.kwargs['course_token']
-        )
+        course = get_object_or_404(Course, token=self.kwargs["course_token"])
         self.check_object_permissions(self.request, course)
         return course
 
 
 @extend_schema_view(
     delete=extend_schema(
-        description='''Delete a course.''',
+        description="""Delete a course.""",
         responses={
-            '204': 'ok',
-            '400': 'Cannot delete in-progress/completed courses.',
-            '403': 'Permission denied',
-            '404': 'Not found',
+            "204": "ok",
+            "400": "Cannot delete in-progress/completed courses.",
+            "403": "Permission denied",
+            "404": "Not found",
         },
-        tags=['Courses'],
+        tags=["Courses"],
     ),
 )
 class CourseDeleteView(DestroyAPIView):
     permission_classes = [IsAuthenticated, CanDeleteCourse]
 
     def get_object(self):
-        course = get_object_or_404(
-            Course,
-            token=self.kwargs['course_token']
-        )
+        course = get_object_or_404(Course, token=self.kwargs["course_token"])
         self.check_object_permissions(self.request, course)
         return course
 
@@ -138,15 +132,15 @@ class CourseDeleteView(DestroyAPIView):
         # check if course is enrolling
         if course.status != CourseStatus.ENROLLING:
             return Response(
-                {'detail': 'Cannot delete in-progress/completed courses.'},
-                status=status.HTTP_400_BAD_REQUEST
+                {"detail": "Cannot delete in-progress/completed courses."},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         # Check if there are any enrollments
         if course.enrollments.exists():
             return Response(
                 "Cannot delete courses with enrollments.",
-                status=status.HTTP_400_BAD_REQUEST
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         return super().destroy(request, *args, **kwargs)
@@ -154,39 +148,39 @@ class CourseDeleteView(DestroyAPIView):
 
 @extend_schema_view(
     get=extend_schema(
-        description='''List of all courses.''',
+        description="""List of all courses.""",
         request=CourseListSerializer,
-        responses={
-            '200': 'ok',
-            '401': 'Unauthorized'
-        },
-        tags=['Courses'],
+        responses={"200": "ok", "401": "Unauthorized"},
+        tags=["Courses"],
     ),
 )
 class CourseListView(ListAPIView):
-
     permission_classes = [IsAuthenticated]
     serializer_class = CourseListSerializer
 
     def get_queryset(self):
         # Define the related fields
-        related_fields = ['instructor', 'instructor__user']
+        related_fields = ["instructor", "instructor__user"]
 
         # Get all courses
         courses = Course.objects.select_related(*related_fields)
 
         # Check if there is a search query
-        search_query = self.request.query_params.get('search')
+        search_query = self.request.query_params.get("search")
         if search_query:
             # Perform search and return queryset
-            return CourseDocument.search().query(
-                'multi_match', query=search_query,
-                fields=['title', 'description']
-            ).to_queryset().select_related(*related_fields)
+            return (
+                CourseDocument.search()
+                .query(
+                    "multi_match", query=search_query, fields=["title", "description"]
+                )
+                .to_queryset()
+                .select_related(*related_fields)
+            )
 
         # Order the courses by status and return the queryset
         return courses.order_by(
-            '-start_date',
+            "-start_date",
             Case(
                 When(status=CourseStatus.ENROLLING, then=Value(0)),
                 When(status=CourseStatus.IN_PROGRESS, then=Value(1)),

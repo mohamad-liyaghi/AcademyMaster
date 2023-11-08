@@ -3,12 +3,11 @@ from activities.models import Activity
 from core.serializers import (
     CourseRelationSerializer,
     UserProfileRelationSerializer,
-    EnrollmentRelationSerializer
+    EnrollmentRelationSerializer,
 )
 
 
 class ActivityRetrieveSerializer(serializers.ModelSerializer):
-
     course = CourseRelationSerializer()
     user = UserProfileRelationSerializer()
     enrollment = EnrollmentRelationSerializer()
@@ -16,12 +15,12 @@ class ActivityRetrieveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Activity
         fields = (
-            'course',
-            'user',
-            'enrollment',
-            'attendance',
-            'final_mark',
-            'created_at'
+            "course",
+            "user",
+            "enrollment",
+            "attendance",
+            "final_mark",
+            "created_at",
         )
         read_only_fields = fields
 
@@ -30,11 +29,11 @@ class ActivityUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Activity
         fields = (
-            'token',
-            'attendance',
-            'final_mark',
+            "token",
+            "attendance",
+            "final_mark",
         )
-        read_only_fields = ('token',)
+        read_only_fields = ("token",)
 
     def update(self, instance, validated_data):
         try:
@@ -44,15 +43,14 @@ class ActivityUpdateSerializer(serializers.ModelSerializer):
 
 
 class ActivityListSerializer(serializers.ModelSerializer):
-
     course = CourseRelationSerializer()
     user = UserProfileRelationSerializer()
 
     class Meta:
         model = Activity
         fields = (
-            'course',
-            'user',
-            'token',
+            "course",
+            "user",
+            "token",
         )
         read_only_fields = fields

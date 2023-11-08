@@ -18,18 +18,19 @@ from courses.models import Course
 
 @extend_schema_view(
     get=extend_schema(
-        description='''Register a new user.''',
+        description="""Register a new user.""",
         responses={
-            '200': ActivityRetrieveSerializer,
-            '403': 'Forbidden',
-            '400': 'Unauthorized',
-            '404': 'Not found',
+            "200": ActivityRetrieveSerializer,
+            "403": "Forbidden",
+            "400": "Unauthorized",
+            "404": "Not found",
         },
-        tags=['Activities'],
+        tags=["Activities"],
     ),
 )
 class ActivityRetrieveView(RetrieveAPIView):
-    '''Retrieve an activity'''
+    """Retrieve an activity"""
+
     queryset = Activity.objects.all()
     serializer_class = ActivityRetrieveSerializer
     permission_classes = [IsAuthenticated, CanRetrieveActivity]
@@ -37,10 +38,10 @@ class ActivityRetrieveView(RetrieveAPIView):
     def get_object(self):
         activity = get_object_or_404(
             Activity.objects.select_related(
-                'user', 'course', 'enrollment', 'user__profile'
+                "user", "course", "enrollment", "user__profile"
             ),
-            token=self.kwargs['activity_token'],
-            course__token=self.kwargs['course_token'],
+            token=self.kwargs["activity_token"],
+            course__token=self.kwargs["course_token"],
         )
         self.check_object_permissions(self.request, activity)
         return activity
@@ -48,26 +49,26 @@ class ActivityRetrieveView(RetrieveAPIView):
 
 @extend_schema_view(
     patch=extend_schema(
-        description='''Update an activity.''',
+        description="""Update an activity.""",
         request=ActivityUpdateSerializer,
         responses={
-            '200': 'Updated',
-            '403': 'Forbidden',
-            '400': 'Unauthorized',
-            '404': 'Not found',
+            "200": "Updated",
+            "403": "Forbidden",
+            "400": "Unauthorized",
+            "404": "Not found",
         },
-        tags=['Activities'],
+        tags=["Activities"],
     ),
     put=extend_schema(
-        description='''Update an activity by its course instructor.''',
+        description="""Update an activity by its course instructor.""",
         request=ActivityUpdateSerializer,
         responses={
-            '200': 'Updated',
-            '403': 'Forbidden',
-            '400': 'Unauthorized',
-            '404': 'Not found',
+            "200": "Updated",
+            "403": "Forbidden",
+            "400": "Unauthorized",
+            "404": "Not found",
         },
-        tags=['Activities'],
+        tags=["Activities"],
     ),
 )
 class ActivityUpdateView(UpdateAPIView):
@@ -76,9 +77,9 @@ class ActivityUpdateView(UpdateAPIView):
 
     def get_object(self):
         activity = get_object_or_404(
-            Activity.objects.select_related('user', 'course', 'enrollment'),
-            token=self.kwargs['activity_token'],
-            course__token=self.kwargs['course_token'],
+            Activity.objects.select_related("user", "course", "enrollment"),
+            token=self.kwargs["activity_token"],
+            course__token=self.kwargs["course_token"],
         )
         self.check_object_permissions(self.request, activity)
         return activity
@@ -86,33 +87,32 @@ class ActivityUpdateView(UpdateAPIView):
 
 @extend_schema_view(
     get=extend_schema(
-        description='''List all activities of a course.''',
+        description="""List all activities of a course.""",
         responses={
-            '200': 'ok',
-            '403': 'Forbidden',
-            '401': 'Unauthorized',
-            '404': 'Not found',
+            "200": "ok",
+            "403": "Forbidden",
+            "401": "Unauthorized",
+            "404": "Not found",
         },
-        tags=['Activities'],
+        tags=["Activities"],
     ),
 )
 class CourseActivityListView(ListAPIView):
-    '''List all activities of a course'''
+    """List all activities of a course"""
+
     serializer_class = ActivityListSerializer
     permission_classes = [IsAuthenticated, IsCourseInstructor]
 
     def get_queryset(self):
         course = get_object_or_404(
             Course.objects.select_related(
-                'instructor',
+                "instructor",
             ),
-            token=self.kwargs['course_token']
+            token=self.kwargs["course_token"],
         )
 
         # Check user permissions
         self.check_object_permissions(self.request, course)
 
         # Access the prefetched activities directly
-        return course.activities.select_related(
-            'user', 'user__profile'
-        ).all()
+        return course.activities.select_related("user", "user__profile").all()

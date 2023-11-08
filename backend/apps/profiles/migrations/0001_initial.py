@@ -7,7 +7,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -16,21 +15,51 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Profile',
+            name="Profile",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('token', models.CharField(max_length=32, unique=True)),
-                ('avatar', models.ImageField(default='assets/pictures/profiles/default-avatar.jpg', upload_to='avatars/')),
-                ('birth_date', models.DateField()),
-                ('address', models.CharField(max_length=150)),
-                ('passport_id', models.CharField(max_length=15)),
-                ('phone_number', models.CharField(max_length=13, unique=True, validators=[django.core.validators.RegexValidator('^\\+98\\d{10}$')])),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='profile', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("token", models.CharField(max_length=32, unique=True)),
+                (
+                    "avatar",
+                    models.ImageField(
+                        default="assets/pictures/profiles/default-avatar.jpg",
+                        upload_to="avatars/",
+                    ),
+                ),
+                ("birth_date", models.DateField()),
+                ("address", models.CharField(max_length=150)),
+                ("passport_id", models.CharField(max_length=15)),
+                (
+                    "phone_number",
+                    models.CharField(
+                        max_length=13,
+                        unique=True,
+                        validators=[
+                            django.core.validators.RegexValidator("^\\+98\\d{10}$")
+                        ],
+                    ),
+                ),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="profile",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Profile',
-                'verbose_name_plural': 'Profiles',
-                'db_table': 'profiles',
+                "verbose_name": "Profile",
+                "verbose_name_plural": "Profiles",
+                "db_table": "profiles",
             },
         ),
     ]

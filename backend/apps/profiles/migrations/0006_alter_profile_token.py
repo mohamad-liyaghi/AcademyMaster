@@ -5,15 +5,14 @@ import uuid
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('profiles', '0005_alter_profile_address'),
+        ("profiles", "0005_alter_profile_address"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='profile',
-            name='token',
+            model_name="profile",
+            name="token",
             field=models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
         ),
     ]

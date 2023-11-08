@@ -5,15 +5,14 @@ import uuid
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('activities', '0004_alter_activity_unique_together'),
+        ("activities", "0004_alter_activity_unique_together"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='activity',
-            name='token',
+            model_name="activity",
+            name="token",
             field=models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
         ),
     ]
