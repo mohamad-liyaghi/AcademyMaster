@@ -10,7 +10,7 @@ from apps.enrollments.tests.fixtures import *
 from apps.activities.tests.fixtures import *
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture(autouse=True, scope="session")
 def disable_celery_tasks():
     """
     Disable celery tasks for all tests.
@@ -18,4 +18,3 @@ def disable_celery_tasks():
     celery.conf.CELERY_ALWAYS_EAGER = True
     yield
     celery.conf.CELERY_ALWAYS_EAGER = False
-
