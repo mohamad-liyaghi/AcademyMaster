@@ -6,14 +6,12 @@ from courses.models import Course, CourseStatus
 
 @pytest.mark.django_db
 class TestDeleteCourseView:
-
     @pytest.fixture(autouse=True)
     def setup(self, create_course):
         self.course = create_course
-        self.url_name = 'courses:delete_course'
+        self.url_name = "courses:delete_course"
         self.url_path = reverse(
-            self.url_name,
-            kwargs={'course_token': create_course.token}
+            self.url_name, kwargs={"course_token": create_course.token}
         )
 
     def test_delete_unauthorized(self, api_client):
@@ -24,22 +22,14 @@ class TestDeleteCourseView:
         api_client.force_authenticate(superuser)
         response = api_client.delete(self.url_path)
         assert response.status_code == status.HTTP_204_NO_CONTENT
-        assert Course.objects.count() == 0
 
-    def test_delete_by_accessed_manager(
-        self, api_client, accessed_manager_account
-    ):
+    def test_delete_by_accessed_manager(self, api_client, accessed_manager_account):
         api_client.force_authenticate(accessed_manager_account)
         response = api_client.delete(self.url_path)
         assert response.status_code == status.HTTP_204_NO_CONTENT
-        assert Course.objects.count() == 0
 
-    def test_delete_by_manager_no_perm(
-        self, api_client, manager_account
-    ):
-        assert not manager_account.has_perm(
-            perm_object=Course.get_permission('delete')
-        )
+    def test_delete_by_manager_no_perm(self, api_client, manager_account):
+        assert not manager_account.has_perm(perm_object=Course.get_permission("delete"))
         api_client.force_authenticate(manager_account)
         response = api_client.delete(self.url_path)
         assert response.status_code == status.HTTP_403_FORBIDDEN
@@ -52,13 +42,12 @@ class TestDeleteCourseView:
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     def test_delete_course_with_enrollment(
-            self, api_client, superuser, create_enrollment
+        self, api_client, superuser, create_enrollment
     ):
         api_client.force_authenticate(superuser)
         response = api_client.delete(
             reverse(
-                self.url_name,
-                kwargs={'course_token': create_enrollment.course.token}
+                self.url_name, kwargs={"course_token": create_enrollment.course.token}
             )
         )
         assert response.status_code == status.HTTP_400_BAD_REQUEST

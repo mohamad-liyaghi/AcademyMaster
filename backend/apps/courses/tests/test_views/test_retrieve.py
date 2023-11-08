@@ -5,12 +5,10 @@ from rest_framework import status
 
 @pytest.mark.django_db
 class TestRetrieveCourseView:
-
     @pytest.fixture(autouse=True)
     def setup(self, create_course):
         self.url_path = reverse(
-            'courses:retrieve_course',
-            kwargs={'course_token': create_course.token}
+            "courses:retrieve_course", kwargs={"course_token": create_course.token}
         )
 
     def test_retrieve_unauthorized(self, api_client):

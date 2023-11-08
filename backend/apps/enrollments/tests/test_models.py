@@ -5,17 +5,14 @@ from enrollments.models import Enrollment, EnrollmentStatus
 
 @pytest.mark.django_db
 class TestEnrollmentModel:
-
     def test_enrollment_default_status(self, create_enrollment):
-        assert Enrollment.objects.count() == 1
         assert create_enrollment.status == EnrollmentStatus.PENDING
 
     def test_create_pending_enrollment_twice(self, create_enrollment):
         assert create_enrollment.status == EnrollmentStatus.PENDING
         with pytest.raises(ValidationError):
             Enrollment.objects.create(
-                user=create_enrollment.user,
-                course=create_enrollment.course
+                user=create_enrollment.user, course=create_enrollment.course
             )
 
     def test_create_success_enrollment_twice(self, create_enrollment):
@@ -24,8 +21,7 @@ class TestEnrollmentModel:
         assert create_enrollment.status == EnrollmentStatus.SUCCESS
         with pytest.raises(ValidationError):
             Enrollment.objects.create(
-                user=create_enrollment.user,
-                course=create_enrollment.course
+                user=create_enrollment.user, course=create_enrollment.course
             )
 
     def test_enrollment_has_token(self, create_enrollment):

@@ -5,17 +5,16 @@ from rest_framework import status
 
 @pytest.mark.django_db
 class TestRetrieveActivityView:
-
     @pytest.fixture(autouse=True)
     def setup(self, get_activity):
         self.activity = get_activity
-        self.url_name = 'activities:retrieve_activity'
+        self.url_name = "activities:retrieve_activity"
         self.url_path = reverse(
             self.url_name,
             kwargs={
-                'activity_token': get_activity.token,
-                'course_token': get_activity.course.token
-            }
+                "activity_token": get_activity.token,
+                "course_token": get_activity.course.token,
+            },
         )
 
     def test_retrieve_unauthenticated(self, api_client):
@@ -51,10 +50,7 @@ class TestRetrieveActivityView:
     def test_retrieve_not_found(self, api_client, unique_uuid):
         self.url_path = reverse(
             self.url_name,
-            kwargs={
-                'activity_token': unique_uuid,
-                'course_token': unique_uuid
-            }
+            kwargs={"activity_token": unique_uuid, "course_token": unique_uuid},
         )
         api_client.force_authenticate(user=self.activity.user)
         response = api_client.get(self.url_path)

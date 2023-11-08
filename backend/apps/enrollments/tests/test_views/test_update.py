@@ -9,13 +9,11 @@ class TestEnrollmentUpdateView:
     @pytest.fixture(autouse=True)
     def setup(self, create_enrollment):
         self.enrollment = create_enrollment
-        self.url_name = 'enrollments:update_enrollment'
+        self.url_name = "enrollments:update_enrollment"
         self.url_path = reverse(
-            self.url_name, kwargs={'enrollment_token': self.enrollment.token}
+            self.url_name, kwargs={"enrollment_token": self.enrollment.token}
         )
-        self.data = {
-            'status': EnrollmentStatus.SUCCESS
-        }
+        self.data = {"status": EnrollmentStatus.SUCCESS}
 
     def test_update_unauthorized(self, api_client):
         response = api_client.put(self.url_path)
@@ -49,18 +47,14 @@ class TestEnrollmentUpdateView:
         response = api_client.put(self.url_path, self.data)
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
-    def test_update_not_found(
-            self, api_client, active_account, unique_uuid
-    ):
+    def test_update_not_found(self, api_client, active_account, unique_uuid):
         api_client.force_authenticate(active_account)
-        url = reverse(self.url_name, kwargs={'enrollment_token': unique_uuid})
+        url = reverse(self.url_name, kwargs={"enrollment_token": unique_uuid})
         response = api_client.put(url, self.data)
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_update_invalid_data(self, api_client):
         api_client.force_authenticate(self.enrollment.user)
-        data = {
-            'status': 'invalid-status'
-        }
+        data = {"status": "invalid-status"}
         response = api_client.put(self.url_path, data)
         assert response.status_code == status.HTTP_400_BAD_REQUEST

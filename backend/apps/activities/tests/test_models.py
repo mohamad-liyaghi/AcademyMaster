@@ -11,8 +11,7 @@ class TestActivityModel:
     def test_create_activity(self, create_success_enrollment):
         Activity.objects.all().delete()
         activity = Activity.objects.create(
-            user=create_success_enrollment.user,
-            enrollment=create_success_enrollment
+            user=create_success_enrollment.user, enrollment=create_success_enrollment
         )
         assert activity.course == create_success_enrollment.course
         assert Activity.objects.count() == 1
@@ -22,22 +21,19 @@ class TestActivityModel:
         with pytest.raises(IntegrityError):
             Activity.objects.create(
                 user=create_success_enrollment.user,
-                enrollment=create_success_enrollment
+                enrollment=create_success_enrollment,
             )
 
-    def test_create_with_others_enrollment(
-            self, create_success_enrollment, superuser
-    ):
+    def test_create_with_others_enrollment(self, create_success_enrollment, superuser):
         Activity.objects.all().delete()
         activity = Activity.objects.create(
-            user=superuser,
-            enrollment=create_success_enrollment
+            user=superuser, enrollment=create_success_enrollment
         )
         assert activity.user == create_success_enrollment.user
         assert activity.user != superuser
 
     def test_create_with_failed_enrollment(self, create_enrollment):
-        '''Raise PermissionDenied if enrollment status is FAILED.'''
+        """Raise PermissionDenied if enrollment status is FAILED."""
         create_enrollment.status = EnrollmentStatus.FAILED
         create_enrollment.save()
 
@@ -45,12 +41,11 @@ class TestActivityModel:
 
         with pytest.raises(PermissionDenied):
             Activity.objects.create(
-                user=create_enrollment.user,
-                enrollment=create_enrollment
+                user=create_enrollment.user, enrollment=create_enrollment
             )
 
     def test_create_with_pedning_enrollment(self, create_enrollment):
-        '''Raise PermissionDenied if enrollment status is PENDING.'''
+        """Raise PermissionDenied if enrollment status is PENDING."""
         create_enrollment.status = EnrollmentStatus.PENDING
         create_enrollment.save()
 
@@ -58,27 +53,26 @@ class TestActivityModel:
 
         with pytest.raises(PermissionDenied):
             Activity.objects.create(
-                user=create_enrollment.user,
-                enrollment=create_enrollment
+                user=create_enrollment.user, enrollment=create_enrollment
             )
 
     def test_create_with_final_mark(self, create_success_enrollment):
-        '''
+        """
         By default final_mark is None
         and teacher cannot change until the course end date.
-        '''
+        """
         Activity.objects.all().delete()
         activity = Activity.objects.create(
             user=create_success_enrollment.user,
             enrollment=create_success_enrollment,
-            final_mark=10
+            final_mark=10,
         )
         assert activity.final_mark is None
 
     def test_add_final_mark_to_unfinished_course(self, get_activity):
-        '''
+        """
         Only activities with course status of COMPLETED can have final_mark.
-        '''
+        """
         assert get_activity.course.status != CourseStatus.COMPLETED
         with pytest.raises(PermissionDenied):
             get_activity.final_mark = 10
