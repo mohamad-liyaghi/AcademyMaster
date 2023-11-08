@@ -8,10 +8,9 @@ class TestTeacherUpdateView:
     @pytest.fixture(autouse=True)
     def setup(self, teacher_account):
         self.teacher = teacher_account
-        self.url_name = 'teachers:update_teacher'
+        self.url_name = "teachers:update_teacher"
         self.url_path = reverse(
-            self.url_name,
-            kwargs={'teacher_token': self.teacher.teacher.token}
+            self.url_name, kwargs={"teacher_token": self.teacher.teacher.token}
         )
 
     def test_update_unauthorized(self, api_client):
@@ -19,12 +18,9 @@ class TestTeacherUpdateView:
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
     def test_update_by_object_owner(self, api_client):
-        updated_description = 'Updated description'
+        updated_description = "Updated description"
         api_client.force_authenticate(self.teacher)
-        response = api_client.put(
-            self.url_path,
-            {'description': updated_description}
-        )
+        response = api_client.put(self.url_path, {"description": updated_description})
         assert response.status_code == status.HTTP_200_OK
         self.teacher.teacher.refresh_from_db()
         assert self.teacher.teacher.description == updated_description
@@ -41,9 +37,6 @@ class TestTeacherUpdateView:
         assert unique_uuid != self.teacher.teacher.token
 
         response = api_client.put(
-            reverse(
-                self.url_name,
-                kwargs={'teacher_token': unique_uuid}
-            )
+            reverse(self.url_name, kwargs={"teacher_token": unique_uuid})
         )
         assert response.status_code == status.HTTP_404_NOT_FOUND
