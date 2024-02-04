@@ -49,7 +49,6 @@ spec:
             - key: .env
               path: .env
 
-
 ---
 
 apiVersion: v1
@@ -65,44 +64,3 @@ spec:
       targetPort: 8000
 
 
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: academy-master-smtp-dp
-  labels:
-    app: academy-master-smtp
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: academy-master-smtp
-  template:
-    metadata:
-      labels:
-        app: academy-master-smtp
-    spec:
-      containers:
-      - name: smtp
-        image: rnwood/smtp4dev:v3
-        ports:
-        - name: tcp-80
-          containerPort: 80
-        - name: tcp-25
-          containerPort: 25
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: smtp4dev
-spec:
-  selector:
-    app: academy-master-smtp
-  ports:
-    - name: http
-      port: 5000
-      targetPort: tcp-80
-    - name: smtp
-      port: 25
-      targetPort: tcp-25
