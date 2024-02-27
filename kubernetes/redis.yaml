@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: academy-master-redis-dp
+  labels:
+    app: academy-master-redis
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: academy-master-redis
+
+  template:
+    metadata:
+      labels:
+        app: academy-master-redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:6.2-alpine
+          ports:
+            - containerPort: 6379
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+spec:
+  selector:
+    app: academy-master-redis
+  ports:
+  - protocol: TCP
+    port: 6379
+    targetPort: 6379

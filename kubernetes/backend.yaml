@@ -29,7 +29,6 @@ spec:
         - configMapRef:
             name: academy-master-env
 
-
         ports:
         - containerPort: 8000
 
