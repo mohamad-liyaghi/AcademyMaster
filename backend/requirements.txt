@@ -14,7 +14,7 @@ colorama==0.4.6
 coreapi==2.3.3
 coreschema==0.0.4
 cron-descriptor==1.4.0
-Django==4.2.7
+Django==4.2.11
 django-celery-beat==2.5.0
 django-celery-results==2.5.1
 django-debug-toolbar==4.1.0
