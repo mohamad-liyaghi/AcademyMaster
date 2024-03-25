@@ -67,7 +67,7 @@ jobs:
         run: kubectl wait --for=condition=available --timeout=60s deployment/academy-master-redis-dp
 
       - name: Wait for Backend Deployments
-        run: kubectl wait --for=condition=available --timeout=60s academy-master-backend-dp
+        run: kubectl wait --for=condition=available --timeout=60s deployment/academy-master-backend-dp
 
       - name: Run Backend Tests
         run: kubectl exec -it $(kubectl get pods | grep backend | awk '{print $1}') -- pytest
