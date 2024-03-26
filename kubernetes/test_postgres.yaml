@@ -45,5 +45,5 @@ spec:
     app: academy-master-test-postgres
   ports:
     - protocol: TCP
-      port: 9999
+      port: 5433
       targetPort: 5432

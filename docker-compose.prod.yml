@@ -52,8 +52,8 @@ services:
     image: postgres:12
     container_name: academy-master-postgres-test
     restart: on-failure
-    expose:
-      - 5432
+    ports:
+      - "5433:5432"
     networks:
       - main
     environment:
