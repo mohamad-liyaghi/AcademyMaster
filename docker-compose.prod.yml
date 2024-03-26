@@ -1,8 +1,8 @@
 version: '3.9'
 
 x-environment: &COMMON_VARS
-    DJANGO_SETTINGS_MODULE: 'config.settings.production'
-    ENVIRONMENT: PRODUCTION
+  DJANGO_SETTINGS_MODULE: 'config.settings.production'
+  ENVIRONMENT: PRODUCTION
 
 
 services:
@@ -142,11 +142,11 @@ services:
     container_name: academy-master-celery-beat
     command: sh ./docker/commands/celery-beat.sh
     env_file:
-        - ./backend/.env.prod/
+      - ./backend/.env.prod/
     environment:
       *COMMON_VARS
     volumes:
-        - ./backend/:/backend
+      - ./backend/:/backend
     networks:
       - main
     depends_on:

@@ -1,8 +1,8 @@
 version: '3.9'
 
 x-environment: &COMMON_VARS
-    DJANGO_SETTINGS_MODULE: 'config.settings.local'
-    ENVIRONMENT: LOCAL
+  DJANGO_SETTINGS_MODULE: 'config.settings.local'
+  ENVIRONMENT: LOCAL
 
 services:
 
@@ -52,7 +52,7 @@ services:
     container_name: academy-master-postgres-test
     restart: on-failure
     ports:
-        - "5433:5432"
+      - "5433:5432"
     networks:
       - main
     environment:
@@ -140,7 +140,7 @@ services:
     container_name: academy-master-celery-beat
     command: sh ./docker/commands/celery-beat.sh
     env_file:
-        - ./backend/.env.local
+      - ./backend/.env.local
     environment:
       *COMMON_VARS
     networks:
