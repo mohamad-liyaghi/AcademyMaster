@@ -60,8 +60,8 @@ jobs:
       - name: Run Kubernetes Deployments
         run: kubectl apply -f kubernetes/
 
-      - name: Wait for Database Deployments
-        run: kubectl wait --for=condition=available --timeout=60s deployment/academy-master-postgres-dp
+      - name: Wait for Test Database Deployments
+        run: kubectl wait --for=condition=available --timeout=60s deployment/academy-master-test-postgres-dp
 
       - name: Wait for Redis Service
         run: kubectl wait --for=condition=available --timeout=60s deployment/academy-master-redis-dp
