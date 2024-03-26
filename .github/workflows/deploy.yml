@@ -5,6 +5,11 @@ on:
     branches: [main]
   workflow_dispatch:
 
+
+env:
+  REGISTRY: docker.io
+  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/academy_master
+
 jobs:
   build:
     runs-on: ubuntu-latest
