@@ -25,8 +25,8 @@ jobs:
     steps:
       - uses: ./deploy/test-docker.yaml
         with:
-        image_name: ${{ env.IMAGE_NAME }}
-        registry: ${{ env.REGISTRY }}
+          image_name: ${{ env.IMAGE_NAME }}
+          registry: ${{ env.REGISTRY }}
 
 
   test-on-kubernetes:
