@@ -19,9 +19,11 @@ runs:
 
     - name: Pull The Image
       run: docker pull ${{ inputs.registry }}/${{ inputs.image_name }}:latest
+      shell: bash
 
     - name: Run Containers
       run: make run DETACHED=true
+      shell: bash
 
     - name: Wait for backend container to prepare
       uses: jakejarvis/wait-action@master
@@ -30,3 +32,4 @@ runs:
 
     - name: Run tests
       run: make test
+      shell: bash
