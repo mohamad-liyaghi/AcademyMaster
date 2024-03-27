@@ -1,6 +1,16 @@
 name: "Test On Docker"
 description: "Test The Code On Docker"
 
+inputs:
+  image_name:
+    description: "Name of the image"
+    required: true
+    default: "academy_master"
+  registry:
+    description: "Docker registry"
+    required: true
+    default: "docker.io"
+
 runs:
   using: composite
   steps:
