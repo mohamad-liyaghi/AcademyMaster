@@ -14,7 +14,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-        - uses: ./deploy/build.yaml
+        - uses: .github/workflows/deployment/build.yaml
           with:
             image_name: ${{ env.IMAGE_NAME }}
             registry: ${{ env.REGISTRY }}
@@ -23,7 +23,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: ./deploy/test-docker.yaml
+      - uses: .github/workflows/deployment/test-docker.yaml
         with:
           image_name: ${{ env.IMAGE_NAME }}
           registry: ${{ env.REGISTRY }}
@@ -33,10 +33,10 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: ./deploy/test-kubernetes.yaml
+      - uses: .github/workflows/deployment/test-kubernetes.yaml
 
   deploy:
     needs: [ test-on-docker, test-on-kubernetes ]
     runs-on: ubuntu-latest
     steps:
-        - uses: ./deploy/deploy.yaml
+        - uses: .github/workflows/deployment/deploy.yaml
