@@ -14,6 +14,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+        - uses: actions/checkout@v3
         - uses: .github/workflows/deployment/build.yaml
           with:
             image_name: ${{ env.IMAGE_NAME }}
@@ -23,6 +24,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - uses: .github/workflows/deployment/test-docker.yaml
         with:
           image_name: ${{ env.IMAGE_NAME }}
@@ -33,10 +35,12 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - uses: .github/workflows/deployment/test-kubernetes.yaml
 
   deploy:
     needs: [ test-on-docker, test-on-kubernetes ]
     runs-on: ubuntu-latest
     steps:
-        - uses: .github/workflows/deployment/deploy.yaml
+      - uses: actions/checkout@v3
+      - uses: .github/workflows/deployment/deploy.yaml
