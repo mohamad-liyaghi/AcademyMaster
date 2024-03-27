@@ -1,0 +1,32 @@
+name: Test On Kubernetes
+description: Test the application on kubernetes
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v1
+
+    - name: Start minikube
+      uses: medyagh/setup-minikube@master
+
+
+    - name: Create ConfigMap
+      run: kubectl create configmap academy-master-env --from-env-file=./backend/.env.local && kubectl create configmap academy-master-env-file --from-file=.env=./backend/.env.local
+
+    - name: Run Kubernetes Deployments
+      run: kubectl apply -f kubernetes/
+
+    - name: Wait for Test Database Deployments
+      run: kubectl wait --for=condition=available --timeout=60s deployment/academy-master-test-postgres-dp
+
+    - name: Wait for Redis Service
+      run: kubectl wait --for=condition=available --timeout=60s deployment/academy-master-redis-dp
+
+    - name: Wait for Backend Deployments
+      run: kubectl wait --for=condition=available --timeout=60s deployment/academy-master-backend-dp
+
+    - name: Run Backend Tests
+      run: kubectl exec -it $(kubectl get pods | grep backend | awk '{print $1}') -- pytest

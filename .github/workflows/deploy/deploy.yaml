@@ -1,0 +1,11 @@
+name: Deploy The Code
+description: This Workflow deploys the code to the cloud
+
+runs:
+  using: composite
+  steps:
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Fake Deployment
+        run: echo "Deploying the service to the cloud..."

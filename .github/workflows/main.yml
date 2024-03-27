@@ -1,0 +1,42 @@
+name: Academy Master Tests
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+
+env:
+  REGISTRY: docker.io
+  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/academy_master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+        - uses: ./deploy/build.yaml
+          with:
+            image_name: ${{ env.IMAGE_NAME }}
+            registry: ${{ env.REGISTRY }}
+
+  test-on-docker:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./deploy/test-docker.yaml
+        with:
+        image_name: ${{ env.IMAGE_NAME }}
+        registry: ${{ env.REGISTRY }}
+
+
+  test-on-kubernetes:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./deploy/test-kubernetes.yaml
+
+  deploy:
+    needs: [ test-on-docker, test-on-kubernetes ]
+    runs-on: ubuntu-latest
+    steps:
+        - uses: ./deploy/deploy.yaml
