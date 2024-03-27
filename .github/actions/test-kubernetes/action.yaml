@@ -1,11 +1,9 @@
 name: Test On Kubernetes
-description: Test the application on kubernetes
+description: "Test the application on kubernetes"
 
 runs:
-  using: composite
+  using: 'composite'
   steps:
-    - uses: actions/checkout@v3
-
     - name: Set up kubectl
       uses: azure/setup-kubectl@v1
 

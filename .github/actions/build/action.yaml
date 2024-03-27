@@ -1,22 +1,10 @@
-name: Build Image
-description: This WorkFlow Builds the image and push it to dockerhub
-inputs:
-  image_name:
-    description: 'Name of the image'
-    required: true
-    default: 'academy_master'
-  registry:
-    description: 'Docker registry'
-    required: true
-    default: 'docker.io'
+name: "Build And Push The Image"
+description: "Build And Push The Image To The Docker Registry"
 
 runs:
-  using: composite
+  using: 'composite'
   steps:
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
       - name: Setup Docker buildx
         uses: docker/setup-buildx-action@v2
 
