@@ -4,12 +4,10 @@ description: "Test the application on kubernetes"
 runs:
   using: 'composite'
   steps:
-    - name: Set up kubectl
-      uses: azure/setup-kubectl@v1
-
-    - name: Start minikube
-      uses: medyagh/setup-minikube@master
-
+    - uses: debianmaster/actions-k3s@master
+      id: k3s
+      with:
+        version: 'latest'
 
     - name: Create ConfigMap
       run: kubectl create configmap academy-master-env --from-env-file=./backend/.env.local && kubectl create configmap academy-master-env-file --from-file=.env=./backend/.env.local
