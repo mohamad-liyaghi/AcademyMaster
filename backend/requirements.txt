@@ -31,7 +31,7 @@ elastic-transport==8.4.0
 elasticsearch==7.17.9
 elasticsearch-dsl==7.4.1
 Faker==18.11.1
-gunicorn==20.1.0
+gunicorn==22.0.0
 h11==0.14.0
 idna==3.4
 inflection==0.5.1
