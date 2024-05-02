@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: celery-master
-        image: mohammadbaj/academy_master:latest
+        image: ml06py/academy_master:latest
         command: ["/bin/sh"]
         args: [ "/backend/docker/commands/celery.sh" ]
 
@@ -32,7 +32,7 @@ spec:
 
 
       - name: celery-slave
-        image: mohammadbaj/academy_master:latest
+        image: ml06py/academy_master:latest
         command: ["/bin/sh"]
         args: [ "/backend/docker/commands/celery-beat.sh" ]
 

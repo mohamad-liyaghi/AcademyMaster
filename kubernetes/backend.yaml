@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: mohammadbaj/academy_master:latest
+        image: ml06py/academy_master:latest
         command: ["/bin/sh"]
         args: [ "/backend/docker/commands/setup.sh" ]
 

@@ -11,9 +11,7 @@ services:
     restart: on-failure
     command: sh ./docker/commands/setup.sh
     container_name: academy-master-backend
-    build:
-      context: .
-      dockerfile: ./backend/docker/Dockerfile
+    image: ml06py/academy_master:latest
     ports:
       - "8000:8000"
     volumes:
