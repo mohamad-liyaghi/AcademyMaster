@@ -114,9 +114,7 @@ services:
     restart: always
 
   celery:
-    build:
-      context: .
-      dockerfile: ./backend/docker/Dockerfile
+    image: ml06py/academy_master:latest
     container_name: academy-master-celery
     command: sh ./docker/commands/celery.sh
     volumes:
@@ -134,9 +132,7 @@ services:
         condition: service_healthy
 
   celery-beat:
-    build:
-      context: .
-      dockerfile: ./backend/docker/Dockerfile
+    image: ml06py/academy_master:latest
     container_name: academy-master-celery-beat
     command: sh ./docker/commands/celery-beat.sh
     env_file:
