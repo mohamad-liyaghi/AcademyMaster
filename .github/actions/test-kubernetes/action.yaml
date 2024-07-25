@@ -17,6 +17,10 @@ runs:
       run: kubectl apply -f kubernetes/
       shell: bash
 
+    - name: Wait for Postgres Service
+      run: kubectl wait --for=condition=available --timeout=60s deployment/academy-master-postgres-dp
+      shell: bash
+
     - name: Wait for Redis Service
       run: kubectl wait --for=condition=available --timeout=60s deployment/academy-master-redis-dp
       shell: bash
