@@ -33,7 +33,7 @@ elasticsearch-dsl==7.4.1
 Faker==18.11.1
 gunicorn==22.0.0
 h11==0.14.0
-idna==3.4
+idna==3.7
 inflection==0.5.1
 iniconfig==2.0.0
 itypes==1.2.0
