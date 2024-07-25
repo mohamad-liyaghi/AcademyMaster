@@ -25,15 +25,13 @@ spec:
 
           env:
           - name: POSTGRES_USER
-            value: "$(DATABASE_USER)"
+            value: "$(POSTGRES_USER)"
           - name: POSTGRES_PASSWORD
-            value: "$(DATABASE_PASSWORD)"
+            value: "$(POSTGRES_PASSWORD)"
           - name: POSTGRES_DB
-            value: "$(DATABASE_NAME)"
-          - name: DATABASE_HOST
-            value: "postgres"
+            value: "$(POSTGRES_NAME)"
           - name: POSTGRES_MULTIPLE_DATABASES
-            value: "$(DATABASE_NAME),$(DATABASE_TEST_NAME)"
+            value: "$(POSTGRES_NAME),$(POSTGRES_TEST_NAME)"
 
           volumeMounts:
           - mountPath: /var/lib/postgresql/data

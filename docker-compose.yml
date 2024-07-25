@@ -25,7 +25,7 @@ services:
     depends_on:
       elastic:
         condition: service_started
-      database:
+      postgres:
         condition: service_started
       rabbitmq:
         condition: service_started
@@ -34,7 +34,7 @@ services:
       smtp4dev:
         condition: service_started
 
-  database:
+  postgres:
     image: postgres:12
     container_name: academy-master-postgres
     restart: on-failure
@@ -48,7 +48,7 @@ services:
     networks:
       - main
     environment:
-      - POSTGRES_MULTIPLE_DATABASES="${DATABASE_NAME},${TEST_DATABASE_NAME}"
+      - POSTGRES_MULTIPLE_DATABASES="${POSTGRES_NAME},${TEST_POSTGRES_NAME}"
 
   rabbitmq:
     image: rabbitmq:3.10-management-alpine

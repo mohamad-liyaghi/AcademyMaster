@@ -37,7 +37,7 @@ spec:
           value: "config.settings.local"
         - name: ENVIRONMENT
           value: "LOCAL"
-        - name: DATABASE_PORT
+        - name: POSTGRES_PORT
           value: "5432"
 
       volumes:
