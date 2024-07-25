@@ -30,6 +30,8 @@ spec:
             value: "$(DATABASE_PASSWORD)"
           - name: POSTGRES_DB
             value: "$(DATABASE_NAME)"
+          - name: DATABASE_HOST
+            value: "postgres"
           - name: POSTGRES_MULTIPLE_DATABASES
             value: "$(DATABASE_NAME),$(DATABASE_TEST_NAME)"
 
