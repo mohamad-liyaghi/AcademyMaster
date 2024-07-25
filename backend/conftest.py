@@ -1,6 +1,6 @@
+import pytest
 from django.conf import settings
 from config.celery import celery
-import pytest
 from apps.core.tests.fixtures import *
 from apps.accounts.tests.fixtures import *
 from apps.managers.tests.fixtures import *
