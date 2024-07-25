@@ -30,18 +30,26 @@ spec:
             value: "$(DATABASE_PASSWORD)"
           - name: POSTGRES_DB
             value: "$(DATABASE_NAME)"
-
+          - name: POSTGRES_MULTIPLE_DATABASES
+            value: "$(POSTGRES_MULTIPLE_DATABASES)"
 
           volumeMounts:
           - mountPath: /var/lib/postgresql/data
             name: postgres-vol
+          - mountPath: /docker-entrypoint-initdb.d/entrypoint.sh
+            name: postgres-initdb
 
           image: postgres:12
           ports:
           - containerPort: 5432
+
+
       volumes:
       - name: postgres-vol
         emptyDir: {}
+      - name: postgres-initdb
+        configMap:
+          name: postgres-initdb
 
 ---
 apiVersion: v1

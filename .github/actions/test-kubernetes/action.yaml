@@ -10,7 +10,7 @@ runs:
         version: 'latest'
 
     - name: Create ConfigMap
-      run: kubectl create configmap academy-master-env --from-env-file=./backend/.env.local && kubectl create configmap academy-master-env-file --from-file=.env=./backend/.env.local
+      run: kubectl create configmap academy-master-env --from-env-file=./backend/.env.local && kubectl create configmap academy-master-env-file --from-file=.env=./backend/.env.local &&  kubectl create configmap postgres-initdb-script --from-file=./backend/docker/commands/pg-entrypoint.sh
       shell: bash
 
     - name: Run Kubernetes Deployments
