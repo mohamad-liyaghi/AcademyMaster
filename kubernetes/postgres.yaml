@@ -31,7 +31,7 @@ spec:
           - name: POSTGRES_DB
             value: "$(DATABASE_NAME)"
           - name: POSTGRES_MULTIPLE_DATABASES
-            value: "$(POSTGRES_MULTIPLE_DATABASES)"
+            value: "$(DATABASE_NAME),$(DATABASE_TEST_NAME)"
 
           volumeMounts:
           - mountPath: /var/lib/postgresql/data
