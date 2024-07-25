@@ -44,6 +44,8 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ./docker/scripts/pg-entrypoint.sh:/docker-entrypoint-initdb.d/entrypoint.sh
+    environment:
+      - POSTGRES_MULTIPLE_DATABASES="${DATABASE_NAME},${TEST_DATABASE_NAME}"
     networks:
       - main
 

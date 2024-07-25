@@ -47,6 +47,8 @@ services:
       - ./docker/scripts/pg-entrypoint.sh:/docker-entrypoint-initdb.d/entrypoint.sh
     networks:
       - main
+    environment:
+      - POSTGRES_MULTIPLE_DATABASES="${DATABASE_NAME},${TEST_DATABASE_NAME}"
 
   rabbitmq:
     image: rabbitmq:3.10-management-alpine
