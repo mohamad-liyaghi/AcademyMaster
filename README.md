@@ -48,11 +48,14 @@ Follow these simple steps to run the AcademyMaster backend:
     cd AcademyMaster/
     ```
 
-3. Create a ConfigMap from .env file(use .env.prod for production).
+3. Create ConfigMap 
     ```bash
-    kubectl create configmap academy-master-env --from-env-file=./backend/.env.local
-    kubectl create configmap academy-master-env-file --from-file=.env=./backend/.env.local
+    make local_confmap
     ```
+    or
+    ```bash
+      make prod_confmap
+   ```
 
 4. Creating Deployments
     ```bash
@@ -65,7 +68,7 @@ use `http://backend:8000/` on nodes
 
 You can also load sample data by running the following command:
 ```bash
-docker exec -it academy-master-backend python manage.py loaddata db.json
+  make load_mock_data
 ```
 
 

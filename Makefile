@@ -1,4 +1,4 @@
-.PHONY: help build run stop test admin
+.PHONY: help build run stop test admin local_confmap prod_confmap
 
 help:
 	@echo "Available targets:"
@@ -10,7 +10,8 @@ help:
 	@echo "  test    - Run the tests."
 	@echo "  migrations - Create migrations."
 	@echo "  migrate - Migrate"
-
+	@echo "  local_confmap - Make Kubernetes config maps for local stage"
+	@echo "  prod_confmap - Make Kubernetes config maps for production stage"
 
 build:
 	docker compose build
@@ -42,3 +43,6 @@ local_confmap:
 
 prod_confmap:
 	kubectl create configmap academy-master-env --from-env-file=./backend/.env.prod && kubectl create configmap academy-master-env-file --from-file=.env=./backend/.env.prod &&  kubectl create configmap postgres-initdb --from-file=./backend/docker/commands/pg-entrypoint.sh
+
+load_mock_data:
+	docker exec academy-master-backend python manage.py loaddata sample-db.json
