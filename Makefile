@@ -1,4 +1,4 @@
-.PHONY: help build run stop test test_k8s admin local_confmap prod_confmap
+.PHONY: help build run stop test admin local_confmap prod_confmap
 
 help:
 	@echo "Available targets:"
@@ -8,7 +8,6 @@ help:
 	@echo "  deploy  - Deploy the docker container."
 	@echo "  stop    - Stop the docker container."
 	@echo "  test    - Run the tests."
-	@echo "  test_k8s - Run the tests in Kubernetes."
 	@echo "  migrations - Create migrations."
 	@echo "  migrate - Migrate"
 	@echo "  local_confmap - Make Kubernetes config maps for local stage"
@@ -32,9 +31,6 @@ stop:
 
 test:
 	docker exec academy-master-backend pytest
-
-test_k8s:
-	kubectl exec -it $(kubectl get pods | grep backend | awk '{print $1}') -- pytest
 
 migrations:
 	docker exec academy-master-backend python manage.py makemigrations
