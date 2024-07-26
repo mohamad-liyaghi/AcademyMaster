@@ -25,6 +25,14 @@ runs:
       run: kubectl wait --for=condition=available --timeout=60s deployment/academy-master-redis-dp
       shell: bash
 
+    - name: Wait for RabbitMQ Service
+      run: kubectl wait --for=condition=available --timeout=60s deployment/academy-master-rabbitmq-dp
+      shell: bash
+
+    - name: Wait for Elastic Service
+      run: kubectl wait --for=condition=available --timeout=60s deployment/academy-master-elastic-dp
+      shell: bash
+
     - name: Wait for Backend Deployments
       run: kubectl wait --for=condition=available --timeout=60s deployment/academy-master-backend-dp
       shell: bash
