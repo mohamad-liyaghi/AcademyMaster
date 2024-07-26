@@ -24,7 +24,7 @@ services:
       *COMMON_VARS
     depends_on:
       elastic:
-        condition: service_started
+        condition: service_healthy
       postgres:
         condition: service_started
       rabbitmq:
@@ -79,15 +79,13 @@ services:
   elastic:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.14.0
     container_name: academy-master-elastic
-    environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=false
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    env_file:
+      - ./backend/.env.local
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:9200" ]
-      interval: 7s
-      timeout: 3s
-      retries: 3
+      interval: 15s
+      timeout: 30s
+      retries: 10
     expose:
       - 9200
     networks:
