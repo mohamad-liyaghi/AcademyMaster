@@ -4,13 +4,11 @@ metadata:
   name: academy-master-prometheus-dp
   labels:
     app: academy-master-prometheus
-
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: academy-master-prometheus
-
   template:
     metadata:
       labels:
@@ -18,15 +16,13 @@ spec:
     spec:
       containers:
         - name: prometheus
-
-          volumeMounts:
-            - name: prometheus-config
-              mountPath: /etc/prometheus/prometheus.yml
-
           image: prom/prometheus
           ports:
             - containerPort: 9090
-
+          volumeMounts:
+            - name: prometheus-config
+              mountPath: /etc/prometheus/prometheus.yml
+              subPath: prometheus.yml
       volumes:
         - name: prometheus-config
           configMap:
