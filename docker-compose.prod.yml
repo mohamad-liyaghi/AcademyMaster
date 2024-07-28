@@ -144,7 +144,6 @@ services:
     container_name: academy-master-prometheus
     volumes:
       - ./prometheus/config.yaml:/etc/prometheus/prometheus.yml
-      - invest-club_prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
