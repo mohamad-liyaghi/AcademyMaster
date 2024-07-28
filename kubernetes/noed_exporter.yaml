@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: academy-master-node_exporter-dp
+  name: academy-master-node-exporter-dp
   labels:
-    app: academy-master-node_exporter
+    app: academy-master-node-exporter
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: academy-master-node_exporter
+      app: academy-master-node-exporter
   template:
     metadata:
       labels:
-        app: academy-master-node_exporter
+        app: academy-master-node-exporter
     spec:
       containers:
-        - name: node_exporter
+        - name: node-exporter
           image: quay.io/prometheus/node-exporter:latest
           ports:
             - containerPort: 9100
@@ -24,10 +24,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: node_exporter
+  name: node-exporter
 spec:
   selector:
-    app: academy-master-node_exporter
+    app: academy-master-node-exporter
   ports:
     - protocol: TCP
       port: 9100
