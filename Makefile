@@ -39,10 +39,10 @@ migrate:
 	docker exec academy-master-backend python manage.py migrate
 
 local_confmap:
-	kubectl create configmap academy-master-env --from-env-file=./backend/.env.local && kubectl create configmap academy-master-env-file --from-file=.env=./backend/.env.local &&  kubectl create configmap postgres-initdb --from-file=./backend/docker/commands/pg-entrypoint.sh
+	kubectl create configmap academy-master-env --from-env-file=./backend/.env.local && kubectl create configmap academy-master-env-file --from-file=.env=./backend/.env.local &&  kubectl create configmap postgres-initdb --from-file=./backend/docker/commands/pg-entrypoint.sh && kubectl create configmap prometheus-config --from-file=./prometheus/config.yaml
 
 prod_confmap:
-	kubectl create configmap academy-master-env --from-env-file=./backend/.env.prod && kubectl create configmap academy-master-env-file --from-file=.env=./backend/.env.prod &&  kubectl create configmap postgres-initdb --from-file=./backend/docker/commands/pg-entrypoint.sh
+	kubectl create configmap academy-master-env --from-env-file=./backend/.env.prod && kubectl create configmap academy-master-env-file --from-file=.env=./backend/.env.prod &&  kubectl create configmap postgres-initdb --from-file=./backend/docker/commands/pg-entrypoint.sh && kubectl create configmap prometheus-config --from-file=./prometheus/config.yaml
 
 load_mock_data:
 	docker exec academy-master-backend python manage.py loaddata sample-db.json
